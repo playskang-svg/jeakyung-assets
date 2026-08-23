@@ -4,6 +4,7 @@ import AdminControlIndexPanel from '../../components/admin/AdminControlIndexPane
 import MembershipApprovalPanel from '../../components/admin/MembershipApprovalPanel.jsx';
 import OrganizationManagementPanel from '../../components/admin/OrganizationManagementPanel.jsx';
 import DashboardWidgetPanel from '../../components/admin/DashboardWidgetPanel.jsx';
+import LinkPageAdminPanel from '../../components/admin/LinkPageAdminPanel.jsx';
 import SystemUsagePanel from '../../components/admin/SystemUsagePanel.jsx';
 import EmployeeProfilePanel from '../../components/admin/EmployeeProfilePanel.jsx';
 import { EMPTY_DIRECTORY, getAdminOverview } from '../../services/adminOverviewService.js';
@@ -59,6 +60,7 @@ export default function AdminPage() {
       {section === 'employee' && <EmployeeProfilePanel directory={directory} />}
       {section === 'organization' && <OrganizationManagementPanel directory={directory} onReload={load} />}
       {section === 'widgets' && <DashboardWidgetPanel directory={directory} />}
+      {section === 'linkpages' && <LinkPageAdminPanel />}
       {section === 'usage' && <SystemUsagePanel usage={overview.usage} loading={loading} onReload={load} />}
     </article>
   );

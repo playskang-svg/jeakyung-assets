@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { getAttachmentViewUrl, getBoardOverview, getBoardPosts } from '../../services/boardService.js';
 
-export default function BoardPage() {
+// embedded: 링크 페이지 안에서 하위 화면으로 렌더될 때. 라우트 파라미터 대신
+// props로 게시판을 받고, 뒤로가기·목록 이동처럼 전체 화면 전제의 동선은 숨긴다.
+export default function BoardPage({ boardSlug: boardSlugProp, embedded = false }) {
   const navigate = useNavigate();
-  const { boardSlug } = useParams(); const [params, setParams] = useSearchParams();
+  const routeParams = useParams(); const boardSlug = boardSlugProp ?? routeParams.boardSlug;
+  const [params, setParams] = useSearchParams();
   const [overview, setOverview] = useState(null); const [posts, setPosts] = useState({ items: [] }); const [thumbnails, setThumbnails] = useState({}); const [error, setError] = useState('');
   const search = params.get('q') ?? ''; const category = params.get('category') || null; const page = Number(params.get('page') ?? 1);
   useEffect(() => {
@@ -40,9 +43,9 @@ export default function BoardPage() {
   };
   // 제목 줄 하나에 분류·검색·목록 이동·글쓰기를 모두 둔다. 예전에는 분류 탭과
   // 검색 폼이 각각 한 줄씩 차지해 목록이 그만큼 아래로 밀렸다.
-  return <article className="gw-page" aria-labelledby="board-title">
+  return <article className={embedded ? 'gw-page gw-page--embedded' : 'gw-page'} aria-labelledby="board-title">
     <header className="gw-page-header gw-board-header">
-      <button type="button" className="gw-back-icon-button" onClick={() => navigate('/boards')} aria-label="게시판 목록으로"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg></button>
+      {!embedded && <button type="button" className="gw-back-icon-button" onClick={() => navigate('/boards')} aria-label="게시판 목록으로"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg></button>}
       <h1 id="board-title">{overview.board.name}</h1>
       <div className="gw-board-header-actions">
         {overview.categories.length > 0 && (
@@ -61,7 +64,7 @@ export default function BoardPage() {
           </form>
         )}
         {overview.board.settings.shortcut_enabled && overview.board.settings.shortcut_url && <a className="gw-secondary-button gw-board-shortcut-button" href={overview.board.settings.shortcut_url} target="_blank" rel="noopener noreferrer" aria-label={`${overview.board.settings.shortcut_label || '바로가기'}, 새 창`}>{overview.board.settings.shortcut_label || '바로가기'}<span aria-hidden="true">↗</span></a>}
-        <Link className="gw-secondary-button" to="/boards">목록 이동</Link>
+        {!embedded && <Link className="gw-secondary-button" to="/boards">목록 이동</Link>}
         {overview.permissions.create && <Link className="gw-primary-button gw-board-write-button" to={`/boards/${boardSlug}/write`}>{isDiscussion ? '새 대화 시작' : '글쓰기'}</Link>}
       </div>
     </header>

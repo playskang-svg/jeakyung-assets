@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { getMyDashboardWidgets, setDashboardPreference } from '../../services/dashboardService.js';
 import { getVisibleBoards } from '../../services/boardService.js';
+import { getMyLinkPages } from '../../services/linkPageService.js';
 import ProfileCard from '../../components/profile/ProfileCard.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 
@@ -12,6 +13,7 @@ export default function DashboardPage() {
   const auth = useAuth();
   const [widgets, setWidgets] = useState([]);
   const [boards, setBoards] = useState([]);
+  const [linkPages, setLinkPages] = useState([]);
   const [collapsed, setCollapsed] = useState(() => new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -19,10 +21,12 @@ export default function DashboardPage() {
   const load = async () => {
     // 게시판 목록은 사이드바에만 있어서 모바일(드로어가 닫힌 상태)에서는 보이지
     // 않았다. 대시보드에도 같이 실어 어느 화면 크기에서든 바로 들어갈 수 있게 한다.
-    const [widgetResult, boardResult] = await Promise.allSettled([getMyDashboardWidgets(), getVisibleBoards()]);
+    // 링크 페이지는 마이그레이션이 아직 없는 환경도 있으므로 실패해도 조용히 넘어간다.
+    const [widgetResult, boardResult, linkPageResult] = await Promise.allSettled([getMyDashboardWidgets(), getVisibleBoards(), getMyLinkPages()]);
     if (widgetResult.status === 'fulfilled') setWidgets(widgetResult.value);
     else setError('대시보드 구성을 불러오지 못했습니다.');
     if (boardResult.status === 'fulfilled') setBoards(boardResult.value);
+    if (linkPageResult.status === 'fulfilled') setLinkPages(linkPageResult.value);
     setLoading(false);
   };
 
@@ -59,6 +63,23 @@ export default function DashboardPage() {
                 <Link to={`/boards/${board.slug}`}>
                   <strong>{board.name}</strong>
                   <span>{board.group_name || '기타'}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {!loading && linkPages.length > 0 && (
+        <section className="gw-dashboard-widget gw-dashboard-widget--full" aria-labelledby="dashboard-linkpages-title">
+          <div className="gw-dashboard-widget-heading">
+            <h2 id="dashboard-linkpages-title">업무 페이지</h2>
+          </div>
+          <ul className="gw-dashboard-board-list">
+            {linkPages.map((page) => (
+              <li key={page.id}>
+                <Link to={`/pages/${page.slug}`}>
+                  <strong>{page.title}</strong>
+                  <span>{page.item_count}개 항목</span>
                 </Link>
               </li>
             ))}

@@ -10,6 +10,7 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage.jsx';
 import SignupPage from './pages/auth/SignupPage.jsx';
 import UpdatePasswordPage from './pages/auth/UpdatePasswordPage.jsx';
 import BoardPage from './pages/internal/BoardPage.jsx';
+import LinkTreePage from './pages/internal/LinkTreePage.jsx';
 import BoardsPage from './pages/internal/BoardsPage.jsx';
 import CalendarPage from './pages/internal/CalendarPage.jsx';
 import DashboardPage from './pages/internal/DashboardPage.jsx';
@@ -74,6 +75,7 @@ export default function App() {
               <Route path="organization" element={<OrganizationPage />} />
               <Route path="boards" element={<BoardsPage />} />
               <Route path="boards/:boardSlug" element={<BoardPage />} />
+              <Route path="pages/:pageSlug" element={<LinkTreePage />} />
               <Route path="boards/:boardSlug/posts/:postId" element={<PostDetailPage />} />
               <Route path="boards/:boardSlug/posts/:postId/edit" element={<EditorRoute />} />
               <Route path="boards/:boardSlug/write" element={<EditorRoute />} />

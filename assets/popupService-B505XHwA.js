@@ -1,0 +1,1 @@
+import{i as e,r as t}from"./PopupLayer-C1lm0LMc.js";import{H as n}from"./groupware-C7CV1zXC.js";var r=()=>t(n),i=t=>e(n,t);export{i as n,r as t};
