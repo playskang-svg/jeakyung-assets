@@ -52,15 +52,54 @@
 - **검색 노출 차단**: `/groupware/*`에 `X-Robots-Tag: noindex, nofollow`
 - `.vercelignore`로 `WEBSITE_SPEC.md`, `docs/`, `CNAME`은 배포 산출물에서 제외한다.
 
-## 13.4 도메인 현황
+## 13.4 도메인 전환 (GitHub Pages → Vercel, DNS는 Cloudflare)
 
-- `jeakyung.com`은 현재 저장소 루트의 `CNAME` 파일에 따라 **GitHub Pages**로 서빙 중이다.
-- Vercel로 옮기려면 별도 작업이 필요하다(아직 적용하지 않음).
-  1. Vercel 프로젝트 → Settings → Domains에 `jeakyung.com`, `www.jeakyung.com` 추가
-  2. DNS를 Vercel이 안내하는 A/CNAME 레코드로 변경
-  3. 전환 확인 후 GitHub Pages 설정 비활성화 및 저장소의 `CNAME` 파일 제거
-- 전환 전까지는 Vercel URL과 GitHub Pages(`jeakyung.com`)가 **동시에 서비스**되므로,
-  두 곳의 산출물이 어긋나지 않도록 항상 `main`에 함께 반영한다.
+`jeakyung.com`은 저장소 루트의 `CNAME` 파일에 따라 **GitHub Pages**로 서빙되고 있으며,
+DNS는 **Cloudflare**에서 관리한다. 아래 순서대로 Vercel로 옮긴다.
+
+### 13.4.1 사전 조건
+
+- `main`에 `vercel.json`이 반영되어 있고 프로덕션 배포가 정상이어야 한다.
+  (도메인을 먼저 붙이면 404를 가리키게 된다.)
+- Vercel 팀이 **Hobby 플랜**이면 상업적 용도 약관 확인이 필요하다. 필요 시 Pro로 전환한다.
+
+### 13.4.2 Vercel에 도메인 추가
+
+1. Vercel → `jeakyung-assets` → Settings → Domains
+2. `jeakyung.com` 추가 → `www.jeakyung.com`의 리다이렉트 구성 여부를 함께 선택
+3. Vercel이 화면에 표시하는 **필요 DNS 레코드 값을 그대로 사용한다.**
+   (apex는 A 레코드, `www`는 CNAME. CNAME 대상은 계정·시점에 따라
+   `cname.vercel-dns.com` 또는 `cname.vercel-dns-0.com` 등으로 다르므로 화면 값을 따른다.)
+
+### 13.4.3 Cloudflare DNS 변경
+
+1. Cloudflare → `jeakyung.com` → DNS → Records
+2. **기존 GitHub Pages 레코드를 제거**한다.
+   - apex `@` A 레코드: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+   - apex `@` AAAA 레코드: `2606:50c0:8000::153` ~ `2606:50c0:8003::153`
+   - `www` CNAME: `<GitHub 사용자>.github.io`
+3. Vercel이 안내한 레코드를 추가한다.
+4. **Proxy status를 반드시 `DNS only`(회색 구름)로 둔다.**
+   주황색 구름(프록시)이면 Vercel의 인증서 발급이 실패하거나 리다이렉트 루프가 발생한다.
+   이것이 Cloudflare + Vercel 조합에서 가장 흔한 실패 원인이다.
+5. TTL은 `Auto`로 둔다.
+
+> MX·TXT(SPF/DKIM) 등 **메일 관련 레코드는 건드리지 않는다.** 웹 호스팅만 옮기는 작업이다.
+
+### 13.4.4 전환 확인 및 마무리
+
+1. Vercel Domains 화면이 **Valid Configuration**으로 바뀌고 SSL 인증서가 발급될 때까지 기다린다(보통 수 분).
+2. `https://jeakyung.com/`, `https://jeakyung.com/privacy/`,
+   `https://jeakyung.com/groupware/login`(새로고침 포함)을 확인한다.
+3. 정상 확인 후에만 아래를 진행한다.
+   - 저장소 루트의 `CNAME` 파일 제거
+   - GitHub 저장소 Settings → Pages에서 배포 비활성화
+4. Supabase 인증 URL에 `https://jeakyung.com`을 등록한다(13.5 참고).
+
+### 13.4.5 롤백
+
+전환 중 문제가 생기면 Cloudflare에서 13.4.3의 GitHub Pages 레코드를 되돌린다.
+`CNAME` 파일과 Pages 설정을 마지막 단계까지 그대로 두는 이유가 이것이다.
 
 ## 13.5 Supabase 연동
 
