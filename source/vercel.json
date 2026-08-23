@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/groupware",
+      "destination": "/groupware/index.html"
+    },
+    {
+      "source": "/groupware/",
+      "destination": "/groupware/index.html"
+    },
+    {
+      "source": "/groupware/:path*",
+      "destination": "/groupware/index.html"
+    }
+  ]
+}

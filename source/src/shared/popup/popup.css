@@ -1,0 +1,102 @@
+.site-popup-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(3, 8, 30, 0.66);
+}
+
+.site-popup-dialog {
+  width: min(720px, 100%);
+  max-height: min(820px, calc(100vh - 48px));
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  border: 1px solid #dce1eb;
+  border-radius: 22px;
+  color: #11172b;
+  background: #fff;
+  box-shadow: 0 30px 80px rgba(3, 8, 30, 0.3);
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* 크기는 관리자가 문서마다 고른다. 기본(medium)은 위의 720px 그대로 쓰므로
+   따로 규칙을 두지 않는다. 기본 규칙 뒤에 와야 폭이 덮어써진다. */
+.site-popup-dialog--small { width: min(480px, 100%); }
+.site-popup-dialog--large { width: min(960px, 100%); }
+.site-popup-dialog--full { width: min(90vw, 100%); max-height: min(90vh, calc(100vh - 48px)); }
+
+.site-popup-dialog > header,
+.site-popup-dialog > footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+}
+
+.site-popup-dialog > header { border-bottom: 1px solid #e3e7ef; }
+.site-popup-dialog > footer { border-top: 1px solid #e3e7ef; background: #f8faff; }
+.site-popup-dialog h2 { margin: 0; color: #071037; font-size: clamp(22px, 4vw, 30px); line-height: 1.25; }
+.site-popup-dialog > header button { flex: 0 0 auto; width: 40px; height: 40px; border: 0; border-radius: 10px; color: #33405d; background: #eef1f7; font-size: 26px; line-height: 1; }
+.site-popup-body { overflow-y: auto; padding: 24px; }
+.site-popup-dialog > footer span { color: #687087; font-size: 14px; }
+.site-popup-dialog > footer button { min-height: 44px; margin-left: auto; border: 0; border-radius: 11px; padding: 0 18px; color: #fff; background: #2450f5; font-size: 14px; font-weight: 800; cursor: pointer; }
+
+.site-popup-7days-btn {
+  border: 1px solid #dce1eb !important;
+  background: #fff !important;
+  color: #33405d !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  border-radius: 11px !important;
+  min-height: 40px !important;
+  padding: 0 14px !important;
+  margin-left: 0 !important;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.site-popup-7days-btn:hover {
+  background: #eef1f7 !important;
+  color: #11172b !important;
+}
+
+.site-popup-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.site-popup-document { color: #222a40; font-size: 15px; line-height: 1.75; overflow-wrap: anywhere; }
+.site-popup-document > :first-child { margin-top: 0; }
+.site-popup-document > :last-child { margin-bottom: 0; }
+.site-popup-document h1,
+.site-popup-document h2,
+.site-popup-document h3,
+.site-popup-document h4 { margin: 1.35em 0 .55em; color: #071037; line-height: 1.35; }
+.site-popup-document h1 { font-size: 28px; }
+.site-popup-document h2 { font-size: 23px; }
+.site-popup-document h3 { font-size: 19px; }
+.site-popup-document h4 { font-size: 17px; }
+.site-popup-document p { margin: .75em 0; }
+.site-popup-document ul,
+.site-popup-document ol { margin: .8em 0; padding-left: 1.5em; }
+.site-popup-document li + li { margin-top: .4em; }
+.site-popup-document blockquote { margin: 1em 0; border-left: 4px solid #9fb0ee; padding: .7em 1em; background: #f5f7ff; }
+.site-popup-document a { color: #1739d1; }
+.site-popup-document table { width: 100%; border-collapse: collapse; }
+.site-popup-document th,
+.site-popup-document td { border: 1px solid #dce1eb; padding: 8px; text-align: left; }
+
+@media (max-width: 640px) {
+  .site-popup-layer { align-items: end; padding: 10px; }
+  .site-popup-dialog { max-height: calc(100vh - 20px); border-radius: 18px; }
+  .site-popup-dialog > header,
+  .site-popup-dialog > footer { padding: 14px 16px; }
+  .site-popup-body { padding: 18px 16px; }
+}
+
