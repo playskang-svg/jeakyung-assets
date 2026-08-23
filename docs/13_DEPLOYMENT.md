@@ -54,8 +54,9 @@
 
 ## 13.4 도메인 전환 (GitHub Pages → Vercel, DNS는 Cloudflare)
 
-`jeakyung.com`은 저장소 루트의 `CNAME` 파일에 따라 **GitHub Pages**로 서빙되고 있으며,
-DNS는 **Cloudflare**에서 관리한다. 아래 순서대로 Vercel로 옮긴다.
+`jeakyung.com`의 DNS는 **Cloudflare**에서 관리한다.
+2026-08-23에 GitHub Pages → Vercel 전환을 완료했으며, apex는 `www`로 308 리다이렉트된다.
+아래는 당시 수행한 절차이자 재현·롤백 기준이다.
 
 ### 13.4.1 사전 조건
 
@@ -79,10 +80,14 @@ DNS는 **Cloudflare**에서 관리한다. 아래 순서대로 Vercel로 옮긴�
    - apex `@` AAAA 레코드: `2606:50c0:8000::153` ~ `2606:50c0:8003::153`
    - `www` CNAME: `<GitHub 사용자>.github.io`
 3. Vercel이 안내한 레코드를 추가한다.
-4. **Proxy status를 반드시 `DNS only`(회색 구름)로 둔다.**
+4. 실제 적용된 apex 레코드는 A가 아니라 **CNAME**이었다
+   (`@` → `050ebfa8358cbaec.vercel-dns-017.com`). Cloudflare가 apex CNAME을 flattening 하므로 동작한다.
+   기존 A/AAAA를 지우기 전에는 `An A, AAAA, or CNAME record with that host already exists` 오류가 나므로,
+   **삭제 → 추가 순서**를 지켜야 한다.
+5. **Proxy status를 반드시 `DNS only`(회색 구름)로 둔다.**
    주황색 구름(프록시)이면 Vercel의 인증서 발급이 실패하거나 리다이렉트 루프가 발생한다.
    이것이 Cloudflare + Vercel 조합에서 가장 흔한 실패 원인이다.
-5. TTL은 `Auto`로 둔다.
+6. TTL은 `Auto`로 둔다.
 
 > MX·TXT(SPF/DKIM) 등 **메일 관련 레코드는 건드리지 않는다.** 웹 호스팅만 옮기는 작업이다.
 
@@ -91,7 +96,7 @@ DNS는 **Cloudflare**에서 관리한다. 아래 순서대로 Vercel로 옮긴�
 1. Vercel Domains 화면이 **Valid Configuration**으로 바뀌고 SSL 인증서가 발급될 때까지 기다린다(보통 수 분).
 2. `https://jeakyung.com/`, `https://jeakyung.com/privacy/`,
    `https://jeakyung.com/groupware/login`(새로고침 포함)을 확인한다.
-3. 정상 확인 후에만 아래를 진행한다.
+3. 정상 확인 후에만 아래를 진행한다. (완료: `CNAME` 파일 제거)
    - 저장소 루트의 `CNAME` 파일 제거
    - GitHub 저장소 Settings → Pages에서 배포 비활성화
 4. Supabase 인증 URL에 `https://jeakyung.com`을 등록한다(13.5 참고).
@@ -110,10 +115,11 @@ DNS는 **Cloudflare**에서 관리한다. 아래 순서대로 Vercel로 옮긴�
 
 | 구분 | URL |
 | --- | --- |
-| Site URL | `https://jeakyung.com` (도메인 이전 전에는 프로덕션 Vercel URL) |
+| Site URL | `https://www.jeakyung.com` (실제 콘텐츠가 서빙되는 호스트) |
+| Redirect URLs | `https://www.jeakyung.com/**` |
+| Redirect URLs | `https://jeakyung.com/**` (apex는 www로 308 리다이렉트되지만 함께 등록해 둔다) |
 | Redirect URLs | `https://jeakyung-assets-playskang-6383s-projects.vercel.app/**` |
 | Redirect URLs | `https://jeakyung-assets-*-playskang-6383s-projects.vercel.app/**` (프리뷰 배포용) |
-| Redirect URLs | `https://jeakyung.com/**` |
 
 - 비밀번호 재설정 경로는 `/groupware/reset-password/update`이므로 해당 경로가
   리다이렉트 허용 패턴에 포함되는지 확인한다.
@@ -122,4 +128,11 @@ DNS는 **Cloudflare**에서 관리한다. 아래 순서대로 Vercel로 옮긴�
 
 - 배포 상태·로그 확인: https://vercel.com/playskang-6383s-projects/jeakyung-assets
 - 문제가 생긴 배포는 Vercel 대시보드의 **Instant Rollback**으로 직전 프로덕션으로 되돌린다.
-- 배포 후 확인 경로: `/`, `/privacy/`, `/groupware/login`(새로고침 포함), 메인 영상·이미지 로딩
+- 배포 후 확인 경로: `https://www.jeakyung.com/`, `/privacy/`,
+  `/groupware/login`(새로고침 포함), 메인 영상·이미지 로딩
+
+### 알려진 불일치
+
+`index.html`과 `privacy/index.html`의 `<link rel="canonical">`은 apex(`https://jeakyung.com/...`)를
+가리키는데, 실제 서빙 호스트는 `www`이고 apex는 그쪽으로 308 리다이렉트된다.
+Vercel Domains에서 apex를 기본 도메인으로 바꾸거나, canonical을 `www`로 맞춰 정리해야 한다.
