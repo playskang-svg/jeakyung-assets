@@ -30,23 +30,43 @@ npm ci && npm run build
 `public/` 을 그대로 쓰므로 건드리지 않는다. `vercel.json`, `.vercelignore`, `docs/` 도
 이 저장소에만 있는 파일이라 덮어쓰면 안 된다.
 
-### 알려진 차이
+### ⚠️ 빌드 시 환경변수를 반드시 넣을 것
 
-`npm ci`(락파일 기준) 빌드 결과가 기존 배포본과 청크 구성이 다르다.
-기존 배포본에는 `dist-ClserGXx.js`(207KB)가 있으나 락파일 기준 빌드에는 없고,
-대신 `groupware-*.js` 청크가 그만큼 커진다. 소스 코드는 동일하므로
-(HEAD와 배포 시점 커밋의 차이는 문서 파일 하나뿐) 기존 배포본이 락파일과
-다른 의존성으로 빌드된 것으로 보인다. 동작상의 차이는 확인되지 않았다.
+`src/groupware/lib/supabase.js`는 빌드 타임 환경변수를 읽는다.
 
----
+```js
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
+const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim();
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabasePublishableKey);
+export const supabase = isSupabaseConfigured ? createClient(...) : null;
+```
 
+`.env` 없이 빌드하면 **오류 없이 빌드가 성공하지만 `supabase`가 `null`이 되어
+그룹웨어 전체가 동작하지 않는다.** 로그인부터 막힌다. `.env`는 `.gitignore` 대상이라
+저장소를 clone 해도 딸려오지 않으므로, 빌드 전에 직접 만들어야 한다.
 
-아래의 셀렉터·문자열·상수는 **현재 배포된 번들에서 직접 추출한 값**이다.
-소스에서 해당 값을 grep 하면 수정 지점을 바로 찾을 수 있다.
+```
+VITE_SUPABASE_URL=https://vzswlvumcdxnryrfwkkl.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=<publishable 키>
+```
 
-- 추출 대상: `assets/groupware-DLYMr5bm.js`, `assets/ApprovalRoutes-CKDbVJIr.js`,
-  `assets/PostWritePage-DMMx_6JY.js`, `assets/groupware-C9T2gLy3.css`
-- 기준 커밋: `main` @ 2026-08-23
+두 값 모두 배포된 번들에 그대로 들어 있는 공개 값이다
+(`assets/supabaseAnon-*.js`에서 확인할 수 있다).
+
+### 빌드 결과 검증 체크리스트
+
+환경변수 누락은 빌드 로그에 아무 경고도 남기지 않으므로, 산출물을 직접 확인한다.
+
+| 확인 항목 | 기대값 |
+| --- | --- |
+| `grep -o 'https://[a-z0-9]*\.supabase\.co' dist/assets/*.js` | 프로젝트 URL이 나와야 함 |
+| `dist/assets/` 에 `dist-*.js` 207KB 청크 | 존재해야 함 (Supabase 청크) |
+| `grep -c uploadToSignedUrl dist/assets/*.js` | 1 이상 |
+| `grep -c 'width<=' dist/assets/*.css` | 0 |
+
+환경변수가 빠지면 Supabase 코드가 트리셰이킹으로 통째로 사라져
+`dist-*.js`(207KB) 청크가 없어지고 `groupware-*.js` 청크 크기도 달라진다.
+이 차이가 누락을 알아채는 가장 빠른 신호다.
 
 ---
 
