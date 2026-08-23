@@ -8,14 +8,21 @@
 | 항목 | 값 |
 | --- | --- |
 | Vercel 팀 | `playskang-6383s-projects` (`team_EEaHa7nJq0hm29jtOEDAioQ4`) |
-| Vercel 프로젝트 | `jeakyung-assets` (`prj_UL3afJMXg2TFTx2CQ94UNlnEX4Ej`) |
+| Vercel 프로젝트 | `jeakyung-preview` (`prj_kIwU2fL8FyoRZk3DPAp8B3t3nyah`) |
 | 연결 저장소 | `playskang-svg/jeakyung-assets` (GitHub) |
 | 프로덕션 브랜치 | `main` |
-| 프로덕션 URL | https://jeakyung-assets-playskang-6383s-projects.vercel.app |
-| 프레임워크 프리셋 | 없음(정적 파일 서빙, 빌드 명령 없음) |
+| 프레임워크 프리셋 | 사용 안 함 — `vercel.json`이 빌드 없이 저장소 루트를 서빙하도록 덮어쓴다 |
 
-> 참고: 기존 `jeakyung-preview` 프로젝트는 다른 저장소(`jeakyungdrive01-art/jeakyung-assets`)에서
-> 배포되던 것이며 현재 Git 연결이 끊겨 있다. 신규 작업은 `jeakyung-assets` 프로젝트를 기준으로 한다.
+> `vercel.json`의 `framework`/`buildCommand`/`installCommand`/`outputDirectory` 값은
+> 대시보드의 프로젝트 설정보다 우선한다. 따라서 프로젝트에 남아 있는 `vite` 프리셋은
+> 실제 빌드에 영향을 주지 않는다.
+
+### 저장소 이전 이력
+
+- 과거 배포는 `jeakyungdrive01-art/jeakyung-assets`(브랜치 `groupware/approval`)에서 이루어졌고,
+  현재 그 Git 연결은 끊어진 상태였다.
+- 운영 저장소를 `playskang-svg/jeakyung-assets`로 옮기면서 `jeakyung-preview` 프로젝트에
+  이 저장소를 다시 연결하고, 프로덕션 브랜치를 `main`으로 사용한다.
 
 ## 13.2 자동 배포 규칙
 
@@ -27,6 +34,10 @@
 
 ## 13.3 `vercel.json` 설정 요약
 
+- **출력 디렉터리 고정**: `outputDirectory: "."`
+  - Vercel 제로컨피그는 저장소에 `public/` 폴더가 있으면 그것을 출력 디렉터리로 간주한다.
+    그대로 두면 루트를 포함한 모든 경로가 404가 되므로 반드시 루트로 고정해야 한다.
+  - `framework`, `buildCommand`, `installCommand`는 `null` — 빌드 단계 없음.
 - **SPA 리라이트**: `/groupware`, `/groupware/**` → `/groupware/index.html`
   - 그룹웨어는 React Router(history 모드) 기반이므로 `/groupware/login` 같은 경로로
     직접 접속하거나 새로고침해도 URL이 유지된 채 앱이 부팅된다.
@@ -50,12 +61,25 @@
 - 전환 전까지는 Vercel URL과 GitHub Pages(`jeakyung.com`)가 **동시에 서비스**되므로,
   두 곳의 산출물이 어긋나지 않도록 항상 `main`에 함께 반영한다.
 
-## 13.5 운영 체크리스트
+## 13.5 Supabase 연동
 
-- 배포 상태·로그 확인: https://vercel.com/playskang-6383s-projects/jeakyung-assets
+- 그룹웨어는 Supabase(`https://vzswlvumcdxnryrfwkkl.supabase.co`)를 브라우저에서 직접 호출한다.
+- 프로젝트 URL과 anon 키가 번들에 포함되어 있으므로 **Vercel 환경변수 설정은 필요 없다.**
+- 다만 새 도메인에서 로그인·인증 리다이렉트가 동작하려면 Supabase 쪽
+  **Authentication → URL Configuration**에 아래 URL을 등록해야 한다.
+
+| 구분 | URL |
+| --- | --- |
+| Site URL | `https://jeakyung.com` (도메인 이전 전에는 프로덕션 Vercel URL) |
+| Redirect URLs | `https://jeakyung-preview-playskang-6383s-projects.vercel.app/**` |
+| Redirect URLs | `https://jeakyung-preview-*-playskang-6383s-projects.vercel.app/**` (프리뷰 배포용) |
+| Redirect URLs | `https://jeakyung.com/**` |
+
+- 비밀번호 재설정 경로는 `/groupware/reset-password/update`이므로 해당 경로가
+  리다이렉트 허용 패턴에 포함되는지 확인한다.
+
+## 13.6 운영 체크리스트
+
+- 배포 상태·로그 확인: https://vercel.com/playskang-6383s-projects/jeakyung-preview
 - 문제가 생긴 배포는 Vercel 대시보드의 **Instant Rollback**으로 직전 프로덕션으로 되돌린다.
-- 그룹웨어는 Supabase(`https://vzswlvumcdxnryrfwkkl.supabase.co`)를 직접 호출한다.
-  키가 번들에 포함되어 있으므로 Vercel 환경변수 설정은 필요 없다.
-  대신 Supabase 쪽 **RLS 정책과 허용 Origin 목록에 새 Vercel 도메인을 추가**해야
-  프리뷰/프로덕션 URL에서 로그인이 정상 동작한다.
 - 배포 후 확인 경로: `/`, `/privacy/`, `/groupware/login`(새로고침 포함), 메인 영상·이미지 로딩
