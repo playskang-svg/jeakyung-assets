@@ -1,8 +1,12 @@
 # 14. 그룹웨어 UI 작업 명세 (소스 저장소용)
 
-이 저장소(`playskang-svg/jeakyung-assets`)는 **빌드 산출물만** 담고 있다.
-소스는 `jeakyungdrive01-art/jeakyung-assets` 저장소의 **`groupware/approval` 브랜치**에 있다
-(공개 저장소라 clone은 가능하나, push 권한은 없다).
+이 저장소(`playskang-svg/jeakyung-assets`)는 **빌드 산출물**을 담고 있다.
+소스는 `jeakyungdrive01-art/jeakyung-assets` 저장소의 **`groupware/approval` 브랜치**에 있다.
+공개 저장소라 clone은 되지만 이 세션에는 그 저장소로의 **push 권한이 없다.**
+그래서 소스 전체를 `source/`(`.vercelignore` 대상, 배포에 포함되지 않음) 아래
+그대로 벤더링해 두고, 이후 작업은 전부 `source/`에서 하고 빌드해서 `assets/` 와
+`groupware/index.html`에만 산출물을 복사하는 방식으로 진행한다.
+소스 저장소 쪽에 반영하는 건 별도로 패치를 전달해 사람이 적용해야 한다.
 
 ## 14.0 처리 현황 (2026-08-23)
 
@@ -12,6 +16,9 @@
 | 14.2 세로 여백 축소 | **완료** — 소스 수정 후 빌드 반영 |
 | 14.3 첨부 팝업 | 보류 (상한 20MB 유지) |
 | 14.4 모바일 미디어쿼리 | **완료** — 빌드 타깃 조정으로 근본 해결 |
+| 14.6 링크 페이지 (게시판 탭형) | **완료** — 마이그레이션 적용, 배포 반영 |
+| 14.7 버튼 박스 (링크 페이지·대시보드 겸용) | **완료** — 마이그레이션 적용, 배포 반영 |
+| 14.8 메일 화면 내장 | **막힘** — 메일 서비스 확인 필요 (14.8 참고) |
 
 소스 변경분은 `groupware/approval` 브랜치 기준 패치로 전달했다.
 **소스 저장소에 반영하는 것은 별도 작업이다** — push 권한이 없어 이 저장소의
@@ -259,11 +266,91 @@ iOS Safari 16.4는 2023년 3월 릴리스라, 그 이전 iOS 기기·구형 안�
 
 ---
 
-## 14.4 소스 저장소 접근
+## 14.5 소스 저장소 접근
 
-- 이 세션에 연결된 GitHub 계정은 `playskang-svg`이며, 해당 계정의 저장소 목록에
+- 이 세션에 연결된 GitHub 계정은 `playskang-svg`이며, 해당 계정의 저장소 목록에는
   그룹웨어 소스 저장소가 없다.
-- 과거 Vercel 배포 메타데이터상 소스는 `jeakyungdrive01-art/jeakyung-assets`
-  (브랜치 `groupware/approval`)로 보이나, **접근 권한이 없어 확인하지 못했다.**
-- 작업하려면 해당 저장소를 소유한 계정으로 세션을 시작하거나,
-  `playskang-svg`의 Claude GitHub 연동에 그 저장소 접근 권한을 부여해야 한다.
+- 소스는 `jeakyungdrive01-art/jeakyung-assets`(브랜치 `groupware/approval`)에 있고
+  **공개 저장소라 clone은 된다.** 다만 push 권한은 없다.
+- 그래서 `source/`(`.vercelignore` 대상)에 그 소스를 통째로 벤더링해 두고, 이후
+  작업은 여기서 하고 빌드 산출물만 이 저장소에 반영한다. `source/` 쪽 변경분을
+  실제 소스 저장소에 올리려면 패치 파일을 전달받아 사람이 적용해야 한다.
+- `push` 권한 자체가 필요해지면(예: 소스 저장소에 직접 커밋해야 하는 경우)
+  그 저장소를 소유한 계정으로 세션을 시작하거나, `playskang-svg`의 Claude
+  GitHub 연동에 그 저장소 접근 권한을 부여해야 한다.
+
+---
+
+## 14.6 링크 페이지 (게시판 탭형) — 완료
+
+`link_pages` / `link_page_items` 테이블 + `get_my_link_pages` / `get_link_page` /
+`admin_get_link_pages` / `manage_link_page` / `delete_link_page` RPC. `/pages/:slug`에서
+제목 아래 탭 버튼 줄을 두고, 버튼마다 게시판(분류 포함)을 연결한다. 관리자 화면의
+"링크 페이지" 패널에서 구성한다. 마이그레이션(`202608230001_link_pages.sql`)을
+운영 DB에 적용 완료.
+
+---
+
+## 14.7 버튼 박스 — 완료
+
+제목과 URL만으로 이루어진 재사용 가능한 큰 버튼 묶음. 링크 페이지 본문과
+대시보드 위젯 양쪽에서 그대로 골라 쓸 수 있다.
+
+- `button_boxes` / `button_box_items` 테이블 + `get_button_box` /
+  `admin_get_button_boxes` / `manage_button_box` / `delete_button_box` RPC.
+  마이그레이션 `202608231000_button_boxes.sql`, 운영 DB 적용 완료.
+- 디자인 3종: `cards`(번호 배지 + 알약 버튼, 화면 캡처로 요청받은 모양),
+  `tiles`(제목만 있는 큰 상자), `list`(좁은 폭에 어울리는 한 줄씩).
+- 항목 주소가 `/`로 시작하면 앱 안에서 이동(`Link`), 아니면 외부 주소로 보아
+  새 탭으로 연다 (`ButtonBoxGrid.jsx`).
+- **링크 페이지에 붙이기**: `link_pages.button_box_id` 컬럼 추가. 관리자 화면에서
+  "하위 게시판 탭" / "버튼 박스" 중 하나를 고른다. 버튼 박스를 고르면 기존
+  탭+게시판 임베드 대신 이 버튼 박스가 본문에 그대로 렌더링된다
+  (`LinkTreePage.jsx`).
+- **대시보드에 붙이기**: 기존 `dashboard_widgets.widget_type` 체크 제약에
+  `'button_box'`를 추가하고, `configuration.button_box_id`로 참조한다. 이
+  위젯 유형은 이미 존재하던 범용 위젯 프레임(대상 배포 규칙, 크기, 순서 등)을
+  그대로 쓴다 — 새 테이블을 따로 만들지 않았다. `DashboardPage.jsx`는 위젯
+  목록에 없는 상세 데이터(제목·스타일·항목)를 `get_button_box`로 별도 조회한다.
+- 관리자 화면 "버튼 박스" 패널(`ButtonBoxAdminPanel.jsx`)에서 박스를 만들고,
+  링크 페이지·대시보드 위젯 양쪽의 관리 화면에서 드롭다운으로 골라 쓴다.
+
+---
+
+## 14.8 메일 화면 내장 — 막힘, 확인 필요
+
+요청: 사이드바 "이메일" 메뉴(`https://mail.jeakyung.com`, 새 탭)를 새 탭이 아니라
+그룹웨어 상단바 고정 틀 안에 iframe으로 띄워 일체감 있게 만든다.
+
+**이미 예전에 확인된 차단 요인이 있다** — `AdminControlIndexPanel.jsx`의
+"코드 밖에서 관리하는 설정" 목록에 다음이 이미 기록돼 있었다:
+
+> 메일 화면 내장: 메일 서버가 x-frame-options로 iframe을 막고 있어 서버 설정
+> 변경 필요
+
+즉 `mail.jeakyung.com` 응답에 `X-Frame-Options`(또는 `Content-Security-Policy:
+frame-ancestors`)가 걸려 있어, 그룹웨어 쪽 코드를 아무리 고쳐도 iframe이 뜨지
+않는다. 이 세션의 네트워크 egress 프록시가 `mail.jeakyung.com`으로 나가는 요청
+자체를 막고 있어(`curl`, `WebFetch` 둘 다 `EGRESS_BLOCKED`), 실제 헤더를 직접
+확인하지 못했다.
+
+### 진행하려면 확인이 필요한 것
+
+- **`mail.jeakyung.com`이 어떤 서비스인가?**
+  - Google Workspace/Gmail이면 구글이 보안상 강제 차단하는 것이라 **불가능**하다.
+    대안은 iframe 포기, 또는 IMAP/Gmail API로 자체 메일 클라이언트를 새로 만드는
+    (훨씬 큰) 작업뿐이다.
+  - 자체 운영 웹메일(Roundcube, SOGo 등)이면 서버 설정(reverse proxy 등)에서
+    `X-Frame-Options` 완화 또는 `frame-ancestors https://jeakyung.com
+    https://www.jeakyung.com`을 넣으면 될 가능성이 높다. 이 경우 그 서버 접근
+    권한이 있는 사람이 처리해야 한다.
+  - 제3자 서비스(Zoho 등)면 서비스별로 iframe 허용 옵션이 있는지 문서를 따로
+    확인해야 한다.
+- 위 확인 후 실제로 embedding이 가능하다고 판단되면, 그룹웨어 쪽 작업은:
+  - `config/navigation.js`의 `mail` 항목을 `external: true` 링크 대신 내부 경로
+    (예: `/mail`)로 바꾸고,
+  - 새 라우트(`MailPage.jsx`)를 추가해 `<iframe src="https://mail.jeakyung.com" .../>`를
+    `AppShell`(상단바·사이드바가 유지되는 틀) 안에서 렌더링한다.
+  - 공개 사이트 헤더(`index.html`)의 "그룹웨어 | 메일" 링크는 그룹웨어 로그인이
+    선행돼야 하므로 그대로 `/groupware/login`을 가리키게 둔다(내부 라우트로
+    바로 진입할 수 없음).

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 
 import { getBoardAdminCatalog } from '../../services/boardService.js';
+import { getButtonBoxAdminCatalog } from '../../services/buttonBoxService.js';
 import { deleteLinkPage, getLinkPageAdminCatalog, saveLinkPage } from '../../services/linkPageService.js';
 
-const EMPTY_FORM = { id: null, title: '', slug: '', description: '', is_active: true, items: [] };
+const EMPTY_FORM = { id: null, title: '', slug: '', description: '', is_active: true, content_type: 'boards', button_box_id: '', items: [] };
 const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', item_type: 'board', board_id: '' });
 
 // 제목만 입력해도 쓸 수 있는 주소를 얻도록 영문·숫자만 남기고, 전부 걸러지면
@@ -16,6 +17,7 @@ function suggestSlug(title) {
 export default function LinkPageAdminPanel() {
   const [pages, setPages] = useState([]);
   const [boards, setBoards] = useState([]);
+  const [buttonBoxes, setButtonBoxes] = useState([]);
   const [form, setForm] = useState(null);
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
@@ -24,9 +26,12 @@ export default function LinkPageAdminPanel() {
   const load = async () => {
     setError('');
     try {
-      const [catalog, boardCatalog] = await Promise.all([getLinkPageAdminCatalog(), getBoardAdminCatalog()]);
+      const [catalog, boardCatalog, buttonBoxCatalog] = await Promise.all([
+        getLinkPageAdminCatalog(), getBoardAdminCatalog(), getButtonBoxAdminCatalog().catch(() => []),
+      ]);
       setPages(catalog ?? []);
       setBoards((boardCatalog.boards ?? []).filter((board) => !board.archived_at));
+      setButtonBoxes((buttonBoxCatalog ?? []).filter((box) => box.is_active));
     } catch (cause) {
       setError(cause.message || '링크 페이지 목록을 불러오지 못했습니다.');
     }
@@ -39,6 +44,8 @@ export default function LinkPageAdminPanel() {
     setForm({
       id: page.id, title: page.title, slug: page.slug, description: page.description ?? '',
       is_active: page.is_active,
+      content_type: page.button_box_id ? 'button_box' : 'boards',
+      button_box_id: page.button_box_id ?? '',
       items: (page.items ?? []).map((item) => ({ key: item.id, id: item.id, label: item.label, item_type: item.item_type, board_id: item.board_id ?? '' })),
     });
   };
@@ -57,9 +64,13 @@ export default function LinkPageAdminPanel() {
     setSaving(true); setError(''); setStatus('');
     try {
       const slug = form.slug.trim() || suggestSlug(form.title);
+      const isButtonBox = form.content_type === 'button_box';
       await saveLinkPage(
-        { id: form.id, title: form.title, slug, description: form.description, is_active: form.is_active },
-        form.items.filter((item) => item.label.trim() && item.board_id).map((item) => ({ label: item.label, item_type: item.item_type, board_id: item.board_id })),
+        {
+          id: form.id, title: form.title, slug, description: form.description, is_active: form.is_active,
+          button_box_id: isButtonBox ? form.button_box_id : '',
+        },
+        isButtonBox ? [] : form.items.filter((item) => item.label.trim() && item.board_id).map((item) => ({ label: item.label, item_type: item.item_type, board_id: item.board_id })),
       );
       setStatus('저장했습니다.');
       setForm(null);
@@ -124,11 +135,26 @@ export default function LinkPageAdminPanel() {
             <div className="gw-check-grid"><label><input type="checkbox" checked={form.is_active} onChange={(event) => patchForm({ is_active: event.target.checked })} /><span>활성 (끄면 목록·주소에서 숨김)</span></label></div>
           </div>
 
+          <div className="gw-check-grid gw-content-type-choice">
+            <label><input type="radio" name="content_type" checked={form.content_type === 'boards'} onChange={() => patchForm({ content_type: 'boards' })} /><span>하위 게시판 탭 (버튼 여러 개, 게시판마다 연결)</span></label>
+            <label><input type="radio" name="content_type" checked={form.content_type === 'button_box'} onChange={() => patchForm({ content_type: 'button_box' })} /><span>버튼 박스 (관리자 화면에서 따로 만든 큰 버튼 묶음)</span></label>
+          </div>
+
+          {form.content_type === 'button_box' ? (
+            <label className="gw-field"><span>버튼 박스</span>
+              <select value={form.button_box_id} required onChange={(event) => patchForm({ button_box_id: event.target.value })}>
+                <option value="">버튼 박스 선택</option>
+                {buttonBoxes.map((box) => <option key={box.id} value={box.id}>{box.title}</option>)}
+              </select>
+              {buttonBoxes.length === 0 && <small className="gw-field-hint">아직 만든 버튼 박스가 없습니다. 관리자 화면의 "버튼 박스"에서 먼저 만들어 주세요.</small>}
+            </label>
+          ) : (
+          <>
           <h3>하위 페이지 버튼</h3>
           <p className="gw-field-hint">버튼 순서대로 머리글에 나열됩니다. 지금은 게시판만 연결할 수 있습니다.</p>
           {form.items.map((item, index) => (
             <div className="gw-linkpage-item-row" key={item.key}>
-              <input value={item.label} maxLength={40} placeholder="버튼 이름" aria-label={`${index + 1}번 버튼 이름`} onChange={(event) => patchItem(item.key, { label: event.target.value })} />
+              <input value={item.label} maxLength={40} placeholder="항목 제목" aria-label={`${index + 1}번 항목 제목`} onChange={(event) => patchItem(item.key, { label: event.target.value })} />
               <select value={item.board_id} aria-label={`${index + 1}번 버튼에 연결할 게시판`} onChange={(event) => patchItem(item.key, { board_id: event.target.value })}>
                 <option value="">게시판 선택</option>
                 {boards.map((board) => <option key={board.id} value={board.id}>{board.name}</option>)}
@@ -139,6 +165,8 @@ export default function LinkPageAdminPanel() {
             </div>
           ))}
           <button type="button" className="gw-secondary-button" onClick={() => patchForm({ items: [...form.items, NEW_ITEM()] })}>항목 추가</button>
+          </>
+          )}
 
           <div className="gw-admin-actions">
             <button type="submit" className="gw-primary-button" disabled={saving}>{saving ? '저장 중…' : '저장'}</button>

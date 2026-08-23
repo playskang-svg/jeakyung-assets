@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 
 import { getLinkPage } from '../../services/linkPageService.js';
+import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
 import BoardPage from './BoardPage.jsx';
 
 // 링크트리형 업무 페이지. 제목과 버튼 줄이 고정 머리글로 남고, 버튼을 누르면
@@ -36,7 +37,7 @@ export default function LinkTreePage() {
           <h1 id="linktree-title">{data.page.title}</h1>
           {data.page.description && <p>{data.page.description}</p>}
         </div>
-        {items.length > 0 && (
+        {!data.button_box && items.length > 0 && (
           <nav className="gw-linktree-tabs" aria-label={`${data.page.title} 하위 페이지`}>
             {items.map((item) => (
               <button
@@ -52,9 +53,13 @@ export default function LinkTreePage() {
           </nav>
         )}
       </header>
-      {activeItem?.board_slug
-        ? <div className="gw-linktree-content"><BoardPage key={activeItem.id} boardSlug={activeItem.board_slug} embedded /></div>
-        : <p className="gw-empty-state">연결된 하위 페이지가 없습니다. 관리자 화면에서 항목을 추가해 주세요.</p>}
+      {data.button_box ? (
+        <div className="gw-linktree-content"><ButtonBoxGrid box={data.button_box} items={data.button_box.items} /></div>
+      ) : activeItem?.board_slug ? (
+        <div className="gw-linktree-content"><BoardPage key={activeItem.id} boardSlug={activeItem.board_slug} embedded /></div>
+      ) : (
+        <p className="gw-empty-state">연결된 하위 페이지가 없습니다. 관리자 화면에서 항목을 추가해 주세요.</p>
+      )}
     </article>
   );
 }

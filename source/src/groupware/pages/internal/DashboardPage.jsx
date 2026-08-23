@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 import { getMyDashboardWidgets, setDashboardPreference } from '../../services/dashboardService.js';
 import { getVisibleBoards } from '../../services/boardService.js';
 import { getMyLinkPages } from '../../services/linkPageService.js';
+import { getButtonBox } from '../../services/buttonBoxService.js';
 import ProfileCard from '../../components/profile/ProfileCard.jsx';
+import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 
 const PREPARING = new Set(['approval_status', 'today_schedule', 'week_schedule']);
@@ -14,6 +16,7 @@ export default function DashboardPage() {
   const [widgets, setWidgets] = useState([]);
   const [boards, setBoards] = useState([]);
   const [linkPages, setLinkPages] = useState([]);
+  const [buttonBoxes, setButtonBoxes] = useState({});
   const [collapsed, setCollapsed] = useState(() => new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -31,6 +34,18 @@ export default function DashboardPage() {
   };
 
   useEffect(() => { load(); }, [auth.activeRole]);
+
+  // 버튼 박스 위젯은 대시보드 RPC가 id만 돌려주므로(다른 위젯처럼 서버가 내용을
+  // 미리 합쳐 주지 않는다), 화면에 나온 뒤 필요한 것만 따로 불러온다.
+  useEffect(() => {
+    const ids = [...new Set(widgets
+      .filter((widget) => widget.widget_type === 'button_box' && widget.configuration?.button_box_id)
+      .map((widget) => widget.configuration.button_box_id))];
+    ids.filter((id) => !(id in buttonBoxes)).forEach((id) => {
+      getButtonBox(id).then((result) => setButtonBoxes((current) => ({ ...current, [id]: result })))
+        .catch(() => setButtonBoxes((current) => ({ ...current, [id]: null })));
+    });
+  }, [widgets]);
 
   // 이전에 숨겨 둔 위젯은 계속 되돌릴 수 있게 남긴다. 새로 숨기는 기능은 없앴고
   // 대신 화면에서만 접는다.
@@ -115,6 +130,13 @@ export default function DashboardPage() {
                   <>
                     {widget.description && <p>{widget.description}</p>}
                     {Array.isArray(widget.configuration?.items) && widget.configuration.items.length > 0 && <ul className="gw-widget-posts">{widget.configuration.items.map((item) => <li key={item.id}><Link to={`/boards/${item.board_slug}/posts/${item.id}`}><strong>{item.title}</strong><span>{item.board_name}</span></Link></li>)}</ul>}
+                    {widget.widget_type === 'button_box' && widget.configuration?.button_box_id && (
+                      buttonBoxes[widget.configuration.button_box_id] === undefined
+                        ? <p className="gw-empty-state" role="status">불러오는 중…</p>
+                        : buttonBoxes[widget.configuration.button_box_id] === null
+                          ? <p className="gw-empty-state">버튼 박스를 불러오지 못했습니다.</p>
+                          : <ButtonBoxGrid box={buttonBoxes[widget.configuration.button_box_id].box} items={buttonBoxes[widget.configuration.button_box_id].items} />
+                    )}
                   </>
                 )}
               </section>
