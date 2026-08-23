@@ -138,6 +138,69 @@ if (!t || t.size < 1 || t.size > 20971520)
 
 ---
 
+## 14.4 모바일 레이아웃이 적용되지 않는 문제 (근본 원인)
+
+### 증상
+
+모바일에서 데스크톱과 동일한 화면 구성이 나오고, 좌측 내비게이션이
+햄버거 드로어로 바뀌지 않는다.
+
+### 원인
+
+빌드된 CSS가 미디어쿼리를 **Media Queries Level 4 range 문법**으로 출력한다.
+
+```css
+@media (width<=1023px) { … }   /* assets/groupware-C9T2gLy3.css */
+```
+
+이 문법은 **Chrome/Edge 104+, Safari 16.4+, Firefox 102+** 에서만 인식된다.
+그보다 낮은 브라우저는 블록 전체를 무시하므로 모바일 스타일이 하나도 적용되지 않는다.
+iOS Safari 16.4는 2023년 3월 릴리스라, 그 이전 iOS 기기·구형 안드로이드 브라우저가
+전부 여기에 해당한다.
+
+대조군: 손으로 작성한 공개 사이트 CSS(`css/style.css`)는 `@media (max-width: 900px)`
+형태라 정상 동작한다. **빌드를 거친 CSS만** range 문법으로 바뀌어 있다
+(lightningcss가 빌드 타깃에 맞춰 축약한 결과).
+
+영향받는 파일과 블록:
+
+| 파일 | 블록 |
+| --- | --- |
+| `assets/groupware-C9T2gLy3.css` | `1023px`, `900px`, `720px`, `640px`, `600px`, `360px` |
+| `assets/PopupLayer-BgWbIifg.css` | `640px` |
+| `assets/mountPublicPopupLayer-*.css` | `1100px`, `900px`, `640px` |
+
+### 햄버거 메뉴는 이미 구현되어 있다
+
+`@media (width<=1023px)` 블록 안에 드로어 UI가 이미 존재한다. 새로 만들 필요가 없다.
+
+- `.gw-menu-button` — 햄버거 버튼
+- `.gw-sidebar` — `transform:translate(-102%)` 로 숨김, `.is-open` 에서 `translate(0)`
+- `.gw-drawer-overlay`, `.gw-drawer-close`
+- `body.gw-drawer-open { overflow:hidden }`
+
+즉 **기능이 없는 게 아니라, 미디어쿼리가 인식되지 않아 발동하지 않는 것**이다.
+
+### 임시 조치 (이 저장소에 적용됨)
+
+`css/groupware-mq-compat.css` — 위 블록들을 선언 내용 그대로
+`(max-width: …)` 문법으로 다시 선언한 자동 생성 파일.
+`groupware/index.html`에서 빌드 CSS 뒤, `groupware-tighten.css` 앞에 로드한다.
+최신 브라우저에서는 같은 선언이 한 번 더 적용될 뿐 결과가 바뀌지 않는다.
+
+### 근본 수정 (소스 저장소)
+
+빌드 타깃을 낮춰 lightningcss가 range 문법을 쓰지 않게 한다.
+
+- `package.json`의 `browserslist`, 또는 `vite.config`의 `build.target` /
+  `css.lightningcss.targets` 를 조정한다.
+- 기준 예: `safari >= 15`, `ios_saf >= 15` 를 포함하면 range 문법이 억제된다.
+- 수정 후 빌드 산출물에 `width<=` 문자열이 없는지 확인한다:
+  `grep -r 'width<=' dist/`
+- 근본 수정이 반영되면 `css/groupware-mq-compat.css` 와 그 링크는 제거한다.
+
+---
+
 ## 14.4 소스 저장소 접근
 
 - 이 세션에 연결된 GitHub 계정은 `playskang-svg`이며, 해당 계정의 저장소 목록에
