@@ -1,0 +1,125 @@
+/*
+ * 그룹웨어 여백 축소 · 게시판 최상단 배치 오버라이드
+ *
+ * 이 저장소는 빌드 산출물만 담고 있어 소스를 고칠 수 없으므로,
+ * 해시가 붙은 빌드 CSS(assets/groupware-*.css)를 직접 수정하는 대신
+ * 뒤에서 덮어쓰는 별도 파일로 둔다.
+ *
+ * - 글자 크기는 바꾸지 않는다. padding / margin / gap / min-height 만 줄인다.
+ * - /assets/ 가 아니라 /css/ 아래 두어 immutable 캐시를 피한다
+ *   (vercel.json에서 /css/* 는 max-age=0, must-revalidate).
+ * - 소스에서 다시 빌드해 groupware/index.html이 교체되면 이 링크는 사라진다.
+ *   영구 반영은 docs/14_GROUPWARE_UI_BACKLOG.md 참고.
+ */
+
+/* ── 대시보드: 게시판 섹션을 페이지 최상단으로 ───────────────────────── */
+/* 게시판 섹션이 있는 페이지(대시보드)에만 적용되도록 :has()로 스코프한다.
+   .gw-page는 원래 일반 block 컨테이너라 다른 화면에는 영향이 없다. */
+.gw-page:has(> section[aria-labelledby="dashboard-boards-title"]) {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.gw-page:has(> section[aria-labelledby="dashboard-boards-title"])
+  > section[aria-labelledby="dashboard-boards-title"] {
+  order: -1;
+  border-top: 0;
+  padding-top: 0;
+  margin-bottom: 4px;
+}
+
+/* ── 페이지 외곽 ────────────────────────────────────────────────── */
+.gw-page,
+.gw-approval-page {
+  padding: 0.35rem 0.6rem;
+}
+.gw-approval-heading,
+.gw-page-header,
+.gw-post-header {
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.2rem;
+}
+
+/* ── 카드 ──────────────────────────────────────────────────────── */
+.gw-approval-card {
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: none;
+}
+.gw-approval-card > h2,
+.gw-approval-card-heading h2 {
+  margin-bottom: 8px;
+}
+.gw-approval-action-row + .gw-admin-actions,
+.gw-approval-card > .gw-admin-actions:last-child {
+  margin-top: 8px;
+}
+
+/* ── 요약 카드 (숫자 타일) ──────────────────────────────────────── */
+.gw-approval-summary {
+  gap: 8px;
+}
+.gw-approval-summary > a {
+  min-height: 64px;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+/* ── 상세 정보 박스 ────────────────────────────────────────────── */
+.gw-approval-facts,
+.gw-approval-form-data {
+  gap: 8px;
+}
+.gw-approval-facts > div,
+.gw-approval-form-data > div {
+  padding: 9px;
+  border-radius: 8px;
+}
+
+/* ── 결재선 · 수신자 목록 ──────────────────────────────────────── */
+.gw-approval-line-preview,
+.gw-approval-lines,
+.gw-approval-assignees {
+  gap: 6px;
+}
+
+/* ── 표 ───────────────────────────────────────────────────────── */
+.gw-approval-table th,
+.gw-approval-table td {
+  padding: 6px 10px;
+}
+
+/* ── 대시보드 위젯 ─────────────────────────────────────────────── */
+.gw-dashboard-grid {
+  gap: 0 16px;
+  margin-top: 4px;
+}
+.gw-dashboard-widget {
+  padding: 6px 0;
+}
+.gw-dashboard-widget > p {
+  margin-top: 2px;
+}
+.gw-dashboard-board-list {
+  gap: 4px;
+  margin-top: 4px;
+}
+.gw-dashboard-board-list a {
+  min-height: 28px;
+  padding: 2px 8px;
+}
+.gw-widget-posts {
+  margin-top: 2px;
+}
+.gw-widget-posts a {
+  min-height: 30px;
+}
+
+/* ── 알림 · 빈 상태 ────────────────────────────────────────────── */
+.gw-notice,
+.gw-form-status {
+  padding: 8px 12px;
+}
+.gw-empty-state {
+  padding: 14px;
+}
