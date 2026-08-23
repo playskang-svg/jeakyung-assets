@@ -1,7 +1,45 @@
 # 14. 그룹웨어 UI 작업 명세 (소스 저장소용)
 
-이 저장소(`playskang-svg/jeakyung-assets`)는 **빌드 산출물만** 담고 있어 아래 작업을 수행할 수 없다.
-그룹웨어 React 소스 저장소에서 작업한 뒤, 빌드 결과를 이 저장소에 반영해야 한다.
+이 저장소(`playskang-svg/jeakyung-assets`)는 **빌드 산출물만** 담고 있다.
+소스는 `jeakyungdrive01-art/jeakyung-assets` 저장소의 **`groupware/approval` 브랜치**에 있다
+(공개 저장소라 clone은 가능하나, push 권한은 없다).
+
+## 14.0 처리 현황 (2026-08-23)
+
+| 항목 | 상태 |
+| --- | --- |
+| 14.1 대시보드 게시판 최상단 | **완료** — 소스 수정 후 빌드 반영 |
+| 14.2 세로 여백 축소 | **완료** — 소스 수정 후 빌드 반영 |
+| 14.3 첨부 팝업 | 보류 (상한 20MB 유지) |
+| 14.4 모바일 미디어쿼리 | **완료** — 빌드 타깃 조정으로 근본 해결 |
+
+소스 변경분은 `groupware/approval` 브랜치 기준 패치로 전달했다.
+**소스 저장소에 반영하는 것은 별도 작업이다** — push 권한이 없어 이 저장소의
+빌드 산출물만 갱신된 상태다. 소스에 반영하지 않으면 다음 빌드 때 되돌아간다.
+
+### 빌드 재현 방법
+
+```
+git clone https://github.com/jeakyungdrive01-art/jeakyung-assets.git
+git checkout groupware/approval
+npm ci && npm run build
+```
+
+산출물 중 **`dist/assets/` 와 `dist/groupware/index.html` 만** 이 저장소에 복사한다.
+공개 사이트는 빌드본이 아니라 원본 `index.html` + `css/style.css` + `js/main.js` +
+`public/` 을 그대로 쓰므로 건드리지 않는다. `vercel.json`, `.vercelignore`, `docs/` 도
+이 저장소에만 있는 파일이라 덮어쓰면 안 된다.
+
+### 알려진 차이
+
+`npm ci`(락파일 기준) 빌드 결과가 기존 배포본과 청크 구성이 다르다.
+기존 배포본에는 `dist-ClserGXx.js`(207KB)가 있으나 락파일 기준 빌드에는 없고,
+대신 `groupware-*.js` 청크가 그만큼 커진다. 소스 코드는 동일하므로
+(HEAD와 배포 시점 커밋의 차이는 문서 파일 하나뿐) 기존 배포본이 락파일과
+다른 의존성으로 빌드된 것으로 보인다. 동작상의 차이는 확인되지 않았다.
+
+---
+
 
 아래의 셀렉터·문자열·상수는 **현재 배포된 번들에서 직접 추출한 값**이다.
 소스에서 해당 값을 grep 하면 수정 지점을 바로 찾을 수 있다.
