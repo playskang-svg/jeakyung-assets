@@ -384,3 +384,70 @@ frame-ancestors`)가 걸려 있어, 그룹웨어 쪽 코드를 아무리 고쳐�
   (이전에는 항상 같은 고정 문구였다).
 - 신고 당시 테스트로 중복 저장된 "댓글 테스크" 2건은 DB에서 삭제 처리
   (soft delete)했다.
+
+## 14.10 정보 및 동향 (공개 사이트 메인) — 완료
+
+요청: ① 메인 메뉴에 "정보 및 동향"을 넣고 ② 관리자에서 그 페이지(웹문서)를
+만들되 메인에 노출하고 모두 읽기만 되게 하며 ③ 히어로 이미지 아래에 썸네일과
+일부 내용이 보이는 목록을 두고 누르면 팝업으로 본문이 뜨게 한다.
+
+### 작업 중 확인된 중요한 사실 — 공개 사이트는 React 빌드가 아니다
+
+이 저장소의 `index.html` / `privacy/index.html` / `css/style.css` / `js/main.js`는
+**손으로 관리하는 정적 파일**이고, `source/`의 React 공개 사이트 빌드 결과가
+아니다. 실제로 두 쪽은 이미 상당히 벌어져 있었다.
+
+- 배포본에만 있는 것: 파트너사 섹션(웰스토리·현대그린푸드·동원식품·HL홀딩스·
+  현대홈쇼핑), "카카오 상담"·"카카오톡으로 문의하기" 문구, 그룹웨어 링크
+  `/groupware/login`
+- source 쪽에만 있는 것: og/트위터 메타, 파비콘 링크, "빠른 상담하기" 문구,
+  그룹웨어 링크 `https://groupware.jeakyung.com/groupware/login`(옛 서브도메인)
+- `css/style.css`도 305줄이 다르다.
+
+즉 **`dist/index.html`을 배포본에 덮어쓰면** 파트너사 섹션과 현재 CTA 문구가
+사라지고, 그룹웨어 링크가 옛 프리뷰 주소(`jeakyung-preview-ten.vercel.app`)로
+바뀌어 버린다. 그래서 공개 사이트 쪽은 **정적 파일에 직접 구현**했고,
+`assets/`와 `groupware/index.html`(그룹웨어 SPA)만 빌드 산출물로 갱신했다.
+
+React 소스(`source/`)에도 같은 기능을 넣어 두었으므로 나중에 공개 사이트를
+React 빌드로 전환하더라도 기능은 그대로 따라간다. **두 곳을 함께 고쳐야 한다.**
+
+### 데이터베이스 (`supabase/migrations/202608290001_site_articles.sql`, 적용 완료)
+
+- `public.site_articles` 테이블: 제목·분류·요약·썸네일 주소·본문·게시일시·
+  정렬·활성·보관. RLS 켜고 anon/authenticated 직접 접근은 모두 revoke.
+- 익명 읽기 전용 RPC 2개 (anon 실행 허용):
+  - `get_public_site_articles(p_limit)` — 카드용. 본문은 주지 않는다.
+  - `get_public_site_article(p_id)` — 카드를 눌렀을 때 본문까지.
+  - 둘 다 `is_active` / `archived_at is null` / `published_at <= now()` 만 반환.
+- 관리자 전용 RPC 3개 (authenticated + `is_membership_admin()` 검사):
+  `get_site_article_admin_catalog` / `manage_site_article` / `delete_site_article`.
+  팝업 문서와 같은 기준으로 위험 태그·이벤트 핸들러를 서버에서도 막고
+  `audit_logs`에 기록한다.
+- 썸네일용 공개 버킷 `public-site-media`(5MB, 이미지 4종). 업로드·수정·삭제
+  정책은 관리자에게만 준다. 읽기는 공개 버킷이라 로그인 없이 된다.
+- 초기 안내 글 1건을 seed 해 두어 처음부터 빈 화면이 아니다.
+
+권한은 `anon` 역할로 실제 실행해 확인했다: 목록·본문 조회는 되고,
+`manage_site_article` / `delete_site_article` / 테이블 직접 조회는 모두
+`insufficient_privilege`로 거부된다.
+
+### 공개 사이트 (정적)
+
+- `index.html`: 히어로 `</section>` 바로 뒤에 `#news` 섹션(제목 + 스켈레톤 카드
+  3장)을 넣고, 데스크톱·모바일 메뉴 "재경닷컴 소개" 뒤에 "정보 및 동향" 추가.
+  `privacy/index.html` 메뉴에도 같은 항목 추가.
+- `js/news.js`(신규): supabase-js 없이 PostgREST RPC를 `fetch`로 직접 호출한다.
+  목록을 카드로 그리고, 카드를 누르면 본문을 따로 받아 팝업으로 띄운다.
+  본문은 화면에 넣기 전에 `popupHtml.js`와 같은 허용 태그 기준으로 한 번 더
+  거른다. 실패하거나 글이 없으면 안내 문구만 남긴다.
+- `css/style.css`: 카드·팝업 스타일 추가. 정적 페이지에는 React 쪽 `popup.css`가
+  오지 않으므로 팝업 틀 스타일도 같은 값으로 함께 넣었다(한쪽을 고치면 다른
+  쪽도 고쳐야 한다).
+
+### 관리자 화면
+
+- `SiteArticleAdminPanel.jsx`(신규): 목록·작성·수정·삭제. 제목/분류/요약/
+  게시일시/정렬/활성/보관, 썸네일 업로드(또는 주소 직접 입력)와 미리보기,
+  본문은 팝업 문서와 같은 일반 편집기 / HTML 편집기 전환.
+- 관리자 점검 목록에 "정보 및 동향" 행 추가 → 같은 화면 아래에서 펼쳐진다.

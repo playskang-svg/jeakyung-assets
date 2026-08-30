@@ -9,6 +9,7 @@ import FAQSection from '../components/home/FAQSection.jsx';
 import GuideSection from '../components/home/GuideSection.jsx';
 import HeroSection from '../components/home/HeroSection.jsx';
 import LocationSection from '../components/home/LocationSection.jsx';
+import NewsSection from '../components/home/NewsSection.jsx';
 import PartnersSection from '../components/home/PartnersSection.jsx';
 import ServicesSection from '../components/home/ServicesSection.jsx';
 import StatementSection from '../components/home/StatementSection.jsx';
@@ -22,6 +23,8 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
+
+      <NewsSection />
 
       <section className="intro section" id="about" aria-labelledby="about-title">
         <div className="content-width">

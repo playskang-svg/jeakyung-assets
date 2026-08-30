@@ -6,6 +6,7 @@ import OrganizationManagementPanel from '../../components/admin/OrganizationMana
 import DashboardWidgetPanel from '../../components/admin/DashboardWidgetPanel.jsx';
 import LinkPageAdminPanel from '../../components/admin/LinkPageAdminPanel.jsx';
 import ButtonBoxAdminPanel from '../../components/admin/ButtonBoxAdminPanel.jsx';
+import SiteArticleAdminPanel from '../../components/admin/SiteArticleAdminPanel.jsx';
 import SystemUsagePanel from '../../components/admin/SystemUsagePanel.jsx';
 import EmployeeProfilePanel from '../../components/admin/EmployeeProfilePanel.jsx';
 import { EMPTY_DIRECTORY, getAdminOverview } from '../../services/adminOverviewService.js';
@@ -63,6 +64,7 @@ export default function AdminPage() {
       {section === 'widgets' && <DashboardWidgetPanel directory={directory} />}
       {section === 'linkpages' && <LinkPageAdminPanel />}
       {section === 'buttonboxes' && <ButtonBoxAdminPanel />}
+      {section === 'sitearticles' && <SiteArticleAdminPanel />}
       {section === 'usage' && <SystemUsagePanel usage={overview.usage} loading={loading} onReload={load} />}
     </article>
   );
