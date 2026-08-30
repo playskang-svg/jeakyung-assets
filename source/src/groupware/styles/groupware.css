@@ -4360,3 +4360,43 @@ body.groupware-root a.gw-secondary-button {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ------------------------------------------------------------------
+   정보 및 동향 관리 — 썸네일 업로드 영역
+   ------------------------------------------------------------------ */
+.gw-article-thumb-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.gw-article-thumb-preview {
+  width: 220px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid var(--gw-line, #dfe3eb);
+  border-radius: 12px;
+  background: #eef1f7;
+}
+
+.gw-article-thumb-preview.is-empty {
+  display: grid;
+  place-items: center;
+  color: #8b93a5;
+  font-size: 13px;
+}
+
+.gw-article-thumb-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .gw-article-thumb-preview {
+    width: 100%;
+  }
+}

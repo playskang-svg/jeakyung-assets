@@ -1,0 +1,1 @@
+async function e(e,t=12){if(!e)return[];let{data:n,error:r}=await e.rpc(`get_public_site_articles`,{p_limit:t});if(r)throw r;return n??[]}async function t(e,t){if(!e)return null;let{data:n,error:r}=await e.rpc(`get_public_site_article`,{p_id:t});if(r)throw r;return Array.isArray(n)?n[0]??null:n??null}export{t as getPublicSiteArticle,e as getPublicSiteArticles};
