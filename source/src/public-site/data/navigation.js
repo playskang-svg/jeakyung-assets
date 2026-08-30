@@ -4,7 +4,7 @@ export const CONSULTATION_URL = 'https://pf.kakao.com/_xgrFxhn';
 export const navigationByPage = {
   home: [
     { href: '#about', label: '재경닷컴 소개' },
-    { href: '#news', label: '정보 및 동향' },
+    { href: 'news/', label: '정보 및 동향' },
     { href: '#services', label: '서비스' },
     { href: '#audience', label: '고객별 안내' },
     { href: '#guide', label: '상담 준비' },
@@ -13,7 +13,14 @@ export const navigationByPage = {
   ],
   privacy: [
     { href: '../#about', label: '재경닷컴 소개' },
-    { href: '../#news', label: '정보 및 동향' },
+    { href: '../news/', label: '정보 및 동향' },
+    { href: '../#services', label: '서비스' },
+    { href: '../#location', label: '찾아오시는 길' },
+    { href: '../#faq', label: 'FAQ' },
+  ],
+  news: [
+    { href: '../#about', label: '재경닷컴 소개' },
+    { href: './', label: '정보 및 동향' },
     { href: '../#services', label: '서비스' },
     { href: '../#location', label: '찾아오시는 길' },
     { href: '../#faq', label: 'FAQ' },
@@ -38,5 +45,14 @@ export const footerLinksByPage = {
     guide: '../#guide',
     faq: '../#faq',
     privacy: './',
+  },
+  news: {
+    home: '../',
+    about: '../#about',
+    services: '../#services',
+    location: '../#location',
+    guide: '../#guide',
+    faq: '../#faq',
+    privacy: '../privacy/',
   },
 };

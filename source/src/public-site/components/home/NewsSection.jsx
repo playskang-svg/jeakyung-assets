@@ -120,6 +120,7 @@ export default function NewsSection() {
           <span className="eyebrow"><i /> Insight &amp; Trends</span>
           <h2 id="news-title">정보 및 동향</h2>
           <p>물류 시장의 흐름과 재경닷컴의 소식을 전해드립니다. 카드를 누르면 전체 내용을 볼 수 있습니다.</p>
+          <a className="news-all-link" href="news/">전체 보기 <span aria-hidden="true">→</span></a>
         </div>
 
         {!loaded && (

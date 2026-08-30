@@ -57,6 +57,7 @@ export default defineConfig({
       input: {
         home: fileURLToPath(new URL('index.html', import.meta.url)),
         privacy: fileURLToPath(new URL('privacy/index.html', import.meta.url)),
+        news: fileURLToPath(new URL('news/index.html', import.meta.url)),
         groupware: fileURLToPath(new URL('groupware/index.html', import.meta.url)),
       },
     },
