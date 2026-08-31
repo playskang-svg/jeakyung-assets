@@ -35,10 +35,13 @@ function head(title, description, base = '') {
 <link rel="stylesheet" href="${base}assets/style.css">`;
 }
 
-function siteFooter(base = '') {
+// No signature image here on purpose — 염달성's signature is only inserted
+// contextually inside the specific documents that actually need it (see
+// SIGNATURE_TARGETS in build.mjs + insertSignatures() in clean-doc.mjs), not
+// as a blanket mark on every page of the site.
+function siteFooter() {
   return `<footer class="site-footer">
   <div class="wrap">
-    <img class="footer-sign" src="${base}assets/sign-ceo-hand.png" alt="대표이사 염달성" height="44">
     <p>${esc(SITE_TITLE)} 웹 게시본 ${VERSION} · 작성/게시일 ${BUILD_DATE} · 문의 유한회사 재경물류</p>
   </div>
 </footer>`;
