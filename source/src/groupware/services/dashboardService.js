@@ -30,6 +30,14 @@ export async function saveDashboardWidget(widget, assignments) {
   return data;
 }
 
+// 순서만 바꾼다. manage_dashboard_widget 은 배포 규칙까지 다시 쓰기 때문에
+// 위/아래 버튼처럼 자주 부르는 동작에는 쓰지 않는다.
+export async function reorderDashboardWidgets(orders) {
+  const { data, error } = await requireSupabase().rpc('reorder_dashboard_widgets', { p_orders: orders });
+  if (error) throw error;
+  return data;
+}
+
 export async function deleteOrArchiveDashboardWidget(widgetId) {
   const { data, error } = await requireSupabase().rpc('delete_or_archive_dashboard_widget', { p_widget_id: widgetId });
   if (error) throw error;

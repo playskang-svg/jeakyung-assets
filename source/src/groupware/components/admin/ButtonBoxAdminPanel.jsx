@@ -86,12 +86,17 @@ export default function ButtonBoxAdminPanel() {
     event.preventDefault();
     setSaving(true); setError(''); setStatus('');
     try {
+      // 썸네일은 없어도 된다. 저장에서 빠지는 조건은 제목이 비었거나 열 대상을
+      // 고르지 않은 경우뿐인데, 예전에는 말없이 사라져서 왜 안 생기는지 알 수 없었다.
+      const ready = form.items.filter((item) => item.label.trim() && isLinkTargetComplete(item));
+      const dropped = form.items.filter((item) => item.label.trim() || !isLinkTargetComplete(item)).length - ready.length;
       await saveButtonBox(
         { id: form.id, title: form.title, style: form.style, is_active: form.is_active },
-        form.items.filter((item) => item.label.trim() && isLinkTargetComplete(item))
-          .map((item) => ({ label: item.label, description: item.description, thumbnail_url: item.thumbnail_url, ...linkTargetPayload(item) })),
+        ready.map((item) => ({ label: item.label, description: item.description, thumbnail_url: item.thumbnail_url, ...linkTargetPayload(item) })),
       );
-      setStatus('저장했습니다.');
+      setStatus(dropped > 0
+        ? `버튼 ${ready.length}개를 저장했습니다. ${dropped}개는 제목이나 열 대상이 비어 있어 저장하지 않았습니다.`
+        : `버튼 ${ready.length}개를 저장했습니다.`);
       setForm(null);
       await load();
     } catch (cause) {
@@ -157,13 +162,13 @@ export default function ButtonBoxAdminPanel() {
           </div>
 
           <h3>버튼</h3>
-          <p className="gw-field-hint">버튼 순서대로 배치됩니다. 썸네일과 설명이 카드에 보이고, 누르면 대상이 <strong>팝업</strong>으로 열립니다. 게시판은 팝업 안에서 글까지 읽을 수 있고, 외부 주소는 팝업에 담을 수 없어 새 탭으로 열립니다.</p>
+          <p className="gw-field-hint">버튼 순서대로 배치됩니다. <strong>이미지는 선택 사항</strong>이고, 비워 두면 제목 앞 글자로 썸네일이 자동으로 만들어집니다. 버튼이 만들어지려면 <strong>제목과 열 대상</strong>만 있으면 됩니다. 누르면 대상이 <strong>팝업</strong>으로 열립니다 — 게시판은 팝업 안에서 글까지 읽을 수 있고, “외부 주소 (화면 안에 표시)”도 팝업 안에 그대로 실립니다. “외부 주소 (새 탭)”만 새 탭으로 나갑니다.</p>
           {form.items.map((item, index) => (
             <div className="gw-linkpage-item-row gw-buttonbox-item-row" key={item.key}>
-              <label className="gw-buttonbox-thumb-picker" title="썸네일 이미지">
+              <label className="gw-buttonbox-thumb-picker" title="이미지 (선택) — 비워 두면 제목 앞 글자로 자동 생성됩니다">
                 {item.thumbnail_url
                   ? <img src={item.thumbnail_url} alt="" />
-                  : <span>{uploadingKey === item.key ? '…' : '＋'}</span>}
+                  : <span>{uploadingKey === item.key ? '…' : (item.label.trim().slice(0, 2) || '＋')}</span>}
                 <input
                   type="file"
                   accept="image/*"

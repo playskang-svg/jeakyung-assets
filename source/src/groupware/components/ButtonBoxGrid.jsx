@@ -6,7 +6,8 @@ import ButtonBoxTargetDialog from './ButtonBoxTargetDialog.jsx';
 // 카드에는 썸네일과 설명만 보여 주고, 누르면 대상이 팝업으로 열린다.
 // 게시판은 팝업 안에서 목록 ↔ 본문이 바뀌고, 팝업에 담을 수 없는 외부 주소는
 // 새 탭으로 연다.
-const canOpenInDialog = (item) => item.link_type === 'board' && Boolean(item.board_slug);
+const canOpenInDialog = (item) => (item.link_type === 'board' && Boolean(item.board_slug))
+  || (item.link_type === 'embed' && Boolean(item.url));
 
 function Thumbnail({ item }) {
   if (item.thumbnail_url) {
