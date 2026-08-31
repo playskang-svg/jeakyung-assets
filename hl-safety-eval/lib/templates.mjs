@@ -1,8 +1,20 @@
 const SITE_TITLE = '적격수급사 안전보건평가';
 const SITE_SUBTITLE = '유한회사 재경물류 안전보건관리';
-const GDRIVE_FOLDER = 'https://drive.google.com/drive/folders/13REZlblbGLwcJkILouBzgVMxoPOv72tZ';
-const BUILD_DATE = '2026-08-31';
 const VERSION = 'v1.0';
+
+// Computed once when this module loads — i.e. fresh on every `npm run
+// build` run — instead of a hand-typed string someone has to remember to
+// bump. That's the whole point: whatever day a build actually runs (because
+// a source Google Doc changed, or for any other reason), the footer's
+// "최종 업데이트" date follows automatically, and since every page's footer
+// comes from this one BUILD_DATE constant, that update reaches every page's
+// body without editing them one by one. Shifted to KST rather than plain
+// UTC so a build run between 00:00–09:00 KST doesn't show yesterday's date.
+function todayInKST() {
+  const kst = new Date(Date.now() + 9 * 60 * 60 * 1000);
+  return kst.toISOString().slice(0, 10);
+}
+const BUILD_DATE = todayInKST();
 
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -42,7 +54,7 @@ function head(title, description, base = '') {
 function siteFooter() {
   return `<footer class="site-footer">
   <div class="wrap">
-    <p>${esc(SITE_TITLE)} 웹 게시본 ${VERSION} · 작성/게시일 ${BUILD_DATE} · 문의 유한회사 재경물류</p>
+    <p>${esc(SITE_TITLE)} 웹 게시본 ${VERSION} · 최종 업데이트 ${BUILD_DATE} · 문의 유한회사 재경물류</p>
   </div>
 </footer>`;
 }
@@ -169,14 +181,6 @@ ${head(SITE_TITLE, 'HL홀딩스(주) 동탄냉장 물류센터 2026년 적격수
       ${CATEGORY_ORDER.map((c) => `<button class="filter-chip" data-filter="${esc(c)}">${esc(c)}</button>`).join('\n      ')}
     </div>
     ${categorySections}
-  </section>
-
-  <section class="block">
-    <h2><span class="num">4</span>전체 다운로드</h2>
-    <div class="download-all">
-      <p style="margin-top:0">32개 문서 전체를 구글 드라이브 폴더에서 한 번에 내려받을 수 있습니다.<br>폴더째 다운로드하면 문서/시트가 워드·엑셀 파일로 자동 변환됩니다.</p>
-      <a class="btn primary" href="${GDRIVE_FOLDER}">📁 구글 드라이브 폴더 전체 열기</a>
-    </div>
   </section>
 
 </main>
