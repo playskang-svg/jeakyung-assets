@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react';
 import { getBoardAdminCatalog } from '../../services/boardService.js';
 import { getButtonBoxAdminCatalog } from '../../services/buttonBoxService.js';
 import { deleteLinkPage, getLinkPageAdminCatalog, saveLinkPage } from '../../services/linkPageService.js';
-import LinkTargetFields, { emptyLinkTarget, isLinkTargetComplete, linkTargetPayload } from './LinkTargetFields.jsx';
+import LinkTargetFields, { SECTION_TYPES, emptyLinkTarget, isContentType, isLinkTargetComplete, linkTargetPayload } from './LinkTargetFields.jsx';
+import PageSectionEditor from './PageSectionEditor.jsx';
 
 const EMPTY_FORM = { id: null, title: '', slug: '', description: '', is_active: true, content_type: 'boards', button_box_id: '', items: [] };
-const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', ...emptyLinkTarget('board') });
+const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', content: {}, ...emptyLinkTarget('board') });
 
 // 제목만 입력해도 쓸 수 있는 주소를 얻도록 영문·숫자만 남기고, 전부 걸러지면
 // (한글 제목) 무작위 접미사로 만든다. 관리자가 직접 고칠 수 있다.
@@ -34,7 +35,7 @@ export default function LinkPageAdminPanel() {
       setBoards((boardCatalog.boards ?? []).filter((board) => !board.archived_at));
       setButtonBoxes((buttonBoxCatalog ?? []).filter((box) => box.is_active));
     } catch (cause) {
-      setError(cause.message || '링크 페이지 목록을 불러오지 못했습니다.');
+      setError(cause.message || '페이지 목록을 불러오지 못했습니다.');
     }
   };
   useEffect(() => { load(); }, []);
@@ -51,6 +52,7 @@ export default function LinkPageAdminPanel() {
         key: item.id, id: item.id, label: item.label,
         link_type: item.item_type ?? 'board',
         board_id: item.board_id ?? '', target_page_id: item.target_page_id ?? '', url: item.url ?? '',
+        content: item.content ?? {},
       })),
     });
   };
@@ -79,7 +81,14 @@ export default function LinkPageAdminPanel() {
           .filter((item) => item.label.trim() && isLinkTargetComplete(item))
           .map((item) => {
             const target = linkTargetPayload(item);
-            return { label: item.label, item_type: target.link_type, board_id: target.board_id, target_page_id: target.target_page_id, url: target.url };
+            return {
+              label: item.label,
+              item_type: target.link_type,
+              board_id: target.board_id,
+              target_page_id: target.target_page_id,
+              url: target.url,
+              content: isContentType(target.link_type) ? (item.content ?? {}) : {},
+            };
           }),
       );
       setStatus('저장했습니다.');
@@ -103,16 +112,16 @@ export default function LinkPageAdminPanel() {
     <section className="gw-admin-section" aria-labelledby="linkpage-admin-title">
       <div className="gw-admin-section-heading">
         <div>
-          <h2 id="linkpage-admin-title">링크 페이지</h2>
-          <p>제목 아래 고정 버튼 줄을 두고, 버튼마다 게시판을 연결하는 업무 페이지를 구성합니다.</p>
+          <h2 id="linkpage-admin-title">페이지</h2>
+          <p>제목 아래 고정 버튼 줄을 두고, 항목마다 게시판·HTML 문서·글·바로가기·외부 화면을 붙이는 업무 페이지를 구성합니다.</p>
         </div>
-        <button type="button" className="gw-primary-button" onClick={startCreate}>새 링크 페이지</button>
+        <button type="button" className="gw-primary-button" onClick={startCreate}>새 페이지</button>
       </div>
 
       {error && <div className="gw-notice gw-notice--warning" role="alert">{error}</div>}
       {status && <p className="gw-form-status" role="status">{status}</p>}
 
-      {pages.length === 0 && !form && <p className="gw-empty-state">아직 만든 링크 페이지가 없습니다.</p>}
+      {pages.length === 0 && !form && <p className="gw-empty-state">아직 만든 페이지가 없습니다.</p>}
       {pages.length > 0 && (
         <ul className="gw-linkpage-admin-list">
           {pages.map((page) => (
@@ -160,22 +169,32 @@ export default function LinkPageAdminPanel() {
             </label>
           ) : (
           <>
-          <h3>하위 페이지 버튼</h3>
-          <p className="gw-field-hint">버튼 순서대로 머리글에 나열됩니다. 게시판은 이 페이지 안에서 열리고, 페이지·외부 주소는 새 탭으로 열립니다.</p>
+          <h3>페이지 항목</h3>
+          <p className="gw-field-hint">항목 순서대로 머리글에 나열되고, 누르면 아래 영역이 그 항목으로 바뀝니다. <strong>게시판</strong>·<strong>외부 주소(화면 안에 표시)</strong>·<strong>HTML 문서</strong>·<strong>일반 글</strong>·<strong>바로가기 버튼</strong>은 이 페이지 안에서 열리고, <strong>페이지</strong>와 <strong>외부 주소(새 탭)</strong>만 새 탭으로 나갑니다.</p>
           {form.items.map((item, index) => (
             <div className="gw-linkpage-item-row" key={item.key}>
               <input value={item.label} maxLength={40} placeholder="항목 제목" aria-label={`${index + 1}번 항목 제목`} onChange={(event) => patchItem(item.key, { label: event.target.value })} />
               <LinkTargetFields
                 item={item}
                 index={index}
+                types={SECTION_TYPES}
                 boards={boards}
                 pages={pages}
                 excludePageId={form.id}
-                onChange={(patch) => patchItem(item.key, patch)}
+                onChange={(patch) => patchItem(item.key, { ...patch, content: item.content ?? {} })}
               />
               <button type="button" className="gw-secondary-button" onClick={() => moveItem(index, -1)} disabled={index === 0} aria-label="위로">↑</button>
               <button type="button" className="gw-secondary-button" onClick={() => moveItem(index, 1)} disabled={index === form.items.length - 1} aria-label="아래로">↓</button>
               <button type="button" className="gw-secondary-button gw-icon-danger-button" onClick={() => patchForm({ items: form.items.filter((entry) => entry.key !== item.key) })} aria-label="항목 삭제">삭제</button>
+              {isContentType(item.link_type) && (
+                <div className="gw-linkpage-item-content">
+                  <PageSectionEditor
+                    type={item.link_type}
+                    content={item.content}
+                    onChange={(content) => patchItem(item.key, { content })}
+                  />
+                </div>
+              )}
             </div>
           ))}
           <button type="button" className="gw-secondary-button" onClick={() => patchForm({ items: [...form.items, NEW_ITEM()] })}>항목 추가</button>
