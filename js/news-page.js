@@ -237,7 +237,11 @@
         }
 
         elThumb.innerHTML = '';
-        if (article.thumbnail_url) {
+        // 썸네일이 본문 맨 앞 이미지에서 자동으로 뽑힌 경우, 본문에도 같은 이미지가
+        // 있으므로 위에 또 띄우면 두 번 나온다. 그때는 생략한다.
+        var bodyHasThumb = article.thumbnail_url && detail
+            && detail.content_html && detail.content_html.indexOf(article.thumbnail_url) !== -1;
+        if (article.thumbnail_url && !bodyHasThumb) {
             var image = document.createElement('img');
             image.src = article.thumbnail_url;
             image.alt = '';

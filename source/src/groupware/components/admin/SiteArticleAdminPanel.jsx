@@ -10,8 +10,6 @@ import {
   uploadSiteArticleThumbnail,
 } from '../../services/siteArticleService.js';
 
-const MAX_THUMBNAIL_BYTES = 5 * 1024 * 1024;
-const THUMBNAIL_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 function localDateTime(value = new Date()) {
   if (!value) return '';
@@ -76,20 +74,14 @@ export default function SiteArticleAdminPanel() {
     const file = event.target.files?.[0];
     if (!file) return;
     setError(''); setStatus('');
-    if (!THUMBNAIL_TYPES.includes(file.type)) {
-      setError('썸네일은 JPG·PNG·WebP·GIF 이미지만 올릴 수 있습니다.');
-    } else if (file.size > MAX_THUMBNAIL_BYTES) {
-      setError('썸네일 용량은 5MB를 넘을 수 없습니다.');
-    } else {
-      setUploading(true);
-      try {
-        patch({ thumbnail_url: await uploadSiteArticleThumbnail(file) });
-        setStatus('썸네일을 올렸습니다. 저장해야 실제로 반영됩니다.');
-      } catch (cause) {
-        setError(`썸네일을 올리지 못했습니다. ${cause?.message ?? ''}`);
-      } finally {
-        setUploading(false);
-      }
+    setUploading(true);
+    try {
+      patch({ thumbnail_url: await uploadSiteArticleThumbnail(file) });
+      setStatus('썸네일을 올렸습니다. 저장해야 실제로 반영됩니다.');
+    } catch (cause) {
+      setError(`썸네일을 올리지 못했습니다. ${cause?.message ?? ''}`);
+    } finally {
+      setUploading(false);
     }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -100,24 +92,18 @@ export default function SiteArticleAdminPanel() {
     const file = event.target.files?.[0];
     if (!file) return;
     setError(''); setStatus('');
-    if (!THUMBNAIL_TYPES.includes(file.type)) {
-      setError('본문 이미지는 JPG·PNG·WebP·GIF만 넣을 수 있습니다.');
-    } else if (file.size > MAX_THUMBNAIL_BYTES) {
-      setError('본문 이미지 용량은 5MB를 넘을 수 없습니다.');
-    } else {
-      setBodyUploading(true);
-      try {
-        const url = await uploadSiteArticleThumbnail(file);
-        patch({
-          content_mode: 'html',
-          content_html: `${form.content_html}\n<p><img src="${url}" alt="" /></p>`,
-        });
-        setStatus('본문 끝에 이미지를 넣었습니다. HTML 편집기에서 위치를 옮길 수 있습니다.');
-      } catch (cause) {
-        setError(`본문 이미지를 올리지 못했습니다. ${cause?.message ?? ''}`);
-      } finally {
-        setBodyUploading(false);
-      }
+    setBodyUploading(true);
+    try {
+      const url = await uploadSiteArticleThumbnail(file);
+      patch({
+        content_mode: 'html',
+        content_html: `${form.content_html}\n<p><img src="${url}" alt="" /></p>`,
+      });
+      setStatus('본문 끝에 이미지를 넣었습니다. HTML 편집기에서 위치를 옮길 수 있습니다.');
+    } catch (cause) {
+      setError(`본문 이미지를 올리지 못했습니다. ${cause?.message ?? ''}`);
+    } finally {
+      setBodyUploading(false);
     }
     if (bodyFileRef.current) bodyFileRef.current.value = '';
   };
@@ -214,7 +200,7 @@ export default function SiteArticleAdminPanel() {
 
         <fieldset className="gw-builder-fieldset">
           <legend>썸네일</legend>
-          <p className="gw-field-hint">카드 상단에 16:9로 잘려 보입니다. 올리지 않으면 기본 배경이 나옵니다. (JPG·PNG·WebP·GIF, 5MB 이하)</p>
+          <p className="gw-field-hint">카드 상단에 16:9로 잘려 보입니다. <strong>비워 두면 본문 맨 앞 이미지가 자동으로 썸네일이 됩니다.</strong> 본문에도 이미지가 없으면 기본 배경이 나옵니다. (JPG·PNG·WebP·GIF, 5MB 이하)</p>
           <div className="gw-article-thumb-row">
             {form.thumbnail_url
               ? <img className="gw-article-thumb-preview" src={form.thumbnail_url} alt="썸네일 미리보기" />
@@ -222,7 +208,7 @@ export default function SiteArticleAdminPanel() {
             <div className="gw-article-thumb-actions">
               <label className="gw-file-button">
                 {uploading ? '올리는 중…' : '이미지 올리기'}
-                <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={uploadThumbnail} disabled={uploading} />
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={uploadThumbnail} disabled={uploading} />
               </label>
               {form.thumbnail_url && <button type="button" className="gw-secondary-button" onClick={() => patch({ thumbnail_url: '' })}>제거</button>}
             </div>
@@ -239,7 +225,7 @@ export default function SiteArticleAdminPanel() {
             <button type="button" className={form.content_mode === 'html' ? 'is-selected' : ''} aria-pressed={form.content_mode === 'html'} onClick={() => patch({ content_mode: 'html' })}>HTML 편집기</button>
             <label className="gw-file-button gw-body-image-button">
               {bodyUploading ? '올리는 중…' : '본문에 이미지 넣기'}
-              <input ref={bodyFileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" disabled={bodyUploading} onChange={uploadBodyImage} />
+              <input ref={bodyFileRef} type="file" accept="image/*" disabled={bodyUploading} onChange={uploadBodyImage} />
             </label>
           </div>
           <p className="gw-field-hint">본문 이미지는 <strong>HTML 편집기</strong>에서만 유지됩니다. 일반 편집기로 바꿔 편집하면 이미지가 사라지니 주의하세요.</p>

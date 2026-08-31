@@ -131,7 +131,9 @@ export default function NewsPage() {
                 <h2 id="news-article-title">{current.title}</h2>
                 {current.summary && <p className="news-article-summary">{current.summary}</p>}
               </header>
-              {current.thumbnail_url && (
+              {/* 썸네일이 본문 맨 앞 이미지에서 자동으로 뽑힌 경우 본문에도 같은 그림이
+                  있으므로, 위에 또 띄우지 않는다. */}
+              {current.thumbnail_url && !(detail?.content_html ?? '').includes(current.thumbnail_url) && (
                 <div className="news-article-thumb"><img src={current.thumbnail_url} alt="" /></div>
               )}
               {detailState === 'loading' && <p className="site-news-dialog-state" role="status">본문을 불러오고 있습니다.</p>}

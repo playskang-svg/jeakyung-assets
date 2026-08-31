@@ -16,8 +16,6 @@ const STYLES = [
 const EMPTY_FORM = { id: null, title: '', style: 'cards', is_active: true, items: [] };
 const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', description: '', thumbnail_url: '', ...emptyLinkTarget('board') });
 
-const MAX_THUMBNAIL_BYTES = 5 * 1024 * 1024;
-const THUMBNAIL_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 export default function ButtonBoxAdminPanel() {
   const [boxes, setBoxes] = useState([]);
@@ -72,18 +70,14 @@ export default function ButtonBoxAdminPanel() {
 
   const uploadThumbnail = async (key, file, input) => {
     setError(''); setStatus('');
-    if (!THUMBNAIL_TYPES.includes(file.type)) setError('썸네일은 JPG·PNG·WebP·GIF 이미지만 올릴 수 있습니다.');
-    else if (file.size > MAX_THUMBNAIL_BYTES) setError('썸네일 용량은 5MB를 넘을 수 없습니다.');
-    else {
-      setUploadingKey(key);
-      try {
-        patchItem(key, { thumbnail_url: await uploadButtonThumbnail(file) });
-        setStatus('썸네일을 올렸습니다. 저장해야 반영됩니다.');
-      } catch (cause) {
-        setError(`썸네일을 올리지 못했습니다. ${cause?.message ?? ''}`);
-      } finally {
-        setUploadingKey('');
-      }
+    setUploadingKey(key);
+    try {
+      patchItem(key, { thumbnail_url: await uploadButtonThumbnail(file) });
+      setStatus('썸네일을 올렸습니다. 저장해야 반영됩니다.');
+    } catch (cause) {
+      setError(`썸네일을 올리지 못했습니다. ${cause?.message ?? ''}`);
+    } finally {
+      setUploadingKey('');
     }
     if (input) input.value = '';
   };
@@ -172,7 +166,7 @@ export default function ButtonBoxAdminPanel() {
                   : <span>{uploadingKey === item.key ? '…' : '＋'}</span>}
                 <input
                   type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  accept="image/*"
                   aria-label={`${index + 1}번 버튼 썸네일`}
                   disabled={uploadingKey === item.key}
                   onChange={(event) => { const file = event.target.files?.[0]; if (file) uploadThumbnail(item.key, file, event.target); }}
