@@ -100,3 +100,11 @@
   .site-popup-body { padding: 18px 16px; }
 }
 
+
+/* 본문에 들어간 이미지 */
+.site-popup-document img {
+  max-width: 100%;
+  height: auto;
+  margin: 1.1em 0;
+  border-radius: 10px;
+}

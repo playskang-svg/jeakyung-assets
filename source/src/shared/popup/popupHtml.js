@@ -1,6 +1,6 @@
 const ALLOWED_TAGS = new Set([
   'A', 'B', 'BLOCKQUOTE', 'BR', 'CODE', 'DIV', 'EM', 'H1', 'H2', 'H3', 'H4', 'HR',
-  'I', 'LI', 'OL', 'P', 'PRE', 'S', 'SPAN', 'STRONG', 'TABLE', 'TBODY', 'TD',
+  'I', 'IMG', 'LI', 'OL', 'P', 'PRE', 'S', 'SPAN', 'STRONG', 'TABLE', 'TBODY', 'TD',
   'TH', 'THEAD', 'TR', 'U', 'UL',
 ]);
 
@@ -40,6 +40,7 @@ export function sanitizePopupHtml(value) {
       const name = attribute.name.toLowerCase();
       const allowed = name === 'style'
         || (element.tagName === 'A' && ['href', 'target', 'rel'].includes(name))
+        || (element.tagName === 'IMG' && ['src', 'alt', 'width', 'height', 'loading'].includes(name))
         || (['TD', 'TH'].includes(element.tagName) && ['colspan', 'rowspan'].includes(name));
       if (!allowed || name.startsWith('on')) element.removeAttribute(attribute.name);
     }
@@ -48,6 +49,16 @@ export function sanitizePopupHtml(value) {
       const safeStyle = sanitizeStyle(element.getAttribute('style') ?? '');
       if (safeStyle) element.setAttribute('style', safeStyle);
       else element.removeAttribute('style');
+    }
+
+    if (element.tagName === 'IMG') {
+      const src = element.getAttribute('src') ?? '';
+      // https 절대주소나 사이트 내부 경로만 남긴다. data:·javascript: 등은 이미지를 통째로 버린다.
+      if (!/^(https:\/\/|\/)/i.test(src)) {
+        element.remove();
+        continue;
+      }
+      element.setAttribute('loading', 'lazy');
     }
 
     if (element.tagName === 'A') {
