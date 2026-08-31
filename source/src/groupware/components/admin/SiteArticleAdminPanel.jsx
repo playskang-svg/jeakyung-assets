@@ -41,6 +41,8 @@ export default function SiteArticleAdminPanel() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [bodyUploading, setBodyUploading] = useState(false);
+  const bodyFileRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const load = async () => {
@@ -90,6 +92,34 @@ export default function SiteArticleAdminPanel() {
       }
     }
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // 본문 이미지: 업로드한 뒤 HTML 끝에 <img> 를 붙인다.
+  // 일반 편집기(tiptap)는 이미지 노드를 몰라서 다시 편집하면 지워지므로 HTML 편집기로 바꿔 준다.
+  const uploadBodyImage = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setError(''); setStatus('');
+    if (!THUMBNAIL_TYPES.includes(file.type)) {
+      setError('본문 이미지는 JPG·PNG·WebP·GIF만 넣을 수 있습니다.');
+    } else if (file.size > MAX_THUMBNAIL_BYTES) {
+      setError('본문 이미지 용량은 5MB를 넘을 수 없습니다.');
+    } else {
+      setBodyUploading(true);
+      try {
+        const url = await uploadSiteArticleThumbnail(file);
+        patch({
+          content_mode: 'html',
+          content_html: `${form.content_html}\n<p><img src="${url}" alt="" /></p>`,
+        });
+        setStatus('본문 끝에 이미지를 넣었습니다. HTML 편집기에서 위치를 옮길 수 있습니다.');
+      } catch (cause) {
+        setError(`본문 이미지를 올리지 못했습니다. ${cause?.message ?? ''}`);
+      } finally {
+        setBodyUploading(false);
+      }
+    }
+    if (bodyFileRef.current) bodyFileRef.current.value = '';
   };
 
   const submit = async (event) => {
@@ -207,7 +237,12 @@ export default function SiteArticleAdminPanel() {
           <div className="gw-popup-mode-switch">
             <button type="button" className={form.content_mode === 'editor' ? 'is-selected' : ''} aria-pressed={form.content_mode === 'editor'} onClick={() => patch({ content_mode: 'editor' })}>일반 편집기</button>
             <button type="button" className={form.content_mode === 'html' ? 'is-selected' : ''} aria-pressed={form.content_mode === 'html'} onClick={() => patch({ content_mode: 'html' })}>HTML 편집기</button>
+            <label className="gw-file-button gw-body-image-button">
+              {bodyUploading ? '올리는 중…' : '본문에 이미지 넣기'}
+              <input ref={bodyFileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" disabled={bodyUploading} onChange={uploadBodyImage} />
+            </label>
           </div>
+          <p className="gw-field-hint">본문 이미지는 <strong>HTML 편집기</strong>에서만 유지됩니다. 일반 편집기로 바꿔 편집하면 이미지가 사라지니 주의하세요.</p>
           {form.content_mode === 'editor'
             ? <PopupRichEditor value={form.content_html} onChange={(content_html) => patch({ content_html })} />
             : <label className="gw-field gw-popup-html-field"><span>HTML 소스</span><textarea required spellCheck="false" value={form.content_html} onChange={(event) => patch({ content_html: event.target.value })} /></label>}
@@ -227,7 +262,7 @@ export default function SiteArticleAdminPanel() {
         </div>
 
         <div className="gw-admin-actions">
-          <button type="submit" className="gw-primary-button" disabled={saving || uploading}>{saving ? '저장 중…' : form.id ? '변경 저장' : '등록'}</button>
+          <button type="submit" className="gw-primary-button" disabled={saving || uploading || bodyUploading}>{saving ? '저장 중…' : form.id ? '변경 저장' : '등록'}</button>
           {form.id && <button type="button" className="gw-secondary-button" onClick={startCreate} disabled={saving}>수정 취소</button>}
         </div>
       </form>

@@ -7,7 +7,7 @@ export default function ContactSection({ selectedService }) {
         <p>관심 서비스와 현재 물류 과제를 정리해 주세요.<br />재경물류 카카오톡 채널에서 상담을 시작할 수 있습니다.</p>
         <a
           className="button button-primary contact-button kakao-cta kakao-cta-primary"
-          href="https://pf.kakao.com/_xgrFxhn"
+          href="https://pf.kakao.com/_xgrFxhn/chat"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="빠른 상담하기, 카카오톡 채널 새 창"

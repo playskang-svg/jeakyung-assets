@@ -1,5 +1,5 @@
 export const WORK_SYSTEM_URL = 'https://jeakyung-preview-ten.vercel.app/groupware/login';
-export const CONSULTATION_URL = 'https://pf.kakao.com/_xgrFxhn';
+export const CONSULTATION_URL = 'https://pf.kakao.com/_xgrFxhn/chat';
 
 export const navigationByPage = {
   home: [

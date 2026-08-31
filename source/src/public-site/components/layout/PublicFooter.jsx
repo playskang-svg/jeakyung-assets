@@ -47,9 +47,9 @@ export default function PublicFooter({ page }) {
               href={CONSULTATION_URL}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="카카오톡 문의, 새 창"
+              aria-label="빠른 상담하기, 카카오톡 채널 새 창"
             >
-              카카오톡 문의 ↗
+              빠른 상담하기 ↗
             </a>
           </div>
           <div>

@@ -4538,3 +4538,6 @@ body.groupware-root a.gw-secondary-button {
   .gw-target-dialog { width: 100%; height: 100%; border-radius: 0; }
   .gw-target-dialog-actions .gw-secondary-button { padding: 0 10px; }
 }
+
+/* 소식/정보 본문 이미지 넣기 버튼 — 편집 모드 전환 줄에 함께 둔다 */
+.gw-body-image-button { margin-top: 0; margin-left: auto; }
