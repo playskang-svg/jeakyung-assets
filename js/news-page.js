@@ -49,7 +49,7 @@
 
     /* --- 본문 정리: js/news.js 와 같은 허용 기준 --- */
     var ALLOWED_TAGS = ['A', 'B', 'BLOCKQUOTE', 'BR', 'CODE', 'DIV', 'EM', 'H1', 'H2', 'H3', 'H4', 'HR',
-        'I', 'LI', 'OL', 'P', 'PRE', 'S', 'SPAN', 'STRONG', 'TABLE', 'TBODY', 'TD',
+        'I', 'IMG', 'LI', 'OL', 'P', 'PRE', 'S', 'SPAN', 'STRONG', 'TABLE', 'TBODY', 'TD',
         'TH', 'THEAD', 'TR', 'U', 'UL'];
     var BLOCKED_TAGS = ['BASE', 'BUTTON', 'EMBED', 'FORM', 'IFRAME', 'INPUT', 'LINK', 'META', 'OBJECT', 'SCRIPT', 'STYLE'];
     var SAFE_STYLE = ['background-color', 'border', 'border-radius', 'color', 'font-size', 'font-weight',
@@ -87,6 +87,7 @@
                 var name = attribute.name.toLowerCase();
                 var allowed = name === 'style'
                     || (element.tagName === 'A' && ['href', 'target', 'rel'].indexOf(name) !== -1)
+                    || (element.tagName === 'IMG' && ['src', 'alt', 'width', 'height', 'loading'].indexOf(name) !== -1)
                     || (['TD', 'TH'].indexOf(element.tagName) !== -1 && ['colspan', 'rowspan'].indexOf(name) !== -1);
                 if (!allowed || name.indexOf('on') === 0) element.removeAttribute(attribute.name);
             });
@@ -95,6 +96,16 @@
                 if (safeStyle) element.setAttribute('style', safeStyle);
                 else element.removeAttribute('style');
             }
+            if (element.tagName === 'IMG') {
+                var src = element.getAttribute('src') || '';
+                // https 절대주소나 사이트 내부 경로만 남긴다.
+                if (!/^(https:\/\/|\/)/i.test(src)) {
+                    if (element.parentNode) element.parentNode.removeChild(element);
+                    return;
+                }
+                element.setAttribute('loading', 'lazy');
+            }
+
             if (element.tagName === 'A') {
                 var href = element.getAttribute('href') || '';
                 if (!/^(https?:|mailto:|tel:|#|\/)/i.test(href)) element.removeAttribute('href');
