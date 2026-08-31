@@ -1,4 +1,5 @@
-const SITE_TITLE = '유한회사 재경물류 안전보건 제출본';
+const SITE_TITLE = '적격수급사 안전보건평가';
+const SITE_SUBTITLE = '유한회사 재경물류 안전보건관리';
 const GDRIVE_FOLDER = 'https://drive.google.com/drive/folders/13REZlblbGLwcJkILouBzgVMxoPOv72tZ';
 const BUILD_DATE = '2026-08-31';
 const VERSION = 'v1.0';
@@ -123,9 +124,8 @@ ${head(SITE_TITLE, 'HL홀딩스(주) 동탄냉장 물류센터 2026년 적격수
 <body>
 <header class="site-header">
   <div class="wrap">
-    <span class="eyebrow">적격수급사 안전보건 평가 · 제출본 웹 게시</span>
     <h1>${esc(SITE_TITLE)}</h1>
-    <p class="subtitle">HL홀딩스(주) 동탄냉장 물류센터 · 2026년 적격수급사 안전보건 평가</p>
+    <p class="subtitle">${esc(SITE_SUBTITLE)}</p>
   </div>
 </header>
 

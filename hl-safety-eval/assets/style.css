@@ -40,16 +40,6 @@ a.btn, button.btn { cursor: pointer; }
   color: #fff;
   padding: 40px 0 32px;
 }
-.site-header .eyebrow {
-  display: inline-block;
-  background: rgba(255,255,255,0.14);
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 999px;
-  padding: 4px 14px;
-  font-size: 13px;
-  letter-spacing: 0.02em;
-  margin-bottom: 14px;
-}
 .site-header h1 { margin: 0 0 8px; font-size: clamp(24px, 4.2vw, 36px); line-height: 1.35; }
 .site-header p.subtitle { margin: 0; font-size: 15px; color: #dbe6f7; }
 
@@ -265,7 +255,7 @@ table.doc-table th, .doc-content table th { background: #eef2f8; text-align: lef
 
 /* ---------- Print ---------- */
 @media print {
-  .topbar, .site-header .eyebrow, .filter-bar, .doc-nav, .site-footer, .btn-row { display: none !important; }
+  .topbar, .filter-bar, .doc-nav, .site-footer, .btn-row { display: none !important; }
   body { background: #fff; }
   .doc-content { border: none; padding: 0; }
   table.doc-table thead th, .doc-content table thead th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }

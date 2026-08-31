@@ -68,6 +68,85 @@ function removeEmptyParagraphs(html) {
   return html.replace(/<p\b[^>]*>((?:\s|&nbsp;|<span[^>]*>\s*<\/span>)*)<\/p>/gi, '');
 }
 
+// Removes the <h?>...</h?> immediately containing `textPattern`, plus the
+// <table>...</table> that immediately follows it — nothing else. Finding the
+// *nearest* preceding heading open-tag by scanning forward and stopping once
+// we pass the target text (rather than a single greedy/lazy regex spanning
+// from the first heading in the whole doc) is the whole point here: an
+// unanchored `<h[1-6][^>]*>[\s\S]*?text[\s\S]*?<\/h[1-6]>` matches from the
+// *first* heading in the document, through every heading in between, which
+// silently deletes the entire body. Bails out (removes nothing) unless a
+// table directly follows the heading, so a shape we didn't expect is left
+// alone rather than guessed at.
+function removeHeadingAndFollowingTable(html, textPattern) {
+  const textMatch = html.match(textPattern);
+  if (!textMatch) return html;
+  const textIdx = html.indexOf(textMatch[0]);
+
+  const headingOpenRe = /<h[1-6][^>]*>/gi;
+  let openIdx = -1;
+  let m;
+  while ((m = headingOpenRe.exec(html))) {
+    if (m.index > textIdx) break;
+    openIdx = m.index;
+  }
+  if (openIdx === -1) return html;
+
+  const closeMatch = html.slice(textIdx).match(/<\/h[1-6]>/i);
+  if (!closeMatch) return html;
+  const closeIdx = textIdx + closeMatch.index + closeMatch[0].length;
+
+  const tableMatch = html.slice(closeIdx).match(/^\s*<table\b[^>]*>[\s\S]*?<\/table>/i);
+  if (!tableMatch) return html;
+  const removeEnd = closeIdx + tableMatch[0].length;
+
+  return html.slice(0, openIdx) + html.slice(removeEnd);
+}
+
+// Same nearest-preceding-tag idea for a <p>...</p> containing `textPattern`.
+function removeParagraphContaining(html, textPattern) {
+  const textMatch = html.match(textPattern);
+  if (!textMatch) return html;
+  const textIdx = html.indexOf(textMatch[0]);
+
+  const pOpenRe = /<p\b[^>]*>/gi;
+  let openIdx = -1;
+  let m;
+  while ((m = pOpenRe.exec(html))) {
+    if (m.index > textIdx) break;
+    openIdx = m.index;
+  }
+  if (openIdx === -1) return html;
+
+  const closeMatch = html.slice(textIdx).match(/<\/p>/i);
+  if (!closeMatch) return html;
+  const removeEnd = textIdx + closeMatch.index + closeMatch[0].length;
+
+  return html.slice(0, openIdx) + html.slice(removeEnd);
+}
+
+// Drops the "제출 전 확인사항" pre-submission checklist (heading + the table
+// right after it) and any "※ 본/이 문서는 ..." attribution footnote.
+// NOTE ON FIDELITY: everything else in this file only touches structure —
+// this is the one place that removes real text the source document has.
+// The Word/PDF/CSV downloads (linked straight to Google's export URLs) still
+// carry it, so the web page and the downloaded file no longer match for
+// these specific paragraphs. Requested explicitly; flagging it here so a
+// future edit doesn't "fix" it back by accident.
+function removeSubmissionChecklist(html) {
+  for (let i = 0; i < 5; i++) {
+    const next = removeHeadingAndFollowingTable(html, /제출\s*전\s*확인\s*사항/);
+    if (next === html) break;
+    html = next;
+  }
+  for (let i = 0; i < 5; i++) {
+    const next = removeParagraphContaining(html, /※[^<]*?(?:본|이)\s*(?:문서|서류)는/);
+    if (next === html) break;
+    html = next;
+  }
+  return html;
+}
+
 function wrapTables(html) {
   return html.replace(/<table\b([^>]*)>/gi, '<div class="table-scroll"><table class="doc-table"$1>')
     .replace(/<\/table>/gi, '</table></div>');
@@ -115,6 +194,7 @@ export function cleanGoogleDocHtml(rawHtml, withSignatures) {
   html = cleanStyleAttributes(html);
   html = stripAttrs(html);
   html = removeEmptyParagraphs(html);
+  html = removeSubmissionChecklist(html);
   html = wrapTables(html);
   if (withSignatures) html = insertSignatures(html);
   return html.trim();

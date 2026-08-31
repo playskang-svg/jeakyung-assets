@@ -120,13 +120,15 @@ export function cleanGoogleSheetCsv(csvText) {
   let i = 3;
   let currentHeader = null;
   let currentBody = [];
+  let skipBlock = false;
 
   const flush = () => {
-    if (currentHeader) {
+    if (currentHeader && !skipBlock) {
       html += renderTable(currentHeader, currentBody);
-      currentHeader = null;
-      currentBody = [];
     }
+    currentHeader = null;
+    currentBody = [];
+    skipBlock = false;
   };
 
   while (i < rows.length) {
@@ -138,7 +140,14 @@ export function cleanGoogleSheetCsv(csvText) {
     }
     if (currentHeader === null) {
       if (nonEmptyCells(row).length === 1) {
-        html += renderBlockHeading(nonEmptyCells(row)[0]);
+        const headingText = nonEmptyCells(row)[0];
+        // Drop the "제출 전 확인사항" pre-submission checklist here too — see
+        // the fidelity note in clean-doc.mjs's removeSubmissionChecklist.
+        if (/제출\s*전\s*확인\s*사항/.test(headingText)) {
+          skipBlock = true;
+        } else {
+          html += renderBlockHeading(headingText);
+        }
         i++;
         continue;
       }
