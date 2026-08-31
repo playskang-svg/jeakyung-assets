@@ -25,10 +25,13 @@ export const deleteSiteArticle = (id) => rpc('delete_site_article', { p_id: id }
 
 // 썸네일은 방문자가 로그인 없이 봐야 해서 공개 버킷에 올리고 공개 URL을 쓴다.
 // 업로드 권한은 스토리지 정책에서 관리자만 갖는다.
-export async function uploadSiteArticleThumbnail(file) {
+export const uploadButtonThumbnail = (file) => uploadPublicImage(file, 'buttons');
+export const uploadSiteArticleThumbnail = (file) => uploadPublicImage(file, 'articles');
+
+async function uploadPublicImage(file, folder) {
   const client = requireSupabase();
   const extension = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
-  const path = `articles/${crypto.randomUUID()}.${extension || 'jpg'}`;
+  const path = `${folder}/${crypto.randomUUID()}.${extension || 'jpg'}`;
 
   const { error } = await client.storage.from(THUMBNAIL_BUCKET).upload(path, file, {
     cacheControl: '31536000',

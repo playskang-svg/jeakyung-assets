@@ -5,6 +5,7 @@ import ButtonBoxGrid from '../ButtonBoxGrid.jsx';
 import LinkTargetFields, { emptyLinkTarget, isLinkTargetComplete, linkTargetPayload } from './LinkTargetFields.jsx';
 import { getBoardAdminCatalog } from '../../services/boardService.js';
 import { getLinkPageAdminCatalog } from '../../services/linkPageService.js';
+import { uploadButtonThumbnail } from '../../services/siteArticleService.js';
 
 const STYLES = [
   ['cards', '카드형 (번호 + 알약 버튼)'],
@@ -13,7 +14,10 @@ const STYLES = [
 ];
 
 const EMPTY_FORM = { id: null, title: '', style: 'cards', is_active: true, items: [] };
-const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', description: '', ...emptyLinkTarget('board') });
+const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', description: '', thumbnail_url: '', ...emptyLinkTarget('board') });
+
+const MAX_THUMBNAIL_BYTES = 5 * 1024 * 1024;
+const THUMBNAIL_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 export default function ButtonBoxAdminPanel() {
   const [boxes, setBoxes] = useState([]);
@@ -23,6 +27,7 @@ export default function ButtonBoxAdminPanel() {
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [uploadingKey, setUploadingKey] = useState('');
 
   const load = async () => {
     setError('');
@@ -49,6 +54,7 @@ export default function ButtonBoxAdminPanel() {
       id: box.id, title: box.title, style: box.style, is_active: box.is_active,
       items: (box.items ?? []).map((item) => ({
         key: item.id, id: item.id, label: item.label, description: item.description ?? '',
+        thumbnail_url: item.thumbnail_url ?? '',
         link_type: item.link_type ?? 'external',
         board_id: item.board_id ?? '', target_page_id: item.target_page_id ?? '', url: item.url ?? '',
       })),
@@ -64,6 +70,24 @@ export default function ButtonBoxAdminPanel() {
     patchForm({ items: next });
   };
 
+  const uploadThumbnail = async (key, file, input) => {
+    setError(''); setStatus('');
+    if (!THUMBNAIL_TYPES.includes(file.type)) setError('썸네일은 JPG·PNG·WebP·GIF 이미지만 올릴 수 있습니다.');
+    else if (file.size > MAX_THUMBNAIL_BYTES) setError('썸네일 용량은 5MB를 넘을 수 없습니다.');
+    else {
+      setUploadingKey(key);
+      try {
+        patchItem(key, { thumbnail_url: await uploadButtonThumbnail(file) });
+        setStatus('썸네일을 올렸습니다. 저장해야 반영됩니다.');
+      } catch (cause) {
+        setError(`썸네일을 올리지 못했습니다. ${cause?.message ?? ''}`);
+      } finally {
+        setUploadingKey('');
+      }
+    }
+    if (input) input.value = '';
+  };
+
   const submit = async (event) => {
     event.preventDefault();
     setSaving(true); setError(''); setStatus('');
@@ -71,7 +95,7 @@ export default function ButtonBoxAdminPanel() {
       await saveButtonBox(
         { id: form.id, title: form.title, style: form.style, is_active: form.is_active },
         form.items.filter((item) => item.label.trim() && isLinkTargetComplete(item))
-          .map((item) => ({ label: item.label, description: item.description, ...linkTargetPayload(item) })),
+          .map((item) => ({ label: item.label, description: item.description, thumbnail_url: item.thumbnail_url, ...linkTargetPayload(item) })),
       );
       setStatus('저장했습니다.');
       setForm(null);
@@ -91,7 +115,7 @@ export default function ButtonBoxAdminPanel() {
   };
 
   const previewItems = form?.items.filter((item) => item.label.trim() && isLinkTargetComplete(item))
-    .map((item) => ({ id: item.key, label: item.label, description: item.description, url: item.url || '#' })) ?? [];
+    .map((item) => ({ id: item.key, label: item.label, description: item.description, thumbnail_url: item.thumbnail_url, url: item.url || '#', link_type: item.link_type })) ?? [];
 
   return (
     <section className="gw-admin-section" aria-labelledby="buttonbox-admin-title">
@@ -139,9 +163,21 @@ export default function ButtonBoxAdminPanel() {
           </div>
 
           <h3>버튼</h3>
-          <p className="gw-field-hint">버튼 순서대로 배치됩니다. 게시판·페이지는 목록에서 고르고, 그 밖의 주소는 직접 적습니다. 어느 쪽이든 <strong>새 탭</strong>으로 열립니다.</p>
+          <p className="gw-field-hint">버튼 순서대로 배치됩니다. 썸네일과 설명이 카드에 보이고, 누르면 대상이 <strong>팝업</strong>으로 열립니다. 게시판은 팝업 안에서 글까지 읽을 수 있고, 외부 주소는 팝업에 담을 수 없어 새 탭으로 열립니다.</p>
           {form.items.map((item, index) => (
             <div className="gw-linkpage-item-row gw-buttonbox-item-row" key={item.key}>
+              <label className="gw-buttonbox-thumb-picker" title="썸네일 이미지">
+                {item.thumbnail_url
+                  ? <img src={item.thumbnail_url} alt="" />
+                  : <span>{uploadingKey === item.key ? '…' : '＋'}</span>}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  aria-label={`${index + 1}번 버튼 썸네일`}
+                  disabled={uploadingKey === item.key}
+                  onChange={(event) => { const file = event.target.files?.[0]; if (file) uploadThumbnail(item.key, file, event.target); }}
+                />
+              </label>
               <input value={item.label} maxLength={40} placeholder="제목" aria-label={`${index + 1}번 버튼 제목`} onChange={(event) => patchItem(item.key, { label: event.target.value })} />
               <input value={item.description} maxLength={80} placeholder="설명 (선택)" aria-label={`${index + 1}번 버튼 설명`} onChange={(event) => patchItem(item.key, { description: event.target.value })} />
               <LinkTargetFields
@@ -153,6 +189,7 @@ export default function ButtonBoxAdminPanel() {
               />
               <button type="button" className="gw-secondary-button" onClick={() => moveItem(index, -1)} disabled={index === 0} aria-label="위로">↑</button>
               <button type="button" className="gw-secondary-button" onClick={() => moveItem(index, 1)} disabled={index === form.items.length - 1} aria-label="아래로">↓</button>
+              {item.thumbnail_url && <button type="button" className="gw-secondary-button" onClick={() => patchItem(item.key, { thumbnail_url: '' })} aria-label={`${index + 1}번 버튼 썸네일 제거`}>썸네일 지우기</button>}
               <button type="button" className="gw-secondary-button gw-icon-danger-button" onClick={() => patchForm({ items: form.items.filter((entry) => entry.key !== item.key) })} aria-label="버튼 삭제">삭제</button>
             </div>
           ))}
