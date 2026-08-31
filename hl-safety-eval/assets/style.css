@@ -52,14 +52,6 @@ a.btn, button.btn { cursor: pointer; }
 }
 .site-header h1 { margin: 0 0 8px; font-size: clamp(24px, 4.2vw, 36px); line-height: 1.35; }
 .site-header p.subtitle { margin: 0; font-size: 15px; color: #dbe6f7; }
-.draft-banner {
-  background: #fff8e1;
-  border-bottom: 1px solid #f0d68a;
-  color: #6b4e00;
-  font-size: 13.5px;
-  text-align: center;
-  padding: 8px 16px;
-}
 
 /* ---------- Section shell ---------- */
 section.block { padding: 30px 0; }
@@ -229,15 +221,11 @@ section.block h2 .num { color: var(--muted); font-weight: 500; margin-right: 6px
   color: var(--muted);
   text-align: center;
 }
-.site-footer .disclaimer {
-  background: var(--check-bg);
-  border: 1px solid #e8d38a;
-  border-radius: var(--radius);
-  padding: 12px 16px;
-  color: #6b4e00;
-  max-width: 640px;
-  margin: 0 auto 14px;
-  font-size: 13px;
+.site-footer .footer-sign {
+  display: block;
+  height: 44px;
+  width: auto;
+  margin: 0 auto 10px;
 }
 
 /* ---------- Doc detail page ---------- */
@@ -322,7 +310,7 @@ table.doc-table th, .doc-content table th { background: #eef2f8; text-align: lef
 
 /* ---------- Print ---------- */
 @media print {
-  .topbar, .site-header .eyebrow, .draft-banner, .filter-bar, .doc-nav, .site-footer, .btn-row { display: none !important; }
+  .topbar, .site-header .eyebrow, .filter-bar, .doc-nav, .site-footer, .btn-row { display: none !important; }
   body { background: #fff; }
   .doc-content { border: none; padding: 0; }
   table.doc-table thead th, .doc-content table thead th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }

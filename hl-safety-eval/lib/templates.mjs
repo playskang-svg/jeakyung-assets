@@ -1,4 +1,3 @@
-const DRAFT_NOTICE = '본 웹 게시본은 초안이며, 제출본은 실제 날인본으로 대체됩니다.';
 const SITE_TITLE = '유한회사 재경물류 안전보건 제출본';
 const GDRIVE_FOLDER = 'https://drive.google.com/drive/folders/13REZlblbGLwcJkILouBzgVMxoPOv72tZ';
 const BUILD_DATE = '2026-08-31';
@@ -35,17 +34,13 @@ function head(title, description, base = '') {
 <link rel="stylesheet" href="${base}assets/style.css">`;
 }
 
-function siteFooter() {
+function siteFooter(base = '') {
   return `<footer class="site-footer">
   <div class="wrap">
-    <div class="disclaimer">⚠️ ${DRAFT_NOTICE}</div>
+    <img class="footer-sign" src="${base}assets/sign-ceo-hand.png" alt="대표이사 염달성" height="44">
     <p>${esc(SITE_TITLE)} 웹 게시본 ${VERSION} · 작성/게시일 ${BUILD_DATE} · 문의 유한회사 재경물류</p>
   </div>
 </footer>`;
-}
-
-function draftBanner() {
-  return `<div class="draft-banner">📝 초안 · ${DRAFT_NOTICE}</div>`;
 }
 
 const CATEGORY_ORDER = ['안전보건관리체계', '실행수준', '비상상황 대응', '재해관리', '가점'];
@@ -122,7 +117,6 @@ export function renderIndexPage(documents) {
 ${head(SITE_TITLE, 'HL홀딩스(주) 동탄냉장 물류센터 2026년 적격수급사 안전보건 평가 제출본 웹 게시본')}
 </head>
 <body>
-${draftBanner()}
 <header class="site-header">
   <div class="wrap">
     <span class="eyebrow">적격수급사 안전보건 평가 · 제출본 웹 게시</span>
@@ -274,14 +268,13 @@ ${head(`${doc.no}. ${doc.title} - ${SITE_TITLE}`, doc.summary, '../')}
 </div>
 <div class="doc-page-body">
   <div class="wrap">
-    <div class="disclaimer" style="background:var(--check-bg);border:1px solid #e8d38a;border-radius:8px;padding:8px 14px;font-size:12.5px;color:#6b4e00;margin-bottom:14px;">⚠️ ${DRAFT_NOTICE}</div>
     <article class="doc-content">
 ${contentHtml}
     </article>
     <div class="doc-nav">${prevLink}${nextLink}</div>
   </div>
 </div>
-${siteFooter()}
+${siteFooter('../')}
 </body>
 </html>`;
 }
