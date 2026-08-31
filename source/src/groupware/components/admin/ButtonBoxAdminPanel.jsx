@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 
 import { deleteButtonBox, getButtonBoxAdminCatalog, saveButtonBox } from '../../services/buttonBoxService.js';
 import ButtonBoxGrid from '../ButtonBoxGrid.jsx';
+import LinkTargetFields, { emptyLinkTarget, isLinkTargetComplete, linkTargetPayload } from './LinkTargetFields.jsx';
+import { getBoardAdminCatalog } from '../../services/boardService.js';
+import { getLinkPageAdminCatalog } from '../../services/linkPageService.js';
 
 const STYLES = [
   ['cards', '카드형 (번호 + 알약 버튼)'],
@@ -10,10 +13,12 @@ const STYLES = [
 ];
 
 const EMPTY_FORM = { id: null, title: '', style: 'cards', is_active: true, items: [] };
-const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', description: '', url: '' });
+const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', description: '', ...emptyLinkTarget('board') });
 
 export default function ButtonBoxAdminPanel() {
   const [boxes, setBoxes] = useState([]);
+  const [boards, setBoards] = useState([]);
+  const [pages, setPages] = useState([]);
   const [form, setForm] = useState(null);
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
@@ -22,7 +27,15 @@ export default function ButtonBoxAdminPanel() {
   const load = async () => {
     setError('');
     try {
-      setBoxes(await getButtonBoxAdminCatalog());
+      // 버튼이 고를 수 있는 대상(게시판·페이지)도 함께 받아 둔다.
+      const [catalog, boardCatalog, pageCatalog] = await Promise.all([
+        getButtonBoxAdminCatalog(),
+        getBoardAdminCatalog().catch(() => ({ boards: [] })),
+        getLinkPageAdminCatalog().catch(() => []),
+      ]);
+      setBoxes(catalog);
+      setBoards((boardCatalog.boards ?? []).filter((board) => !board.archived_at));
+      setPages(pageCatalog ?? []);
     } catch (cause) {
       setError(cause.message || '버튼 박스 목록을 불러오지 못했습니다.');
     }
@@ -34,7 +47,11 @@ export default function ButtonBoxAdminPanel() {
     setStatus('');
     setForm({
       id: box.id, title: box.title, style: box.style, is_active: box.is_active,
-      items: (box.items ?? []).map((item) => ({ key: item.id, id: item.id, label: item.label, description: item.description ?? '', url: item.url })),
+      items: (box.items ?? []).map((item) => ({
+        key: item.id, id: item.id, label: item.label, description: item.description ?? '',
+        link_type: item.link_type ?? 'external',
+        board_id: item.board_id ?? '', target_page_id: item.target_page_id ?? '', url: item.url ?? '',
+      })),
     });
   };
   const patchForm = (patch) => setForm((current) => ({ ...current, ...patch }));
@@ -53,8 +70,8 @@ export default function ButtonBoxAdminPanel() {
     try {
       await saveButtonBox(
         { id: form.id, title: form.title, style: form.style, is_active: form.is_active },
-        form.items.filter((item) => item.label.trim() && item.url.trim())
-          .map((item) => ({ label: item.label, description: item.description, url: item.url })),
+        form.items.filter((item) => item.label.trim() && isLinkTargetComplete(item))
+          .map((item) => ({ label: item.label, description: item.description, ...linkTargetPayload(item) })),
       );
       setStatus('저장했습니다.');
       setForm(null);
@@ -73,8 +90,8 @@ export default function ButtonBoxAdminPanel() {
     catch (cause) { setError(cause.message || '삭제하지 못했습니다.'); }
   };
 
-  const previewItems = form?.items.filter((item) => item.label.trim() && item.url.trim())
-    .map((item) => ({ id: item.key, label: item.label, description: item.description, url: item.url || '/' })) ?? [];
+  const previewItems = form?.items.filter((item) => item.label.trim() && isLinkTargetComplete(item))
+    .map((item) => ({ id: item.key, label: item.label, description: item.description, url: item.url || '#' })) ?? [];
 
   return (
     <section className="gw-admin-section" aria-labelledby="buttonbox-admin-title">
@@ -122,12 +139,18 @@ export default function ButtonBoxAdminPanel() {
           </div>
 
           <h3>버튼</h3>
-          <p className="gw-field-hint">버튼 순서대로 배치됩니다. 주소는 <code>/boards/게시판주소</code>처럼 슬래시로 시작하면 앱 안에서 이동하고, <code>https://…</code>는 새 탭으로 엽니다.</p>
+          <p className="gw-field-hint">버튼 순서대로 배치됩니다. 게시판·페이지는 목록에서 고르고, 그 밖의 주소는 직접 적습니다. 어느 쪽이든 <strong>새 탭</strong>으로 열립니다.</p>
           {form.items.map((item, index) => (
             <div className="gw-linkpage-item-row gw-buttonbox-item-row" key={item.key}>
               <input value={item.label} maxLength={40} placeholder="제목" aria-label={`${index + 1}번 버튼 제목`} onChange={(event) => patchItem(item.key, { label: event.target.value })} />
               <input value={item.description} maxLength={80} placeholder="설명 (선택)" aria-label={`${index + 1}번 버튼 설명`} onChange={(event) => patchItem(item.key, { description: event.target.value })} />
-              <input value={item.url} maxLength={300} placeholder="/boards/... 또는 https://..." aria-label={`${index + 1}번 버튼 주소`} onChange={(event) => patchItem(item.key, { url: event.target.value })} />
+              <LinkTargetFields
+                item={item}
+                index={index}
+                boards={boards}
+                pages={pages}
+                onChange={(patch) => patchItem(item.key, patch)}
+              />
               <button type="button" className="gw-secondary-button" onClick={() => moveItem(index, -1)} disabled={index === 0} aria-label="위로">↑</button>
               <button type="button" className="gw-secondary-button" onClick={() => moveItem(index, 1)} disabled={index === form.items.length - 1} aria-label="아래로">↓</button>
               <button type="button" className="gw-secondary-button gw-icon-danger-button" onClick={() => patchForm({ items: form.items.filter((entry) => entry.key !== item.key) })} aria-label="버튼 삭제">삭제</button>

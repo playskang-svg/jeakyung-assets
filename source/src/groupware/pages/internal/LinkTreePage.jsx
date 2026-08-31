@@ -26,7 +26,8 @@ export default function LinkTreePage() {
   if (!data) return <p className="gw-empty-state" role="status">페이지를 불러오고 있습니다.</p>;
 
   const items = data.items ?? [];
-  const activeItem = items.find((item) => item.id === params.get('tab')) ?? items[0] ?? null;
+  const boardItems = items.filter((item) => item.item_type === 'board');
+  const activeItem = boardItems.find((item) => item.id === params.get('tab')) ?? boardItems[0] ?? null;
   // 하위 페이지를 바꾸면 이전 게시판의 검색·분류·쪽수 상태는 의미가 없으므로 함께 버린다.
   const selectItem = (item) => setParams({ tab: item.id });
 
@@ -39,7 +40,7 @@ export default function LinkTreePage() {
         </div>
         {!data.button_box && items.length > 0 && (
           <nav className="gw-linktree-tabs" aria-label={`${data.page.title} 하위 페이지`}>
-            {items.map((item) => (
+            {items.map((item) => (item.item_type === 'board' ? (
               <button
                 key={item.id}
                 type="button"
@@ -49,7 +50,12 @@ export default function LinkTreePage() {
               >
                 {item.label}
               </button>
-            ))}
+            ) : (
+              // 게시판이 아닌 대상은 이 페이지 안에 끼워 넣을 수 없으므로 새 탭으로 연다.
+              <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer">
+                {item.label} <i aria-hidden="true">↗</i>
+              </a>
+            )))}
           </nav>
         )}
       </header>

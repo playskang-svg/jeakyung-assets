@@ -1,13 +1,12 @@
-import { Link } from 'react-router-dom';
-
 // 재사용 버튼 박스 렌더러. 링크 페이지 본문과 대시보드 위젯 양쪽에서 그대로 쓴다.
-// 항목은 제목(label)·설명(선택)·주소(url)만 가지며, 주소가 '/'로 시작하면 앱
-// 안에서 이동(Link)하고 그 외에는 외부 주소로 보아 새 탭으로 연다.
+// 대상(게시판·페이지·외부 주소)은 관리자 화면에서 고르고, 실제 주소는 서버가
+// 만들어 준다. 어느 대상이든 **항상 새 탭**으로 연다.
 function ButtonBoxLink({ item, children, className }) {
-  if (item.url.startsWith('/')) {
-    return <Link className={className} to={item.url}>{children}</Link>;
-  }
-  return <a className={className} href={item.url} target="_blank" rel="noopener noreferrer">{children}</a>;
+  return (
+    <a className={className} href={item.url} target="_blank" rel="noopener noreferrer">
+      {children}
+    </a>
+  );
 }
 
 export default function ButtonBoxGrid({ box, items }) {

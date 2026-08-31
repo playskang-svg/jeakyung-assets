@@ -1,4 +1,4 @@
-// 공개 사이트 "정보 및 동향" 문서 조회.
+// 공개 사이트 "소식/정보" 문서 조회.
 // 목록은 카드에 필요한 값만 받고, 본문(content_html)은 카드를 눌렀을 때만
 // 따로 받아온다. 두 함수 모두 anon 실행이 허용돼 있어 로그인 없이 읽힌다.
 export async function getPublicSiteArticles(client, limit = 12) {

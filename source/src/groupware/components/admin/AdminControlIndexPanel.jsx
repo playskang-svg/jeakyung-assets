@@ -96,7 +96,7 @@ function buildItems({ directory, usage, approval, popups }) {
     { key: 'usage', title: '사용량·첨부 정리', section: 'usage', ...cleanupItem(usage) },
     { key: 'linkpages', title: '링크 페이지', section: 'linkpages', state: '버튼형 업무 페이지 구성', tone: OK },
     { key: 'buttonboxes', title: '버튼 박스', section: 'buttonboxes', state: '재사용 버튼 묶음 구성', tone: OK },
-    { key: 'sitearticles', title: '정보 및 동향', section: 'sitearticles', state: '공개 사이트 메인 노출 글', tone: OK },
+    { key: 'sitearticles', title: '소식/정보', section: 'sitearticles', state: '공개 사이트 메인 노출 글', tone: OK },
     { key: 'boards', title: '게시판 구성·권한', to: '/admin/boards', ...boardItem(usage) },
     { key: 'approval', title: '전자결재 분류·양식', to: '/approval/admin', ...approvalItem(approval) },
     { key: 'popups', title: '팝업 문서', to: '/admin/popups', ...popupItem(popups) },

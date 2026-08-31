@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import PopupDocumentContent from '../../shared/popup/PopupDocumentContent.jsx';
 import '../../shared/popup/popup.css';
 
-// 정보 및 동향 전용 페이지. 분류 탭으로 목록을 거르고, 글을 누르면 같은
+// 소식/정보 전용 페이지. 분류 탭으로 목록을 거르고, 글을 누르면 같은
 // 화면에서 본문이 열린다. 뒤로가기 / 목록 보기 / 닫기와 브라우저 뒤로가기가
 // 모두 목록으로 돌아온다.
 const ALL = '__all__';
@@ -105,7 +105,7 @@ export default function NewsPage() {
       <section className="policy-hero news-page-hero">
         <div className="content-width">
           <span className="eyebrow eyebrow-light"><i /> Insight &amp; Trends</span>
-          <h1>정보 및 동향</h1>
+          <h1>소식/정보</h1>
           <p>물류 시장의 흐름과 재경닷컴의 소식을 전해드립니다.</p>
         </div>
       </section>

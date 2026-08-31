@@ -48,7 +48,7 @@ export default function SiteArticleAdminPanel() {
     try {
       setArticles(await getSiteArticleAdminCatalog());
     } catch (cause) {
-      setError(cause.message || '정보 및 동향 목록을 불러오지 못했습니다.');
+      setError(cause.message || '소식/정보 목록을 불러오지 못했습니다.');
     } finally {
       setLoading(false);
     }
@@ -129,7 +129,7 @@ export default function SiteArticleAdminPanel() {
     <section className="gw-admin-section" aria-labelledby="site-article-admin-title">
       <div className="gw-admin-section-heading">
         <div>
-          <h2 id="site-article-admin-title">정보 및 동향</h2>
+          <h2 id="site-article-admin-title">소식/정보</h2>
           <p>공개 사이트 메인의 히어로 바로 아래에 카드로 노출됩니다. 방문자는 로그인 없이 읽기만 하며 댓글·작성 기능은 없습니다.</p>
         </div>
         <button type="button" className="gw-primary-button" onClick={startCreate}>새 글 작성</button>

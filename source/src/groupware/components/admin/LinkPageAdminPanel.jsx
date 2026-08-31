@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react';
 import { getBoardAdminCatalog } from '../../services/boardService.js';
 import { getButtonBoxAdminCatalog } from '../../services/buttonBoxService.js';
 import { deleteLinkPage, getLinkPageAdminCatalog, saveLinkPage } from '../../services/linkPageService.js';
+import LinkTargetFields, { emptyLinkTarget, isLinkTargetComplete, linkTargetPayload } from './LinkTargetFields.jsx';
 
 const EMPTY_FORM = { id: null, title: '', slug: '', description: '', is_active: true, content_type: 'boards', button_box_id: '', items: [] };
-const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', item_type: 'board', board_id: '' });
+const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', ...emptyLinkTarget('board') });
 
 // 제목만 입력해도 쓸 수 있는 주소를 얻도록 영문·숫자만 남기고, 전부 걸러지면
 // (한글 제목) 무작위 접미사로 만든다. 관리자가 직접 고칠 수 있다.
@@ -46,7 +47,11 @@ export default function LinkPageAdminPanel() {
       is_active: page.is_active,
       content_type: page.button_box_id ? 'button_box' : 'boards',
       button_box_id: page.button_box_id ?? '',
-      items: (page.items ?? []).map((item) => ({ key: item.id, id: item.id, label: item.label, item_type: item.item_type, board_id: item.board_id ?? '' })),
+      items: (page.items ?? []).map((item) => ({
+        key: item.id, id: item.id, label: item.label,
+        link_type: item.item_type ?? 'board',
+        board_id: item.board_id ?? '', target_page_id: item.target_page_id ?? '', url: item.url ?? '',
+      })),
     });
   };
   const patchForm = (patch) => setForm((current) => ({ ...current, ...patch }));
@@ -70,7 +75,12 @@ export default function LinkPageAdminPanel() {
           id: form.id, title: form.title, slug, description: form.description, is_active: form.is_active,
           button_box_id: isButtonBox ? form.button_box_id : '',
         },
-        isButtonBox ? [] : form.items.filter((item) => item.label.trim() && item.board_id).map((item) => ({ label: item.label, item_type: item.item_type, board_id: item.board_id })),
+        isButtonBox ? [] : form.items
+          .filter((item) => item.label.trim() && isLinkTargetComplete(item))
+          .map((item) => {
+            const target = linkTargetPayload(item);
+            return { label: item.label, item_type: target.link_type, board_id: target.board_id, target_page_id: target.target_page_id, url: target.url };
+          }),
       );
       setStatus('저장했습니다.');
       setForm(null);
@@ -151,14 +161,18 @@ export default function LinkPageAdminPanel() {
           ) : (
           <>
           <h3>하위 페이지 버튼</h3>
-          <p className="gw-field-hint">버튼 순서대로 머리글에 나열됩니다. 지금은 게시판만 연결할 수 있습니다.</p>
+          <p className="gw-field-hint">버튼 순서대로 머리글에 나열됩니다. 게시판은 이 페이지 안에서 열리고, 페이지·외부 주소는 새 탭으로 열립니다.</p>
           {form.items.map((item, index) => (
             <div className="gw-linkpage-item-row" key={item.key}>
               <input value={item.label} maxLength={40} placeholder="항목 제목" aria-label={`${index + 1}번 항목 제목`} onChange={(event) => patchItem(item.key, { label: event.target.value })} />
-              <select value={item.board_id} aria-label={`${index + 1}번 버튼에 연결할 게시판`} onChange={(event) => patchItem(item.key, { board_id: event.target.value })}>
-                <option value="">게시판 선택</option>
-                {boards.map((board) => <option key={board.id} value={board.id}>{board.name}</option>)}
-              </select>
+              <LinkTargetFields
+                item={item}
+                index={index}
+                boards={boards}
+                pages={pages}
+                excludePageId={form.id}
+                onChange={(patch) => patchItem(item.key, patch)}
+              />
               <button type="button" className="gw-secondary-button" onClick={() => moveItem(index, -1)} disabled={index === 0} aria-label="위로">↑</button>
               <button type="button" className="gw-secondary-button" onClick={() => moveItem(index, 1)} disabled={index === form.items.length - 1} aria-label="아래로">↓</button>
               <button type="button" className="gw-secondary-button gw-icon-danger-button" onClick={() => patchForm({ items: form.items.filter((entry) => entry.key !== item.key) })} aria-label="항목 삭제">삭제</button>
