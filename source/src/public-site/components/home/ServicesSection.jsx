@@ -1,4 +1,4 @@
-const consultationUrl = 'https://pf.kakao.com/_xgrFxhn';
+const consultationUrl = 'https://pf.kakao.com/_xgrFxhn/chat';
 
 export default function ServicesSection({ onSelectService }) {
   return (
