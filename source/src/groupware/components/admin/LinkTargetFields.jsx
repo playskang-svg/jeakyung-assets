@@ -4,12 +4,25 @@
 //   external : 주소를 직접 적는다 (새 탭으로 나간다)
 //   embed    : 주소를 직접 적는다 (그룹웨어 화면 안에 그대로 띄운다)
 // 실제로 열 주소(url)는 저장할 때 서버가 만들어 준다.
+// 버튼이 "가리킬" 수 있는 종류. 버튼 박스처럼 반드시 어딘가로 가야 하는 곳에서 쓴다.
 export const LINK_TYPES = [
   ['board', '게시판'],
   ['page', '페이지'],
   ['external', '외부 주소 (새 탭)'],
   ['embed', '외부 주소 (화면 안에 표시)'],
 ];
+
+// 페이지 항목은 가리키는 것 외에 내용을 직접 담을 수도 있다.
+export const SECTION_TYPES = [
+  ...LINK_TYPES,
+  ['html', 'HTML 문서 작성'],
+  ['richtext', '일반 글 작성'],
+  ['buttons', '바로가기 버튼'],
+];
+
+// 가리킬 대상 없이 내용을 직접 담는 종류. 대상 선택칸을 내지 않는다.
+export const CONTENT_TYPES = ['html', 'richtext', 'buttons'];
+export const isContentType = (type) => CONTENT_TYPES.includes(type);
 
 // 주소를 직접 적는 종류. 화면에서 입력칸을 낼지 판단할 때 쓴다.
 const isUrlType = (type) => type === 'external' || type === 'embed';
@@ -29,6 +42,8 @@ export function linkTargetPayload(item) {
 
 export function isLinkTargetComplete(item) {
   const type = item.link_type || 'board';
+  // 내용을 담는 종류는 빈 채로 만들어 두고 나중에 채울 수 있다.
+  if (isContentType(type)) return true;
   if (type === 'board') return Boolean(item.board_id);
   if (type === 'page') return Boolean(item.target_page_id);
   // 화면 안에 싣는 주소는 https 만 받는다. https 페이지가 http 를 못 싣기 때문이다.
@@ -36,7 +51,7 @@ export function isLinkTargetComplete(item) {
   return /^(https?:\/\/|\/)/i.test((item.url ?? '').trim());
 }
 
-export default function LinkTargetFields({ item, boards, pages, excludePageId, onChange, index }) {
+export default function LinkTargetFields({ item, boards, pages, excludePageId, onChange, index, types = LINK_TYPES }) {
   const type = item.link_type || 'board';
   const selectablePages = (pages ?? []).filter((page) => page.id !== excludePageId);
 
@@ -47,7 +62,7 @@ export default function LinkTargetFields({ item, boards, pages, excludePageId, o
         aria-label={`${index + 1}번 버튼이 열 대상 종류`}
         onChange={(event) => onChange({ ...emptyLinkTarget(event.target.value) })}
       >
-        {LINK_TYPES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+        {types.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
       </select>
 
       {type === 'board' && (

@@ -107,7 +107,7 @@ export default function ButtonBoxAdminPanel() {
   };
 
   const remove = async (box) => {
-    if (!window.confirm(`'${box.title}' 버튼 박스를 삭제할까요? 이 박스를 쓰는 링크 페이지·대시보드 위젯에서도 빈 상태로 바뀝니다.`)) return;
+    if (!window.confirm(`'${box.title}' 버튼 박스를 삭제할까요? 이 박스를 쓰는 페이지·대시보드 위젯에서도 빈 상태로 바뀝니다.`)) return;
     setError('');
     try { await deleteButtonBox(box.id); await load(); }
     catch (cause) { setError(cause.message || '삭제하지 못했습니다.'); }
@@ -121,7 +121,7 @@ export default function ButtonBoxAdminPanel() {
       <div className="gw-admin-section-heading">
         <div>
           <h2 id="buttonbox-admin-title">버튼 박스</h2>
-          <p>제목과 주소만으로 큰 버튼 묶음을 만들어, 링크 페이지나 대시보드 위젯 어디서든 골라 씁니다.</p>
+          <p>제목과 주소만으로 큰 버튼 묶음을 만들어, 페이지나 대시보드 위젯 어디서든 골라 씁니다.</p>
         </div>
         <button type="button" className="gw-primary-button" onClick={startCreate}>새 버튼 박스</button>
       </div>
