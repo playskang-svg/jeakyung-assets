@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 
 import { getLinkPage } from '../../services/linkPageService.js';
 import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
+import EmbeddedSite from '../../components/EmbeddedSite.jsx';
 import BoardPage from './BoardPage.jsx';
 
 // 링크트리형 업무 페이지. 제목과 버튼 줄이 고정 머리글로 남고, 버튼을 누르면
@@ -26,8 +27,9 @@ export default function LinkTreePage() {
   if (!data) return <p className="gw-empty-state" role="status">페이지를 불러오고 있습니다.</p>;
 
   const items = data.items ?? [];
-  const boardItems = items.filter((item) => item.item_type === 'board');
-  const activeItem = boardItems.find((item) => item.id === params.get('tab')) ?? boardItems[0] ?? null;
+  // 이 페이지 안에서 내용을 바꿔 낄 수 있는 항목만 탭으로 삼는다.
+  const inlineItems = items.filter((item) => item.item_type === 'board' || item.item_type === 'embed');
+  const activeItem = inlineItems.find((item) => item.id === params.get('tab')) ?? inlineItems[0] ?? null;
   // 하위 페이지를 바꾸면 이전 게시판의 검색·분류·쪽수 상태는 의미가 없으므로 함께 버린다.
   const selectItem = (item) => setParams({ tab: item.id });
 
@@ -40,7 +42,7 @@ export default function LinkTreePage() {
         </div>
         {!data.button_box && items.length > 0 && (
           <nav className="gw-linktree-tabs" aria-label={`${data.page.title} 하위 페이지`}>
-            {items.map((item) => (item.item_type === 'board' ? (
+            {items.map((item) => (item.item_type === 'board' || item.item_type === 'embed' ? (
               <button
                 key={item.id}
                 type="button"
@@ -51,7 +53,7 @@ export default function LinkTreePage() {
                 {item.label}
               </button>
             ) : (
-              // 게시판이 아닌 대상은 이 페이지 안에 끼워 넣을 수 없으므로 새 탭으로 연다.
+              // 화면 안에 끼워 넣을 수 없는 대상은 새 탭으로 연다.
               <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer">
                 {item.label} <i aria-hidden="true">↗</i>
               </a>
@@ -61,8 +63,10 @@ export default function LinkTreePage() {
       </header>
       {data.button_box ? (
         <div className="gw-linktree-content"><ButtonBoxGrid box={data.button_box} items={data.button_box.items} /></div>
-      ) : activeItem?.board_slug ? (
+      ) : activeItem?.item_type === 'board' && activeItem.board_slug ? (
         <div className="gw-linktree-content"><BoardPage key={activeItem.id} boardSlug={activeItem.board_slug} embedded /></div>
+      ) : activeItem?.item_type === 'embed' && activeItem.url ? (
+        <div className="gw-linktree-content"><EmbeddedSite key={activeItem.id} url={activeItem.url} title={activeItem.label} /></div>
       ) : (
         <p className="gw-empty-state">연결된 하위 페이지가 없습니다. 관리자 화면에서 항목을 추가해 주세요.</p>
       )}

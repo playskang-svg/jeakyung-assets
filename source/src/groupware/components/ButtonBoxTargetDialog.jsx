@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import BoardPage from '../pages/internal/BoardPage.jsx';
+import EmbeddedSite from './EmbeddedSite.jsx';
 import PostDetailPage from '../pages/internal/PostDetailPage.jsx';
 
 // 버튼 박스에서 버튼을 눌렀을 때 뜨는 팝업.
@@ -78,7 +79,11 @@ export default function ButtonBoxTargetDialog({ item, onClose }) {
             <p className="gw-empty-state">연결된 게시판을 찾을 수 없습니다. 관리자 화면에서 다시 지정해 주세요.</p>
           )}
 
-          {item.link_type !== 'board' && (
+          {item.link_type === 'embed' && item.url && (
+            <EmbeddedSite url={item.url} title={item.label} />
+          )}
+
+          {item.link_type !== 'board' && item.link_type !== 'embed' && (
             <p className="gw-empty-state">
               이 대상은 팝업 안에서 열 수 없습니다. 위의 “새 탭”으로 열어 주세요.
             </p>

@@ -87,6 +87,8 @@ function cleanupItem(usage) {
 }
 
 // section이 있으면 같은 화면에서 아래에 펼치고, to가 있으면 전용 화면으로 이동한다.
+// 버튼 박스는 링크 페이지 안에서 구성하므로 이 목록에 따로 두지 않는다.
+// (기능과 저장된 데이터는 그대로이고, /admin?section=buttonboxes 로는 계속 들어갈 수 있다.)
 function buildItems({ directory, usage, approval, popups }) {
   return [
     { key: 'membership', title: '회원 승인', section: 'membership', ...membershipItem(usage) },
@@ -95,7 +97,6 @@ function buildItems({ directory, usage, approval, popups }) {
     { key: 'widgets', title: '대시보드 위젯', section: 'widgets', ...widgetItem(usage) },
     { key: 'usage', title: '사용량·첨부 정리', section: 'usage', ...cleanupItem(usage) },
     { key: 'linkpages', title: '링크 페이지', section: 'linkpages', state: '버튼형 업무 페이지 구성', tone: OK },
-    { key: 'buttonboxes', title: '버튼 박스', section: 'buttonboxes', state: '재사용 버튼 묶음 구성', tone: OK },
     { key: 'sitearticles', title: '소식/정보', section: 'sitearticles', state: '공개 사이트 메인 노출 글', tone: OK },
     { key: 'boards', title: '게시판 구성·권한', to: '/admin/boards', ...boardItem(usage) },
     { key: 'approval', title: '전자결재 분류·양식', to: '/approval/admin', ...approvalItem(approval) },

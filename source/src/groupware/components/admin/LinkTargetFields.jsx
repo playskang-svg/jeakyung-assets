@@ -1,13 +1,18 @@
 // 버튼이 열 곳을 고르는 공통 입력. 링크 페이지 항목과 버튼 박스 항목이 같이 쓴다.
 //   board    : 게시판을 목록에서 고른다
 //   page     : 다른 링크 페이지를 목록에서 고른다
-//   external : 주소를 직접 적는다
+//   external : 주소를 직접 적는다 (새 탭으로 나간다)
+//   embed    : 주소를 직접 적는다 (그룹웨어 화면 안에 그대로 띄운다)
 // 실제로 열 주소(url)는 저장할 때 서버가 만들어 준다.
 export const LINK_TYPES = [
   ['board', '게시판'],
   ['page', '페이지'],
-  ['external', '외부 주소'],
+  ['external', '외부 주소 (새 탭)'],
+  ['embed', '외부 주소 (화면 안에 표시)'],
 ];
+
+// 주소를 직접 적는 종류. 화면에서 입력칸을 낼지 판단할 때 쓴다.
+const isUrlType = (type) => type === 'external' || type === 'embed';
 
 export const emptyLinkTarget = (type = 'board') => ({ link_type: type, board_id: '', target_page_id: '', url: '' });
 
@@ -18,7 +23,7 @@ export function linkTargetPayload(item) {
     link_type: type,
     board_id: type === 'board' ? item.board_id : '',
     target_page_id: type === 'page' ? item.target_page_id : '',
-    url: type === 'external' ? (item.url ?? '').trim() : '',
+    url: isUrlType(type) ? (item.url ?? '').trim() : '',
   };
 }
 
@@ -26,6 +31,8 @@ export function isLinkTargetComplete(item) {
   const type = item.link_type || 'board';
   if (type === 'board') return Boolean(item.board_id);
   if (type === 'page') return Boolean(item.target_page_id);
+  // 화면 안에 싣는 주소는 https 만 받는다. https 페이지가 http 를 못 싣기 때문이다.
+  if (type === 'embed') return /^(https:\/\/|\/)/i.test((item.url ?? '').trim());
   return /^(https?:\/\/|\/)/i.test((item.url ?? '').trim());
 }
 
@@ -65,11 +72,11 @@ export default function LinkTargetFields({ item, boards, pages, excludePageId, o
         </select>
       )}
 
-      {type === 'external' && (
+      {isUrlType(type) && (
         <input
           value={item.url ?? ''}
           maxLength={300}
-          placeholder="https://... 또는 /경로"
+          placeholder={type === 'embed' ? 'https://... (화면 안에 표시)' : 'https://... 또는 /경로'}
           aria-label={`${index + 1}번 버튼이 열 주소`}
           onChange={(event) => onChange({ url: event.target.value })}
         />
