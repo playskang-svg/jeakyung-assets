@@ -1,0 +1,13 @@
+{
+  "name": "hl-safety-eval",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "HL홀딩스(주) 적격수급사 안전보건 평가 제출본 웹 게시 사이트 빌드",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
