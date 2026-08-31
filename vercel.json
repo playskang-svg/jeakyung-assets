@@ -89,6 +89,15 @@
           "value": "noindex, nofollow"
         }
       ]
+    },
+    {
+      "source": "/hl-safety-eval/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
     }
   ]
 }

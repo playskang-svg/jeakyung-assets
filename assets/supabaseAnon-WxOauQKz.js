@@ -1,1 +1,0 @@
-import{t as e}from"./dist-ClserGXx.js";var t=e(`https://vzswlvumcdxnryrfwkkl.supabase.co`,`sb_publishable_Jl43SzCeIQ90W-yYKgCQNA_2bS1K7Sd`,{auth:{autoRefreshToken:!1,persistSession:!1,detectSessionInUrl:!1}});export{t as publicSupabase};
