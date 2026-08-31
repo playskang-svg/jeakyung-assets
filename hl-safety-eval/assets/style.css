@@ -69,12 +69,14 @@ section.block h2 .num { color: var(--muted); font-weight: 500; margin-right: 6px
 .overview-card .label { font-size: 12.5px; color: var(--muted); margin-bottom: 4px; }
 .overview-card .value { font-size: 16px; font-weight: 700; color: var(--navy-dark); }
 
-/* ---------- Evaluation checklist (평가항목 체크리스트) ---------- */
+/* ---------- Evaluation checklist (평가항목 체크리스트) — also a jump-to-doc TOC ---------- */
 .checklist { display: grid; gap: 6px; }
 .check-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  column-gap: 10px;
+  row-gap: 8px;
   padding: 10px 14px;
   border-radius: 8px;
   border: 1px solid var(--border);
@@ -83,8 +85,20 @@ section.block h2 .num { color: var(--muted); font-weight: 500; margin-right: 6px
 }
 .check-row.partial { background: var(--check-bg); border-color: #e8d38a; }
 .check-row.todo { background: var(--priority-bg); border-color: #f0b0b0; }
-.check-icon { font-size: 15px; line-height: 1; }
-.check-name { color: var(--ink); }
+.check-icon { font-size: 15px; line-height: 1.5; grid-row: 1 / 3; }
+.check-name { color: var(--ink); font-weight: 600; }
+.check-docs { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; }
+.check-docs a {
+  font-size: 12px;
+  text-decoration: none;
+  color: var(--navy-dark);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.check-docs a:hover { background: var(--accent-bg); border-color: var(--navy); }
 
 /* ---------- Document cards ---------- */
 .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }

@@ -70,15 +70,23 @@ function docCard(doc) {
 }
 
 // Deliberately no numbers here — just done / partial / not-started, so the
-// page never states a score, only what's actually finished.
-function checklistRow({ name, current, max }) {
+// page never states a score, only what's actually finished. Doubles as a
+// table of contents: each row links straight to the document(s) filed
+// under that evaluation criterion (matched via documents.json's own
+// `criterion` field, so it can't drift out of sync with the doc list).
+function checklistRow({ name, current, max }, documents) {
   let state = 'done';
   let icon = '✅';
   if (current === 0) { state = 'todo'; icon = '⬜'; }
   else if (current < max) { state = 'partial'; icon = '🔶'; }
+  const related = documents.filter((d) => d.criterion === name);
+  const links = related
+    .map((d) => `<a href="docs/${encodeURIComponent(d.no)}.html">${esc(d.no)}. ${esc(d.title)}</a>`)
+    .join('');
   return `<div class="check-row ${state}">
   <span class="check-icon">${icon}</span>
   <span class="check-name">${esc(name)}</span>
+  <span class="check-docs">${links}</span>
 </div>`;
 }
 
@@ -98,7 +106,6 @@ const SCORE_ROWS = [
 ];
 
 export function renderIndexPage(documents) {
-  const master = documents.find((d) => d.no === '00');
   const grouped = new Map();
   for (const cat of CATEGORY_ORDER) grouped.set(cat, []);
   for (const doc of documents) {
@@ -147,20 +154,16 @@ ${head(SITE_TITLE, 'HL홀딩스(주) 동탄냉장 물류센터 2026년 적격수
   <section class="block">
     <h2><span class="num">2</span>평가항목 체크리스트</h2>
     <div class="checklist">
-      ${SCORE_ROWS.map(checklistRow).join('\n      ')}
+      ${SCORE_ROWS.map((row) => checklistRow(row, documents)).join('\n      ')}
     </div>
   </section>
 
   <section class="block">
-    <h2><span class="num">3</span>제출서류 (32건)</h2>
+    <h2><span class="num">3</span>제출서류 (31건)</h2>
     <div class="filter-bar">
       <input type="search" id="doc-search" placeholder="문서명·번호로 검색…">
       <button class="filter-chip active" data-filter="all">전체</button>
       ${CATEGORY_ORDER.map((c) => `<button class="filter-chip" data-filter="${esc(c)}">${esc(c)}</button>`).join('\n      ')}
-    </div>
-    <div class="doc-category">
-      <h3>평가표</h3>
-      <div class="doc-grid">${docCard(master)}</div>
     </div>
     ${categorySections}
   </section>
