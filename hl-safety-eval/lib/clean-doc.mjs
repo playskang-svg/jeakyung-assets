@@ -73,10 +73,11 @@ function wrapTables(html) {
     .replace(/<\/table>/gi, '</table></div>');
 }
 
+// Paths are relative to docs/{no}.html (one level below the site root).
 const SIGNERS = [
-  { key: 'ceo', names: ['염달성', '염 달 성'], stamp: '/assets/sign-ceo.png', hand: '/assets/sign-ceo-hand.png', alt: '대표이사 염달성' },
-  { key: 'kim', names: ['김수호', '김 수 호'], stamp: '/assets/sign-kim.png', hand: '/assets/sign-kim.png', alt: '김수호' },
-  { key: 'park', names: ['박천희', '박 천 희'], stamp: '/assets/sign-park.png', hand: '/assets/sign-park.png', alt: '박천희' },
+  { key: 'ceo', names: ['염달성', '염 달 성'], stamp: '../assets/sign-ceo.png', hand: '../assets/sign-ceo-hand.png', alt: '대표이사 염달성' },
+  { key: 'kim', names: ['김수호', '김 수 호'], stamp: '../assets/sign-kim.png', hand: '../assets/sign-kim.png', alt: '김수호' },
+  { key: 'park', names: ['박천희', '박 천 희'], stamp: '../assets/sign-park.png', hand: '../assets/sign-park.png', alt: '박천희' },
 ];
 
 // Inserts a signature image right after every "(인)" / "(서명)" marker whose

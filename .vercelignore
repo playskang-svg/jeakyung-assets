@@ -1,6 +1,6 @@
 # Vercel 배포 산출물에 포함할 필요 없는 문서/호스팅 메타 파일
 WEBSITE_SPEC.md
-docs/
+/docs/
 CNAME
 .github/
 source/

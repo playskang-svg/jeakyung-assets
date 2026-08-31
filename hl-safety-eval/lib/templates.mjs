@@ -21,14 +21,18 @@ function docKindFormat(doc) {
   return doc.type === 'document' ? 'docx' : 'xlsx';
 }
 
-function head(title, description) {
+// base='' from index.html at the site root, base='../' from docs/{no}.html.
+// Every internal link in this file is relative for the same reason: the site
+// may be served from a domain root (its own Netlify site) or from a subpath
+// (e.g. jeakyung.com/hl-safety-eval/) — relative paths work in both.
+function head(title, description, base = '') {
   return `<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="${esc(description)}">
 <title>${esc(title)}</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
-<link rel="stylesheet" href="/assets/style.css">`;
+<link rel="stylesheet" href="${base}assets/style.css">`;
 }
 
 function siteFooter() {
@@ -62,7 +66,7 @@ function docCard(doc) {
   <p class="summary">${esc(doc.summary)}</p>
   <div class="meta-row"><span>${esc(doc.criterion)}</span><span>담당 ${esc(doc.owner)}</span></div>
   <div class="btn-row">
-    <a class="btn primary" href="/docs/${encodeURIComponent(doc.no)}.html">본문 보기</a>
+    <a class="btn primary" href="docs/${encodeURIComponent(doc.no)}.html">본문 보기</a>
     <a class="btn" href="${wordOrExcelUrl}">${docKindLabel(doc)} 받기</a>
     <a class="btn" href="${pdfUrl}">PDF 받기</a>
   </div>
@@ -193,11 +197,11 @@ ${draftBanner()}
     <div class="deduct-callout">
       <h4>🔻 실점 회복 우선순위 (현재 −34점의 직접 원인)</h4>
       <ul>
-        <li><b>위험성평가 −15점</b> — 참여 근로자 서명부 확보(+15점 일부), 개선 전·후 사진 확보(+15점 일부) <a href="/docs/4-2%EB%B3%84%EC%A7%80.html">4-2 별지</a></li>
-        <li><b>TBM −10점</b> — 오전조·오후조 최근 3개월분 실제 작성 + RA-No. 기재 + 참석 서명 <a href="/docs/5-1.html">5-1</a></li>
-        <li><b>안전보건목표 −5점</b> — 안전보건활동계획서 월별 실적란 기입 <a href="/docs/2-1.html">2-1</a></li>
-        <li><b>안전보건경영방침 −2점</b> — 대표이사 날인 및 게시 사진 <a href="/docs/1-1.html">1-1</a></li>
-        <li><b>역할과 책임 −2점</b> — 김수호·박천희 관리감독자 교육 이수 증빙 <a href="/docs/3-3.html">3-3</a></li>
+        <li><b>위험성평가 −15점</b> — 참여 근로자 서명부 확보(+15점 일부), 개선 전·후 사진 확보(+15점 일부) <a href="docs/4-2%EB%B3%84%EC%A7%80.html">4-2 별지</a></li>
+        <li><b>TBM −10점</b> — 오전조·오후조 최근 3개월분 실제 작성 + RA-No. 기재 + 참석 서명 <a href="docs/5-1.html">5-1</a></li>
+        <li><b>안전보건목표 −5점</b> — 안전보건활동계획서 월별 실적란 기입 <a href="docs/2-1.html">2-1</a></li>
+        <li><b>안전보건경영방침 −2점</b> — 대표이사 날인 및 게시 사진 <a href="docs/1-1.html">1-1</a></li>
+        <li><b>역할과 책임 −2점</b> — 김수호·박천희 관리감독자 교육 이수 증빙 <a href="docs/3-3.html">3-3</a></li>
       </ul>
     </div>
     <div class="deduct-callout" style="background:var(--check-bg);border-color:#e8d38a;margin-top:12px;">
@@ -237,7 +241,7 @@ ${draftBanner()}
 
 </main>
 ${siteFooter()}
-<script src="/assets/main.js"></script>
+<script src="assets/main.js"></script>
 </body>
 </html>`;
 }
@@ -246,21 +250,21 @@ export function renderDocPage(doc, contentHtml, prevDoc, nextDoc) {
   const wordOrExcelUrl = exportUrl(doc, docKindFormat(doc));
   const pdfUrl = exportUrl(doc, 'pdf');
   const prevLink = prevDoc
-    ? `<a class="side prev" href="/docs/${encodeURIComponent(prevDoc.no)}.html"><span class="dir">← 이전 문서</span>${esc(prevDoc.no)}. ${esc(prevDoc.title)}</a>`
+    ? `<a class="side prev" href="${encodeURIComponent(prevDoc.no)}.html"><span class="dir">← 이전 문서</span>${esc(prevDoc.no)}. ${esc(prevDoc.title)}</a>`
     : '<span class="side"></span>';
   const nextLink = nextDoc
-    ? `<a class="side next" href="/docs/${encodeURIComponent(nextDoc.no)}.html" style="text-align:right"><span class="dir">다음 문서 →</span>${esc(nextDoc.no)}. ${esc(nextDoc.title)}</a>`
+    ? `<a class="side next" href="${encodeURIComponent(nextDoc.no)}.html" style="text-align:right"><span class="dir">다음 문서 →</span>${esc(nextDoc.no)}. ${esc(nextDoc.title)}</a>`
     : '<span class="side"></span>';
 
   return `<!doctype html>
 <html lang="ko">
 <head>
-${head(`${doc.no}. ${doc.title} - ${SITE_TITLE}`, doc.summary)}
+${head(`${doc.no}. ${doc.title} - ${SITE_TITLE}`, doc.summary, '../')}
 </head>
 <body>
 <div class="topbar">
   <div class="wrap">
-    <a class="back" href="/index.html">← 목록으로</a>
+    <a class="back" href="../index.html">← 목록으로</a>
     <div class="title"><span class="no">${esc(doc.no)} · ${esc(doc.category)}</span><span class="name">${esc(doc.title)}</span></div>
     <div class="actions">
       <a class="btn" href="${wordOrExcelUrl}">${docKindLabel(doc)} 받기</a>
