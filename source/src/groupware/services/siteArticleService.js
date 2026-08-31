@@ -1,9 +1,9 @@
 import { requireSupabase } from '../lib/supabase.js';
 
-// 정보 및 동향 마이그레이션(202608290001_site_articles.sql)이 아직 적용되지
+// 소식/정보 마이그레이션(202608290001_site_articles.sql)이 아직 적용되지
 // 않은 환경에서는 RPC 자체가 없다. 화면이 깨지지 않도록 구분 가능한 메시지로
 // 바꿔 던진다. (버튼 박스 서비스와 같은 방식)
-const MISSING_MESSAGE = '정보 및 동향 기능이 아직 데이터베이스에 설치되지 않았습니다. supabase/migrations/202608290001_site_articles.sql을 적용해 주세요.';
+const MISSING_MESSAGE = '소식/정보 기능이 아직 데이터베이스에 설치되지 않았습니다. supabase/migrations/202608290001_site_articles.sql을 적용해 주세요.';
 
 const THUMBNAIL_BUCKET = 'public-site-media';
 

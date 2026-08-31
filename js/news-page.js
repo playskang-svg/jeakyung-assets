@@ -1,4 +1,4 @@
-/* 정보 및 동향 전용 페이지 (/news/).
+/* 소식/정보 전용 페이지 (/news/).
  *
  * 분류 탭으로 목록을 거르고, 글을 누르면 같은 화면에서 본문이 열린다.
  * 본문에서는 뒤로가기 / 목록 보기 / 닫기 버튼과 브라우저 뒤로가기가 모두
@@ -204,7 +204,7 @@
         openId = null;
         articleView.hidden = true;
         listView.hidden = false;
-        document.title = '정보 및 동향 | 재경닷컴';
+        document.title = '소식/정보 | 재경닷컴';
     }
 
     function fillArticle(article, detail) {
@@ -237,7 +237,7 @@
         }
 
         elBody.innerHTML = detail ? sanitizeHtml(detail.content_html) : '';
-        document.title = article.title + ' | 정보 및 동향 | 재경닷컴';
+        document.title = article.title + ' | 소식/정보 | 재경닷컴';
     }
 
     function openArticle(id, pushState) {

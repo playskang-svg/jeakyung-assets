@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import PopupDocumentContent from '../../../shared/popup/PopupDocumentContent.jsx';
 import '../../../shared/popup/popup.css';
 
-// 히어로 바로 아래 "정보 및 동향" 영역.
+// 히어로 바로 아래 "소식/정보" 영역.
 // 카드에는 썸네일과 요약만 노출하고, 카드를 누르면 본문을 따로 받아 팝업으로
 // 보여준다. 방문자는 로그인 없이 읽기만 하며 댓글·작성 기능은 없다.
 //
@@ -118,7 +118,7 @@ export default function NewsSection() {
       <div className="content-width">
         <div className="section-heading news-heading">
           <span className="eyebrow"><i /> Insight &amp; Trends</span>
-          <h2 id="news-title">정보 및 동향</h2>
+          <h2 id="news-title">소식/정보</h2>
           <p>물류 시장의 흐름과 재경닷컴의 소식을 전해드립니다. 카드를 누르면 전체 내용을 볼 수 있습니다.</p>
           <a className="news-all-link" href="news/">전체 보기 <span aria-hidden="true">→</span></a>
         </div>
