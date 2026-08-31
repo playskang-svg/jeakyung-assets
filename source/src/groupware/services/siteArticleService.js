@@ -1,4 +1,5 @@
 import { requireSupabase } from '../lib/supabase.js';
+import prepareImageForUpload from '../utils/imagePrepare.js';
 
 // 소식/정보 마이그레이션(202608290001_site_articles.sql)이 아직 적용되지
 // 않은 환경에서는 RPC 자체가 없다. 화면이 깨지지 않도록 구분 가능한 메시지로
@@ -28,8 +29,10 @@ export const deleteSiteArticle = (id) => rpc('delete_site_article', { p_id: id }
 export const uploadButtonThumbnail = (file) => uploadPublicImage(file, 'buttons');
 export const uploadSiteArticleThumbnail = (file) => uploadPublicImage(file, 'articles');
 
-async function uploadPublicImage(file, folder) {
+async function uploadPublicImage(original, folder) {
   const client = requireSupabase();
+  // 휴대폰 사진(HEIC·고용량)은 여기서 JPEG 로 줄여서 버킷 규격에 맞춘다.
+  const file = await prepareImageForUpload(original);
   const extension = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
   const path = `${folder}/${crypto.randomUUID()}.${extension || 'jpg'}`;
 
