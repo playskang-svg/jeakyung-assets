@@ -40,26 +40,8 @@ a.btn, button.btn { cursor: pointer; }
   color: #fff;
   padding: 40px 0 32px;
 }
-.site-header .eyebrow {
-  display: inline-block;
-  background: rgba(255,255,255,0.14);
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 999px;
-  padding: 4px 14px;
-  font-size: 13px;
-  letter-spacing: 0.02em;
-  margin-bottom: 14px;
-}
 .site-header h1 { margin: 0 0 8px; font-size: clamp(24px, 4.2vw, 36px); line-height: 1.35; }
 .site-header p.subtitle { margin: 0; font-size: 15px; color: #dbe6f7; }
-.draft-banner {
-  background: #fff8e1;
-  border-bottom: 1px solid #f0d68a;
-  color: #6b4e00;
-  font-size: 13.5px;
-  text-align: center;
-  padding: 8px 16px;
-}
 
 /* ---------- Section shell ---------- */
 section.block { padding: 30px 0; }
@@ -87,67 +69,22 @@ section.block h2 .num { color: var(--muted); font-weight: 500; margin-right: 6px
 .overview-card .label { font-size: 12.5px; color: var(--muted); margin-bottom: 4px; }
 .overview-card .value { font-size: 16px; font-weight: 700; color: var(--navy-dark); }
 
-/* ---------- Scope comparison (관리범위 구분표) ---------- */
-.scope-table {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 2px solid var(--navy);
-}
-.scope-col { padding: 20px; }
-.scope-col.ours { background: var(--accent-bg); }
-.scope-col.theirs { background: #f1f1f1; }
-.scope-col h3 { margin: 0 0 12px; font-size: 16px; color: var(--navy-dark); }
-.scope-col h3 .tag {
-  display: inline-block;
-  font-size: 11.5px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  margin-right: 8px;
-  vertical-align: middle;
-}
-.scope-col.ours h3 .tag { background: var(--navy); color: #fff; }
-.scope-col.theirs h3 .tag { background: #666; color: #fff; }
-.scope-col ul { margin: 0; padding-left: 20px; }
-.scope-col li { margin-bottom: 6px; font-size: 14.5px; }
-.scope-note { grid-column: 1 / -1; background: var(--priority-bg); padding: 10px 20px; font-size: 13.5px; }
-@media (max-width: 640px) {
-  .scope-table { grid-template-columns: 1fr; }
-}
-
-/* ---------- Score dashboard (배점 현황) ---------- */
-.score-summary { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
-.score-total {
-  background: var(--card-bg);
+/* ---------- Evaluation checklist (평가항목 체크리스트) ---------- */
+.checklist { display: grid; gap: 6px; }
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 22px;
-  flex: 1 1 200px;
+  background: var(--card-bg);
+  font-size: 14px;
 }
-.score-total .big { font-size: 34px; font-weight: 800; color: var(--navy); }
-.score-total .big small { font-size: 16px; color: var(--muted); font-weight: 600; }
-.score-total .cap { font-size: 12.5px; color: var(--muted); }
-.score-bars { display: grid; gap: 8px; }
-.score-row { display: grid; grid-template-columns: 200px 1fr 90px; align-items: center; gap: 10px; font-size: 13.5px; }
-.score-row .name { color: var(--ink); }
-.score-row .bar-track { display: block; background: #e7ebf2; border-radius: 999px; height: 12px; overflow: hidden; }
-.score-row .bar-fill { display: block; background: var(--navy); height: 100%; border-radius: 999px; }
-.score-row.deduct .bar-fill { background: #c0392b; }
-.score-row .num { text-align: right; color: var(--muted); }
-.deduct-callout {
-  margin-top: 18px;
-  background: var(--priority-bg);
-  border: 1px solid #f0b0b0;
-  border-radius: var(--radius);
-  padding: 14px 18px;
-}
-.deduct-callout h4 { margin: 0 0 8px; font-size: 14.5px; color: #8a1f1f; }
-.deduct-callout ul { margin: 0; padding-left: 18px; font-size: 13.5px; }
-@media (max-width: 640px) {
-  .score-row { grid-template-columns: 110px 1fr 60px; font-size: 12.5px; }
-}
+.check-row.partial { background: var(--check-bg); border-color: #e8d38a; }
+.check-row.todo { background: var(--priority-bg); border-color: #f0b0b0; }
+.check-icon { font-size: 15px; line-height: 1; }
+.check-name { color: var(--ink); }
 
 /* ---------- Document cards ---------- */
 .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
@@ -229,15 +166,11 @@ section.block h2 .num { color: var(--muted); font-weight: 500; margin-right: 6px
   color: var(--muted);
   text-align: center;
 }
-.site-footer .disclaimer {
-  background: var(--check-bg);
-  border: 1px solid #e8d38a;
-  border-radius: var(--radius);
-  padding: 12px 16px;
-  color: #6b4e00;
-  max-width: 640px;
-  margin: 0 auto 14px;
-  font-size: 13px;
+.site-footer .footer-sign {
+  display: block;
+  height: 44px;
+  width: auto;
+  margin: 0 auto 10px;
 }
 
 /* ---------- Doc detail page ---------- */
@@ -322,7 +255,7 @@ table.doc-table th, .doc-content table th { background: #eef2f8; text-align: lef
 
 /* ---------- Print ---------- */
 @media print {
-  .topbar, .site-header .eyebrow, .draft-banner, .filter-bar, .doc-nav, .site-footer, .btn-row { display: none !important; }
+  .topbar, .filter-bar, .doc-nav, .site-footer, .btn-row { display: none !important; }
   body { background: #fff; }
   .doc-content { border: none; padding: 0; }
   table.doc-table thead th, .doc-content table thead th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
