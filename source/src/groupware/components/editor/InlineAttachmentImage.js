@@ -25,6 +25,7 @@ export const InlineAttachmentImage = Node.create({
       alignment: { default: 'center' },
       size: { default: 'medium' },
       width: { default: null },
+      flow: { default: 'block' },  // 'wrap' 이면 글이 이미지 옆으로 흐른다
     };
   },
 
@@ -36,7 +37,7 @@ export const InlineAttachmentImage = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    const { attachmentId, alt, caption, alignment, size, width } = HTMLAttributes;
+    const { attachmentId, alt, caption, alignment, size, width, flow } = HTMLAttributes;
     return ['figure', mergeAttributes({
       'data-inline-attachment-id': attachmentId,
       'data-alt': alt || '',
@@ -44,6 +45,7 @@ export const InlineAttachmentImage = Node.create({
       'data-alignment': alignment || 'center',
       'data-size': size || 'medium',
       'data-width': width || '',
+      'data-flow': flow || 'block',
     })];
   },
 

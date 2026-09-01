@@ -58,9 +58,9 @@ function RenderNodes({ nodes = [], urls, openImage }) {
     if (node.type === 'externalImage') {
       // 주소로 연결한 이미지. 저장 시 DB 에서도 https 만 통과시키지만, 예전 문서를
       // 대비해 여기서도 스킴을 확인한다. 클릭 확대는 없다 - 원본이 곧 그 주소다.
-      const { src = '', alt = '', caption = '', alignment = 'center', size = 'medium', width = null } = node.attrs ?? {};
+      const { src = '', alt = '', caption = '', alignment = 'center', size = 'medium', width = null, flow = 'block' } = node.attrs ?? {};
       if (!SAFE_IMAGE_SRC.test(src)) return null;
-      return <figure key={key} className={`gw-inline-image gw-inline-image--${alignment} gw-inline-image--${size}`} style={size === 'custom' && width ? { '--gw-image-width': `${width}px` } : undefined}>
+      return <figure key={key} className={`gw-inline-image gw-inline-image--${alignment} gw-inline-image--${size} gw-inline-image--flow-${flow}`} style={size === 'custom' && width ? { '--gw-image-width': `${width}px` } : undefined}>
         <a href={src} target="_blank" rel="noopener noreferrer" aria-label={`${alt || '본문 이미지'} 원본 열기, 새 창`}>
           <img src={src} alt={alt} loading="lazy" referrerPolicy="no-referrer" />
         </a>
@@ -68,9 +68,9 @@ function RenderNodes({ nodes = [], urls, openImage }) {
       </figure>;
     }
     if (node.type === 'inlineImage') {
-      const { attachmentId, alt = '', caption = '', alignment = 'center', size = 'medium', width = null } = node.attrs ?? {};
+      const { attachmentId, alt = '', caption = '', alignment = 'center', size = 'medium', width = null, flow = 'block' } = node.attrs ?? {};
       const source = urls[attachmentId];
-      return <figure key={key} className={`gw-inline-image gw-inline-image--${alignment} gw-inline-image--${size}`} style={size === 'custom' && width ? { '--gw-image-width': `${width}px` } : undefined}>
+      return <figure key={key} className={`gw-inline-image gw-inline-image--${alignment} gw-inline-image--${size} gw-inline-image--flow-${flow}`} style={size === 'custom' && width ? { '--gw-image-width': `${width}px` } : undefined}>
         {source
           ? <button type="button" className="gw-inline-image-open" onClick={() => openImage(attachmentId)} aria-label={`${alt || '본문 이미지'} 원본 확대 보기`}><img src={source} alt={alt} /></button>
           : <div className="gw-inline-image-placeholder" role="status">이미지를 표시할 수 없습니다.</div>}

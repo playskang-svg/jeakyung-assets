@@ -2716,6 +2716,33 @@ body.groupware-root a.gw-secondary-button {
   font-size: 14px;
 }
 
+/* 글이 이미지 옆으로 흐르는 배치.
+   float 를 쓰므로 뒤따르는 문단이 이미지 옆 빈자리를 채운다. 좁은 화면에서는
+   옆으로 흐를 자리가 없어 글이 두세 글자씩 끊기므로, 아래에서 다시 블록으로
+   되돌린다(모바일 규칙 참고). */
+.gw-inline-image--flow-wrap.gw-inline-image--left {
+  float: left;
+  margin: 6px 24px 12px 0;
+}
+
+.gw-inline-image--flow-wrap.gw-inline-image--right {
+  float: right;
+  margin: 6px 0 12px 24px;
+}
+
+/* 가운데 정렬은 옆으로 흐를 자리가 양쪽에 갈리므로 흐르게 하지 않는다. */
+.gw-inline-image--flow-wrap.gw-inline-image--center { float: none; }
+
+/* 흐르던 이미지가 다음 제목이나 구분선을 침범하지 않게 막는다. */
+.gw-rich-editor-content h1,
+.gw-rich-editor-content h2,
+.gw-rich-editor-content h3,
+.gw-rich-editor-content hr,
+.gw-board-document h1,
+.gw-board-document h2,
+.gw-board-document h3,
+.gw-board-document hr { clear: both; }
+
 /* 끌어서 크기 조절하는 손잡이. 이미지를 고른 동안에만 나타난다.
    좌우 가장자리 전체를 잡을 수 있게 해서 정확히 겨냥하지 않아도 잡힌다. */
 .gw-image-handle {
@@ -2797,7 +2824,9 @@ body.groupware-root a.gw-secondary-button {
 .gw-inline-image-control-row { display: grid; grid-template-columns: 1fr 160px; gap: 10px; }
 .gw-inline-image-control-row fieldset { display: flex; gap: 5px; min-width: 0; margin: 0; border: 0; padding: 0; }
 .gw-inline-image-control-row legend { color: var(--gw-muted); font-size: 14px; font-weight: 750; }
-.gw-inline-image-control-row button { min-height: 40px; border: 1px solid var(--gw-border); border-radius: 8px; padding-inline: 9px; color: var(--gw-blue-700); background: #fff; font-size: 14px; }
+/* 글 배치 줄은 항목이 하나뿐이라 2열 격자를 쓰지 않는다. */
+.gw-inline-image-flow-row { grid-template-columns: 1fr; }
+.gw-inline-image-control-row button { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; border: 1px solid var(--gw-border); border-radius: 8px; padding-inline: 9px; color: var(--gw-blue-700); background: #fff; font-size: 14px; }
 .gw-inline-image-control-row button[aria-pressed="true"] { color: #fff; border-color: var(--gw-blue-600); background: var(--gw-blue-600); }
 .gw-inline-image-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .gw-inline-image-actions .gw-secondary-button { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
@@ -4766,3 +4795,15 @@ body.groupware-root a.gw-secondary-button {
 .gw-page-shortcuts a:hover { border-color: #b9c6ef; box-shadow: 0 12px 30px rgba(11, 21, 83, .1); }
 .gw-page-shortcuts a span { color: #5a6488; font-size: 13px; }
 .gw-page-shortcuts a i { position: absolute; top: 16px; right: 16px; color: #2450f5; font-style: normal; }
+
+/* 좁은 화면에서는 이미지 옆으로 글이 흐를 자리가 없다. 그대로 두면 글이
+   두세 글자씩 끊겨 읽기 어려우므로, 흐름 배치를 블록으로 되돌린다.
+   문서의 flow 값은 그대로 두므로 넓은 화면에서는 다시 옆으로 흐른다. */
+@media (max-width: 720px) {
+  .gw-inline-image--flow-wrap.gw-inline-image--left,
+  .gw-inline-image--flow-wrap.gw-inline-image--right {
+    float: none;
+    margin-inline: 0;
+    margin-block: 24px;
+  }
+}
