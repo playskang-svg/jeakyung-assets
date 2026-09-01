@@ -2668,6 +2668,7 @@ body.groupware-root a.gw-secondary-button {
 
 .gw-inline-image {
   --gw-image-width: 640px;
+  position: relative; /* 크기 조절 손잡이가 이 상자를 기준으로 붙는다 */
   display: grid;
   gap: 9px;
   width: min(100%, 640px);
@@ -2713,6 +2714,61 @@ body.groupware-root a.gw-secondary-button {
   color: var(--gw-muted);
   background: #f8faff;
   font-size: 14px;
+}
+
+/* 끌어서 크기 조절하는 손잡이. 이미지를 고른 동안에만 나타난다.
+   좌우 가장자리 전체를 잡을 수 있게 해서 정확히 겨냥하지 않아도 잡힌다. */
+.gw-image-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 18px;
+  display: grid;
+  place-items: center;
+  cursor: ew-resize;
+  touch-action: none;
+  z-index: 2;
+}
+
+.gw-image-handle--left { left: -9px; }
+.gw-image-handle--right { right: -9px; }
+
+/* 실제로 보이는 알약 모양. 손잡이 영역보다 작게 그려 시각적으로 방해되지 않게 한다. */
+.gw-image-handle::after {
+  content: '';
+  width: 6px;
+  height: 44px;
+  max-height: 60%;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  background: var(--gw-accent, #2450f5);
+  box-shadow: 0 2px 6px rgba(11, 21, 83, .35);
+}
+
+.gw-image-handle:hover::after { transform: scaleX(1.25); }
+.gw-image-handle:focus-visible { outline: 2px solid var(--gw-accent, #2450f5); outline-offset: 2px; border-radius: 4px; }
+
+/* 끄는 동안에는 그림 밑에 현재 너비를 띄운다. 몇 px 인지 모르고 맞추기 어렵다. */
+.gw-inline-image.is-resizing { user-select: none; }
+.gw-inline-image.is-resizing img { pointer-events: none; }
+
+.gw-image-size-badge {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(7, 16, 55, .82);
+  color: #fff;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  z-index: 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gw-image-handle:hover::after { transform: none; }
 }
 
 /* 주소로 연결한 이미지에만 붙는 안내. 파일이 우리 것이 아니라는 점을

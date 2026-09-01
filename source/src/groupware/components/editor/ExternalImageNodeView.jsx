@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { NodeViewWrapper } from '@tiptap/react';
 
+import useImageResize from './useImageResize.js';
+
 const SIZE_OPTIONS = [
   ['original', '원본'],
   ['small', '작게'],
@@ -14,6 +16,12 @@ const SIZE_OPTIONS = [
 // "이미지 교체" 대신 "주소 바꾸기"를 둔다.
 export default function ExternalImageNodeView({ node, selected, updateAttributes, deleteNode }) {
   const { src, alt = '', caption = '', alignment = 'center', size = 'medium', width = null } = node.attrs;
+  // 끌어서 크기 조절. 손을 뗄 때 size 를 custom 으로 바꾸며 한 번만 기록한다.
+  const { figureRef, dragWidth, startResize, nudge, isResizing } = useImageResize({
+    width,
+    alignment,
+    onCommit: (next) => updateAttributes({ size: 'custom', width: next }),
+  });
   const [broken, setBroken] = useState(false);
 
   const changeSource = () => {
@@ -31,13 +39,41 @@ export default function ExternalImageNodeView({ node, selected, updateAttributes
   return (
     <NodeViewWrapper
       as="figure"
-      className={`gw-inline-image gw-inline-image--${alignment} gw-inline-image--${size}${selected ? ' is-selected' : ''}`}
+      className={`gw-inline-image gw-inline-image--${alignment} gw-inline-image--${size}${selected ? ' is-selected' : ''}${isResizing ? ' is-resizing' : ''}`}
       data-external-image-src={src}
-      style={size === 'custom' && width ? { '--gw-image-width': `${width}px` } : undefined}
+      ref={figureRef}
+      style={dragWidth != null
+        ? { '--gw-image-width': `${dragWidth}px`, width: `min(100%, ${dragWidth}px)` }
+        : (size === 'custom' && width ? { '--gw-image-width': `${width}px` } : undefined)}
     >
       {broken
         ? <div className="gw-inline-image-placeholder" role="status">이미지를 불러오지 못했습니다. 주소를 확인해 주세요.</div>
         : <img src={src} alt={alt} draggable="false" loading="lazy" referrerPolicy="no-referrer" onError={() => setBroken(true)} onLoad={() => setBroken(false)} />}
+      {selected && <>
+        <span
+          className="gw-image-handle gw-image-handle--left"
+          role="slider"
+          tabIndex={0}
+          aria-label="이미지 너비 조절 (좌우 화살표로도 조절할 수 있습니다)"
+          aria-valuenow={Math.round(dragWidth ?? width ?? 640)}
+          aria-valuemin={80}
+          aria-valuemax={2560}
+          onPointerDown={(event) => startResize(event, 'left')}
+          onKeyDown={nudge}
+        />
+        <span
+          className="gw-image-handle gw-image-handle--right"
+          role="slider"
+          tabIndex={0}
+          aria-label="이미지 너비 조절 (좌우 화살표로도 조절할 수 있습니다)"
+          aria-valuenow={Math.round(dragWidth ?? width ?? 640)}
+          aria-valuemin={80}
+          aria-valuemax={2560}
+          onPointerDown={(event) => startResize(event, 'right')}
+          onKeyDown={nudge}
+        />
+        {isResizing && <span className="gw-image-size-badge" aria-hidden="true">{Math.round(dragWidth)}px</span>}
+      </>}
       {caption && !selected && <figcaption>{caption}</figcaption>}
       {selected && <div className="gw-inline-image-controls" contentEditable={false}>
         <label><span>대체 텍스트</span><input value={alt} maxLength="500" onChange={(event) => updateAttributes({ alt: event.target.value })} placeholder="이미지를 설명해 주세요" /></label>
