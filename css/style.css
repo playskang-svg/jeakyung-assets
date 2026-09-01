@@ -3184,3 +3184,113 @@ p {
     margin: 1.1em 0;
     border-radius: 10px;
 }
+
+/* ---------------------------------------------------------------- 소식/정보 본문
+   글쓴이가 HTML·CSS 로 직접 짠 화면이 들어온다. 어떤 내용이 오든 읽는 화면을
+   깨뜨리지 않도록, 넘칠 수 있는 것들을 여기서 담아 둔다. */
+.news-article-body {
+  color: #222a40;
+  font-size: 16px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  /* 본문 자체가 가로로 밀려나지 않게 한다. 안쪽 요소가 넓으면 그 요소만 스크롤한다. */
+  max-width: 100%;
+}
+
+.news-article-body > :first-child { margin-top: 0; }
+.news-article-body > :last-child { margin-bottom: 0; }
+
+.news-article-body h1,
+.news-article-body h2,
+.news-article-body h3,
+.news-article-body h4,
+.news-article-body h5,
+.news-article-body h6 {
+  margin: 1.5em 0 .6em;
+  color: #071037;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.news-article-body h1 { font-size: 28px; }
+.news-article-body h2 { font-size: 23px; }
+.news-article-body h3 { font-size: 19px; }
+.news-article-body h4,
+.news-article-body h5,
+.news-article-body h6 { font-size: 17px; }
+
+.news-article-body p { margin: 0 0 1.1em; }
+.news-article-body ul,
+.news-article-body ol { margin: 0 0 1.1em; padding-left: 1.4em; }
+.news-article-body li { margin-bottom: .4em; }
+
+.news-article-body blockquote {
+  margin: 1.4em 0;
+  padding: .2em 0 .2em 1.1em;
+  border-left: 3px solid #c3cae6;
+  color: #4d5578;
+}
+
+/* 사진은 어떤 크기로 들어와도 폭에 맞춘다. */
+.news-article-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.news-article-body figure { margin: 1.4em 0; }
+.news-article-body figcaption {
+  margin-top: .5em;
+  font-size: 13px;
+  color: #6b7396;
+  text-align: center;
+}
+
+/* 표와 코드는 좁은 화면에서 자기 안에서만 가로로 스크롤한다.
+   이렇게 해야 페이지 전체가 옆으로 밀리지 않는다. */
+.news-article-body table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1.4em 0;
+}
+
+.news-article-body th,
+.news-article-body td {
+  border: 1px solid #dfe4f5;
+  padding: .6em .8em;
+  text-align: left;
+  vertical-align: top;
+}
+
+.news-article-body th { background: #f4f6fd; font-weight: 700; }
+
+.news-article-body pre {
+  overflow-x: auto;
+  padding: 1em 1.1em;
+  border-radius: 10px;
+  background: #f4f6fd;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* 글쓴이가 짠 배치(flex·grid)가 좁은 화면에서 넘치지 않게 감싼다. */
+@media (max-width: 640px) {
+  .news-article-body [style*="grid-template-columns"],
+  .news-article-body [style*="display: flex"] { flex-wrap: wrap; }
+}
+
+/* 메타 줄의 작성자 */
+.news-article-author,
+.news-card-author {
+  color: #6b7396;
+}
+
+.news-article-author::before,
+.news-card-author::before {
+  content: "·";
+  margin: 0 .45em;
+  color: #b9c0d8;
+}
