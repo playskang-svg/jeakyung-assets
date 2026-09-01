@@ -24,6 +24,7 @@ export const ExternalImage = Node.create({
       alignment: { default: 'center' },
       size: { default: 'medium' },
       width: { default: null },
+      flow: { default: 'block' },  // 'wrap' 이면 글이 이미지 옆으로 흐른다
     };
   },
 
@@ -35,7 +36,7 @@ export const ExternalImage = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    const { src, alt, caption, alignment, size, width } = HTMLAttributes;
+    const { src, alt, caption, alignment, size, width, flow } = HTMLAttributes;
     return ['figure', mergeAttributes({
       'data-external-image-src': src,
       'data-alt': alt || '',
@@ -43,6 +44,7 @@ export const ExternalImage = Node.create({
       'data-alignment': alignment || 'center',
       'data-size': size || 'medium',
       'data-width': width || '',
+      'data-flow': flow || 'block',
     })];
   },
 

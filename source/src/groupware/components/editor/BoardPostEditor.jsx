@@ -4,6 +4,11 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
 import ExternalImage from './ExternalImage.js';
+import {
+  AlignCenterIcon, AlignLeftIcon, AlignRightIcon, BoldIcon, BulletListIcon, ClearFormatIcon,
+  CodeIcon, HeadingIcon, HighlightIcon, ImageIcon, ImageUrlIcon, ItalicIcon, LinkIcon,
+  OrderedListIcon, QuoteIcon, RuleIcon, StrikeIcon, TextColorIcon, UnderlineIcon,
+} from './EditorIcons.jsx';
 import { BackgroundColor, Color, TextStyle } from '@tiptap/extension-text-style';
 import Highlight from '@tiptap/extension-highlight';
 import TextAlign from '@tiptap/extension-text-align';
@@ -216,34 +221,34 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
 
   return <div className="gw-rich-editor">
     <div className="gw-editor-toolbar" role="toolbar" aria-label="본문 서식">
-      <ToolbarButton label="굵게" active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()}>𝐁</ToolbarButton>
-      <ToolbarButton label="기울임" active={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()}>𝐼</ToolbarButton>
-      <ToolbarButton label="밑줄" active={editor.isActive('underline')} onClick={() => editor.chain().focus().toggleUnderline().run()}>U̲</ToolbarButton>
-      <ToolbarButton label="취소선" active={editor.isActive('strike')} onClick={() => editor.chain().focus().toggleStrike().run()}>S̶</ToolbarButton>
+      <ToolbarButton label="굵게" active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()}><BoldIcon /></ToolbarButton>
+      <ToolbarButton label="기울임" active={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()}><ItalicIcon /></ToolbarButton>
+      <ToolbarButton label="밑줄" active={editor.isActive('underline')} onClick={() => editor.chain().focus().toggleUnderline().run()}><UnderlineIcon /></ToolbarButton>
+      <ToolbarButton label="취소선" active={editor.isActive('strike')} onClick={() => editor.chain().focus().toggleStrike().run()}><StrikeIcon /></ToolbarButton>
       <span className="gw-editor-divider" aria-hidden="true" />
-      <ToolbarButton label="제목" active={editor.isActive('heading', { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>🅗</ToolbarButton>
-      <ToolbarButton label="인용" active={editor.isActive('blockquote')} onClick={() => editor.chain().focus().toggleBlockquote().run()}>❝</ToolbarButton>
-      <ToolbarButton label="글머리표 목록" active={editor.isActive('bulletList')} onClick={() => editor.chain().focus().toggleBulletList().run()}>•☰</ToolbarButton>
-      <ToolbarButton label="번호 목록" active={editor.isActive('orderedList')} onClick={() => editor.chain().focus().toggleOrderedList().run()}>1☰</ToolbarButton>
+      <ToolbarButton label="제목" active={editor.isActive('heading', { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}><HeadingIcon /></ToolbarButton>
+      <ToolbarButton label="인용" active={editor.isActive('blockquote')} onClick={() => editor.chain().focus().toggleBlockquote().run()}><QuoteIcon /></ToolbarButton>
+      <ToolbarButton label="글머리표 목록" active={editor.isActive('bulletList')} onClick={() => editor.chain().focus().toggleBulletList().run()}><BulletListIcon /></ToolbarButton>
+      <ToolbarButton label="번호 목록" active={editor.isActive('orderedList')} onClick={() => editor.chain().focus().toggleOrderedList().run()}><OrderedListIcon /></ToolbarButton>
       <span className="gw-editor-divider" aria-hidden="true" />
-      <ToolbarButton label="왼쪽 정렬" active={editor.isActive({ textAlign: 'left' })} onClick={() => editor.chain().focus().setTextAlign('left').run()}>⬅</ToolbarButton>
-      <ToolbarButton label="가운데 정렬" active={editor.isActive({ textAlign: 'center' })} onClick={() => editor.chain().focus().setTextAlign('center').run()}>↔</ToolbarButton>
-      <ToolbarButton label="오른쪽 정렬" active={editor.isActive({ textAlign: 'right' })} onClick={() => editor.chain().focus().setTextAlign('right').run()}>➡</ToolbarButton>
+      <ToolbarButton label="왼쪽 정렬" active={editor.isActive({ textAlign: 'left' })} onClick={() => editor.chain().focus().setTextAlign('left').run()}><AlignLeftIcon /></ToolbarButton>
+      <ToolbarButton label="가운데 정렬" active={editor.isActive({ textAlign: 'center' })} onClick={() => editor.chain().focus().setTextAlign('center').run()}><AlignCenterIcon /></ToolbarButton>
+      <ToolbarButton label="오른쪽 정렬" active={editor.isActive({ textAlign: 'right' })} onClick={() => editor.chain().focus().setTextAlign('right').run()}><AlignRightIcon /></ToolbarButton>
       <span className="gw-editor-divider" aria-hidden="true" />
-      <ColorMenu label="글자색" icon="🎨" colors={TEXT_COLORS} onPick={(c) => editor.chain().focus().setColor(c).run()} onClear={() => editor.chain().focus().unsetColor().run()} />
-      <ColorMenu label="글자 배경색" icon="🖍" colors={HIGHLIGHT_COLORS} onPick={(c) => editor.chain().focus().setHighlight({ color: c }).run()} onClear={() => editor.chain().focus().unsetHighlight().run()} />
+      <ColorMenu label="글자색" icon={<TextColorIcon />} colors={TEXT_COLORS} onPick={(c) => editor.chain().focus().setColor(c).run()} onClear={() => editor.chain().focus().unsetColor().run()} />
+      <ColorMenu label="글자 배경색" icon={<HighlightIcon />} colors={HIGHLIGHT_COLORS} onPick={(c) => editor.chain().focus().setHighlight({ color: c }).run()} onClear={() => editor.chain().focus().unsetHighlight().run()} />
       <span className="gw-editor-divider" aria-hidden="true" />
-      <ToolbarButton label="링크 추가·해제" active={editor.isActive('link')} onClick={toggleLink}>🔗</ToolbarButton>
-      <ToolbarButton label="주소로 이미지 넣기" onClick={insertImageUrl}>🌐</ToolbarButton>
-      {board.settings.allow_images && <ToolbarButton label="사진 추가" onClick={() => fileInputRef.current?.click()}>🖼</ToolbarButton>}
-      <ToolbarButton label="구분선" onClick={() => editor.chain().focus().setHorizontalRule().run()}>―</ToolbarButton>
+      <ToolbarButton label="링크 추가·해제" active={editor.isActive('link')} onClick={toggleLink}><LinkIcon /></ToolbarButton>
+      <ToolbarButton label="주소로 이미지 넣기" onClick={insertImageUrl}><ImageUrlIcon /></ToolbarButton>
+      {board.settings.allow_images && <ToolbarButton label="사진 추가" onClick={() => fileInputRef.current?.click()}><ImageIcon /></ToolbarButton>}
+      <ToolbarButton label="구분선" onClick={() => editor.chain().focus().setHorizontalRule().run()}><RuleIcon /></ToolbarButton>
       <span className="gw-editor-divider" aria-hidden="true" />
       <ToolbarButton
         label={htmlMode ? 'HTML 모드 끄기' : 'HTML 모드'}
         active={htmlMode}
         onClick={() => { if (htmlMode) { applyHtml(); } else { setHtmlDraft(editor.getHTML()); setHtmlMode(true); } }}
-      >{'</>'}</ToolbarButton>
-      <ToolbarButton label="서식 지우기" onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}>🧹</ToolbarButton>
+      ><CodeIcon /></ToolbarButton>
+      <ToolbarButton label="서식 지우기" onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}><ClearFormatIcon /></ToolbarButton>
       <input ref={fileInputRef} className="gw-visually-hidden" type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif" onChange={(event) => { receiveFiles(event.target.files, editor.state.selection.from); event.target.value = ''; }} />
     </div>
     {htmlMode ? (
