@@ -22,8 +22,12 @@
 - 운영 저장소를 `playskang-svg/jeakyung-assets`로 옮기면서 **`jeakyung-assets` 프로젝트를 신설**해
   Git 연동을 다시 구성했다. Vercel API로는 기존 프로젝트에 저장소를 다시 붙일 수 없어
   `jeakyung-preview`를 재사용하지 않았다.
-- `jeakyung-preview`는 더 이상 사용하지 않는다. 과거 배포 이력을 보관할 필요가 없으면
-  대시보드에서 삭제한다.
+- `jeakyung-preview`는 **2026-09-01에 삭제했다.**
+- 그때까지 그 프로젝트가 서빙하던 `groupware.jeakyung.com`(그룹웨어 옛 주소)도 함께 폐기했다.
+  그룹웨어는 `jeakyung.com/groupware/`로 옮겨졌고 사이트 어디에서도 옛 주소로 보내지 않으므로
+  서브도메인을 유지할 이유가 없다. Cloudflare의 `groupware` DNS 레코드도 지운다.
+- 옛 주소를 되살려야 한다면 `groupware.jeakyung.com`을 `jeakyung-assets`에 도메인으로 붙이고
+  `vercel.json`에 `has: host` 조건부 `redirects`를 넣으면 된다.
 
 ## 13.2 자동 배포 규칙
 
@@ -44,14 +48,6 @@
     직접 접속하거나 새로고침해도 URL이 유지된 채 앱이 부팅된다.
   - GitHub Pages용 `404.html` 우회 스크립트는 Pages 호환을 위해 그대로 두지만,
     Vercel에서는 리라이트가 먼저 매칭되므로 동작하지 않는다.
-- **옛 서브도메인 리다이렉트**: `groupware.jeakyung.com/**` → `https://jeakyung.com/**`
-  - 그룹웨어가 예전에 쓰던 주소다. 직원 북마크가 남아 있어 죽이지 않고 넘겨준다.
-  - 루트(`/`)만 따로 `/groupware/`로 보낸다. 옛 주소의 루트는 그룹웨어 첫 화면이었으므로
-    공개 사이트 홈이 아니라 그룹웨어로 가야 한다. 규칙 순서가 그래서 중요하다.
-  - `has: host` 조건이 붙어 있어 `jeakyung.com`으로 들어온 요청에는 매칭되지 않는다.
-  - 307(임시)이다. 옛 주소를 정리할 때 되돌릴 수 있게 두었고, 굳히려면 `permanent: true`로 바꾼다.
-  - 이 규칙은 `groupware.jeakyung.com`이 **이 프로젝트에 도메인으로 붙어 있어야** 동작한다.
-    (2026-09-01에 `jeakyung-preview` 프로젝트에서 넘겨받았다.)
 - **캐시 정책**
   - `/assets/*` : `max-age=31536000, immutable` (파일명 해시로 무효화)
   - `/public/*` : 1주 캐시 + stale-while-revalidate (이미지·영상)
