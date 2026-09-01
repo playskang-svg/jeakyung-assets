@@ -44,22 +44,38 @@ const groupwareSpaFallback = {
 };
 
 
-// .env 없이 build 하면 Supabase 주소가 빈 값으로 구워져서, 배포된 그룹웨어가
-// 로그인 화면에서 "Supabase 연결 설정이 필요합니다" 만 띄우고 멈춘다.
-// 빌드는 성공하고 화면만 죽는 조합이라 알아채기 어려우니 여기서 막는다.
-function requireSupabaseEnv(mode) {
+// .env 없이 돌리면 Supabase 주소가 빈 값으로 들어가서, 그룹웨어가 로그인 화면에서
+// "Supabase 연결 설정이 필요합니다" 만 띄우고 멈춘다. 화면은 멀쩡히 그려지기 때문에
+// 무엇이 빠졌는지 알아채기 어렵다.
+//   build : 그대로 배포되면 실제 사이트가 죽으므로 멈춘다.
+//   dev   : 공개 사이트만 손볼 때는 키 없이도 쓸 수 있어야 하니, 멈추는 대신
+//           터미널에 눈에 띄게 알린다.
+function checkSupabaseEnv(mode, command) {
   const env = loadEnv(mode, projectRoot, 'VITE_');
   const missing = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_PUBLISHABLE_KEY']
     .filter((key) => !env[key]?.trim());
   if (missing.length === 0) return;
-  throw new Error(
-    `${missing.join(', ')} 이(가) 없어 빌드를 멈춥니다. source/.env 를 만든 뒤 다시 빌드해 주세요.\n`
-    + '이 값 없이 만든 번들은 그룹웨어 로그인이 동작하지 않습니다.',
+
+  if (command === 'build') {
+    throw new Error(
+      `${missing.join(', ')} 이(가) 없어 빌드를 멈춥니다. source/.env 를 만든 뒤 다시 빌드해 주세요.\n`
+      + '이 값 없이 만든 번들은 그룹웨어 로그인이 동작하지 않습니다.',
+    );
+  }
+
+  console.warn(
+    `\n\u001b[33m┌─ source/.env 가 없습니다 ─────────────────────────────\u001b[0m\n`
+    + `\u001b[33m│\u001b[0m 빠진 값: ${missing.join(', ')}\n`
+    + `\u001b[33m│\u001b[0m 공개 사이트는 그대로 보이지만 \u001b[1m/groupware/ 로그인은 동작하지 않습니다.\u001b[0m\n`
+    + `\u001b[33m│\u001b[0m 고치려면: cp .env.example .env 로 만든 뒤 Supabase 대시보드의\n`
+    + `\u001b[33m│\u001b[0m Settings → API 에서 Project URL 과 publishable key 를 채우고,\n`
+    + `\u001b[33m│\u001b[0m 개발 서버를 다시 시작하세요.\n`
+    + `\u001b[33m└──────────────────────────────────────────────────────\u001b[0m\n`,
   );
 }
 
 export default defineConfig(({ command, mode }) => {
-  if (command === 'build') requireSupabaseEnv(mode);
+  checkSupabaseEnv(mode, command);
   return {
     plugins: [groupwareSpaFallback, preserveLegacyScript, react()],
     publicDir: 'static',
