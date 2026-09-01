@@ -7,6 +7,13 @@ import '../../shared/popup/popup.css';
 // 화면에서 본문이 열린다. 뒤로가기 / 목록 보기 / 닫기와 브라우저 뒤로가기가
 // 모두 목록으로 돌아온다.
 const ALL = '__all__';
+
+// 목록 위에 한 줄로 놓는 자료 링크. 소식 글이 아니라 바깥 문서로 나가므로
+// 썸네일 없이 제목만 두고 새 탭으로 연다.
+const DOCUMENT_LINKS = [
+  { label: '회사소개서(2025)', href: 'https://jeakyung.quv.kr/21' },
+  { label: '컨설팅소개서(2025)', href: 'https://jeakyung.quv.kr/48' },
+];
 const ARTICLE_LIMIT = 50;
 
 const formatDate = (value) => {
@@ -152,6 +159,21 @@ export default function NewsPage() {
             </article>
           ) : (
             <>
+              {DOCUMENT_LINKS.length > 0 && (
+                <nav className="news-documents" aria-label="회사 자료">
+                  {DOCUMENT_LINKS.map((item) => (
+                    <a
+                      key={item.href}
+                      className="news-document-link"
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {item.label} <i aria-hidden="true">↗</i>
+                    </a>
+                  ))}
+                </nav>
+              )}
               {categories.length > 0 && (
                 <nav className="news-categories" aria-label="분류 선택">
                   {[[ALL, '전체'], ...categories.map((name) => [name, name])].map(([value, label]) => (
