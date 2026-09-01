@@ -5,6 +5,8 @@ import { EMPTY_BOARD_DOCUMENT } from '../../utils/boardDocument.js';
 
 const HEX_COLOR = /^#[0-9a-f]{3,8}$/i;
 const SAFE_HREF = /^https?:\/\//i;
+// 이미지는 https 만 받는다. http 는 브라우저가 혼합 콘텐츠로 막아 어차피 안 보인다.
+const SAFE_IMAGE_SRC = /^https:\/\//i;
 
 function MarkedText({ node }) {
   let content = node.text ?? '';
@@ -53,6 +55,18 @@ function RenderNodes({ nodes = [], urls, openImage }) {
     if (node.type === 'codeBlock') return <pre key={key}><code>{node.content?.map((item) => item.text ?? '').join('')}</code></pre>;
     if (node.type === 'horizontalRule') return <hr key={key} />;
     if (node.type === 'hardBreak') return <br key={key} />;
+    if (node.type === 'externalImage') {
+      // 주소로 연결한 이미지. 저장 시 DB 에서도 https 만 통과시키지만, 예전 문서를
+      // 대비해 여기서도 스킴을 확인한다. 클릭 확대는 없다 - 원본이 곧 그 주소다.
+      const { src = '', alt = '', caption = '', alignment = 'center', size = 'medium', width = null } = node.attrs ?? {};
+      if (!SAFE_IMAGE_SRC.test(src)) return null;
+      return <figure key={key} className={`gw-inline-image gw-inline-image--${alignment} gw-inline-image--${size}`} style={size === 'custom' && width ? { '--gw-image-width': `${width}px` } : undefined}>
+        <a href={src} target="_blank" rel="noopener noreferrer" aria-label={`${alt || '본문 이미지'} 원본 열기, 새 창`}>
+          <img src={src} alt={alt} loading="lazy" referrerPolicy="no-referrer" />
+        </a>
+        {caption && <figcaption>{caption}</figcaption>}
+      </figure>;
+    }
     if (node.type === 'inlineImage') {
       const { attachmentId, alt = '', caption = '', alignment = 'center', size = 'medium', width = null } = node.attrs ?? {};
       const source = urls[attachmentId];
