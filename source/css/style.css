@@ -437,7 +437,7 @@ p {
 }
 
 .hero-media,
-.hero-media video,
+.hero-network,
 .hero-overlay,
 .hero-grid {
     position: absolute;
@@ -449,20 +449,16 @@ p {
     background: linear-gradient(135deg, var(--navy-800), var(--navy-950));
 }
 
-.hero-media video {
+/* 물류망 애니메이션. 영상 대신 캔버스로 그려서 코덱과 용량에 기대지 않는다. */
+.hero-network {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: center;
-}
-
-.hero.video-unavailable .hero-media video {
-    display: none;
+    display: block;
 }
 
 .hero-overlay {
     background:
-        linear-gradient(90deg, rgba(3, 8, 37, 0.9) 0%, rgba(3, 8, 37, 0.64) 45%, rgba(3, 8, 37, 0.25) 100%),
+        linear-gradient(90deg, rgba(3, 8, 37, 0.88) 0%, rgba(3, 8, 37, 0.56) 48%, rgba(3, 8, 37, 0.18) 100%),
         linear-gradient(0deg, rgba(3, 8, 37, 0.75) 0%, transparent 38%);
 }
 
@@ -2305,10 +2301,6 @@ p {
         height: auto;
         min-height: 100svh;
         padding: 118px 0 76px;
-    }
-
-    .hero-media video {
-        object-position: 58% center;
     }
 
     .hero-overlay {

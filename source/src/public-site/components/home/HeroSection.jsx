@@ -1,34 +1,11 @@
 import { CONSULTATION_URL } from '../../data/navigation.js';
-import useHeroVideoState from '../../hooks/useHeroVideoState.js';
-import heroVideoUrl from '../../../../public/videos/main_top.mp4';
+import HeroNetwork from './HeroNetwork.jsx';
 
 export default function HeroSection() {
-  const {
-    handleVideoError,
-    isPaused,
-    isUnavailable,
-    videoRef,
-  } = useHeroVideoState();
-  const className = [
-    'hero',
-    isUnavailable ? 'video-unavailable' : '',
-    isPaused ? 'video-paused' : '',
-  ].filter(Boolean).join(' ');
-
   return (
-    <section className={className} id="top" aria-labelledby="hero-title">
+    <section className="hero" id="top" aria-labelledby="hero-title">
       <div className="hero-media" aria-hidden="true">
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          onError={handleVideoError}
-        >
-          <source src={heroVideoUrl} type="video/mp4" />
-        </video>
+        <HeroNetwork />
         <div className="hero-overlay" />
         <div className="hero-grid" />
       </div>
