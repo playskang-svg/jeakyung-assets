@@ -25,7 +25,9 @@
 - `jeakyung-preview`는 **2026-09-01에 삭제했다.**
 - 그때까지 그 프로젝트가 서빙하던 `groupware.jeakyung.com`(그룹웨어 옛 주소)도 함께 폐기했다.
   그룹웨어는 `jeakyung.com/groupware/`로 옮겨졌고 사이트 어디에서도 옛 주소로 보내지 않으므로
-  서브도메인을 유지할 이유가 없다. Cloudflare의 `groupware` DNS 레코드도 지운다.
+  서브도메인을 유지할 이유가 없다. Cloudflare의 `groupware` CNAME 레코드도 같은 날 삭제했다.
+  (레코드를 남겨 두면 Vercel을 가리키는 채로 주인이 없어져, 다른 Vercel 사용자가 그 호스트명을
+  선점할 수 있다. 옛 로그인 주소였던 만큼 위장 로그인 화면에 쓰이기 좋은 자리라 함께 정리했다.)
 - 옛 주소를 되살려야 한다면 `groupware.jeakyung.com`을 `jeakyung-assets`에 도메인으로 붙이고
   `vercel.json`에 `has: host` 조건부 `redirects`를 넣으면 된다.
 
