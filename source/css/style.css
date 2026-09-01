@@ -3147,3 +3147,585 @@ p {
     margin: 1.1em 0;
     border-radius: 10px;
 }
+/* ---------------------------------------------------------------- 소식/정보 본문
+   글쓴이가 HTML·CSS 로 직접 짠 화면이 들어온다. 어떤 내용이 오든 읽는 화면을
+   깨뜨리지 않도록, 넘칠 수 있는 것들을 여기서 담아 둔다. */
+.news-article-body {
+  color: #222a40;
+  font-size: 16px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  /* 본문 자체가 가로로 밀려나지 않게 한다. 안쪽 요소가 넓으면 그 요소만 스크롤한다. */
+  max-width: 100%;
+}
+
+.news-article-body > :first-child { margin-top: 0; }
+.news-article-body > :last-child { margin-bottom: 0; }
+
+.news-article-body h1,
+.news-article-body h2,
+.news-article-body h3,
+.news-article-body h4,
+.news-article-body h5,
+.news-article-body h6 {
+  margin: 1.5em 0 .6em;
+  color: #071037;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.news-article-body h1 { font-size: 28px; }
+.news-article-body h2 { font-size: 23px; }
+.news-article-body h3 { font-size: 19px; }
+.news-article-body h4,
+.news-article-body h5,
+.news-article-body h6 { font-size: 17px; }
+
+.news-article-body p { margin: 0 0 1.1em; }
+.news-article-body ul,
+.news-article-body ol { margin: 0 0 1.1em; padding-left: 1.4em; }
+.news-article-body li { margin-bottom: .4em; }
+
+.news-article-body blockquote {
+  margin: 1.4em 0;
+  padding: .2em 0 .2em 1.1em;
+  border-left: 3px solid #c3cae6;
+  color: #4d5578;
+}
+
+/* 사진은 어떤 크기로 들어와도 폭에 맞춘다. */
+.news-article-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.news-article-body figure { margin: 1.4em 0; }
+.news-article-body figcaption {
+  margin-top: .5em;
+  font-size: 13px;
+  color: #6b7396;
+  text-align: center;
+}
+
+/* 표와 코드는 좁은 화면에서 자기 안에서만 가로로 스크롤한다.
+   이렇게 해야 페이지 전체가 옆으로 밀리지 않는다. */
+.news-article-body table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1.4em 0;
+}
+
+.news-article-body th,
+.news-article-body td {
+  border: 1px solid #dfe4f5;
+  padding: .6em .8em;
+  text-align: left;
+  vertical-align: top;
+}
+
+.news-article-body th { background: #f4f6fd; font-weight: 700; }
+
+.news-article-body pre {
+  overflow-x: auto;
+  padding: 1em 1.1em;
+  border-radius: 10px;
+  background: #f4f6fd;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* 글쓴이가 짠 배치(flex·grid)가 좁은 화면에서 넘치지 않게 감싼다. */
+@media (max-width: 640px) {
+  .news-article-body [style*="grid-template-columns"],
+  .news-article-body [style*="display: flex"] { flex-wrap: wrap; }
+}
+
+/* 메타 줄의 작성자 */
+.news-article-author,
+.news-card-author {
+  color: #6b7396;
+}
+
+.news-article-author::before,
+.news-card-author::before {
+  content: "·";
+  margin: 0 .45em;
+  color: #b9c0d8;
+}
+
+/* 소식/정보 목록 위 자료 링크 줄.
+   글이 아니라 바깥 문서로 나가는 자리라, 분류 탭과 구별되도록
+   테두리를 둘러 알약 모양으로 두고 화살표로 새 탭임을 알린다. */
+.news-documents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 20px;
+}
+
+.news-document-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .5em;
+  padding: 10px 20px;
+  border: 1px solid #c3cae6;
+  border-radius: 999px;
+  background: #fff;
+  color: #0b1560;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color .15s ease, box-shadow .15s ease, color .15s ease;
+}
+
+.news-document-link:hover,
+.news-document-link:focus-visible {
+  border-color: #2450f5;
+  color: #2450f5;
+  box-shadow: 0 8px 20px rgba(11, 21, 83, .08);
+}
+
+.news-document-link i {
+  font-style: normal;
+  font-size: 13px;
+  color: #6b7396;
+}
+
+.news-document-link:hover i,
+.news-document-link:focus-visible i { color: #2450f5; }
+
+@media (max-width: 480px) {
+  .news-document-link { flex: 1 1 100%; justify-content: center; }
+}
+
+/* ---------------------------------------------------------------- 연혁 (History)
+   대표이사 인사말과 회사 소개 사이에 놓이는 버튼과, 눌렀을 때 그 자리에서
+   갈라지듯 열리는 패널. */
+.history-block { margin: 40px 0 8px; }
+
+/* 입체 버튼: 아래쪽에 짙은 층을 깔아 두께를 만들고, 누르면 그만큼 내려앉는다. */
+.history-button {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: #0a1147;
+  box-shadow: 0 18px 34px rgba(11, 21, 83, .22);
+  cursor: pointer;
+  font: inherit;
+  transition: transform .18s cubic-bezier(.2, .8, .3, 1), box-shadow .18s ease;
+}
+
+.history-button-face {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 26px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #2450f5 0%, #1b3ad4 55%, #16309f 100%);
+  transform: translateY(-6px);
+  transition: transform .18s cubic-bezier(.2, .8, .3, 1);
+}
+
+.history-button:hover { box-shadow: 0 24px 44px rgba(11, 21, 83, .28); }
+.history-button:hover .history-button-face { transform: translateY(-9px); }
+
+.history-button:active .history-button-face,
+.history-button.is-open .history-button-face { transform: translateY(-2px); }
+.history-button:active { box-shadow: 0 10px 20px rgba(11, 21, 83, .2); }
+
+.history-button:focus-visible { outline: 3px solid #94a9ff; outline-offset: 3px; }
+
+.history-button-label {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: #fff;
+}
+
+.history-button-sub {
+  flex: 1;
+  font-size: 14px;
+  color: rgba(255, 255, 255, .74);
+}
+
+/* 화살표: 닫혀 있으면 아래, 열리면 위를 가리킨다. */
+.history-button-arrow {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  border-right: 2.5px solid #fff;
+  border-bottom: 2.5px solid #fff;
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform .25s ease;
+}
+
+.history-button.is-open .history-button-arrow {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+
+/* 패널: 위아래로 갈라지듯 펼쳐진다. */
+.history-panel {
+  margin-top: 16px;
+  padding: 28px 30px 24px;
+  border: 1px solid #dfe4f5;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 22px 50px rgba(11, 21, 83, .1);
+  animation: history-open .34s cubic-bezier(.2, .8, .3, 1) both;
+}
+
+@keyframes history-open {
+  from { opacity: 0; transform: translateY(-10px) scaleY(.97); transform-origin: top; }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .history-panel { animation: none; }
+  .history-button,
+  .history-button-face,
+  .history-button-arrow { transition: none; }
+}
+
+.history-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid #eef1fa;
+}
+
+.history-panel-head h2 {
+  margin: .3em 0 0;
+  font-size: 26px;
+  letter-spacing: -.02em;
+  color: #071037;
+}
+
+.history-close {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #dfe4f5;
+  border-radius: 50%;
+  background: #fff;
+  color: #4d5578;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color .15s ease, color .15s ease;
+}
+
+.history-close:hover { border-color: #2450f5; color: #2450f5; }
+
+/* 패널 본문: 왼쪽 그래픽, 오른쪽 연표. */
+.history-body {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* 원본 페이지의 사진 자리를 대신하는 그래픽.
+   브랜드 마크를 크게 깔고 창립 연도를 얹는다. */
+.history-visual {
+  position: relative;
+  overflow: hidden;
+  padding: 30px 28px;
+  border-radius: 16px;
+  background: linear-gradient(155deg, #0a1147 0%, #16309f 60%, #2450f5 100%);
+  color: #fff;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.history-visual-mark {
+  position: absolute;
+  top: -34px;
+  right: -46px;
+  width: 230px;
+  height: 230px;
+  fill: none;
+  stroke: rgba(255, 255, 255, .3);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.history-visual-since {
+  margin: 0 0 .35em;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .72);
+}
+
+.history-visual-range {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.history-visual-note {
+  margin: .6em 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, .8);
+}
+
+/* 연표: 왼쪽에 연도, 오른쪽에 그 해의 일들. */
+.history-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.history-timeline > li {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 20px;
+}
+
+.history-year {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #2450f5;
+  font-variant-numeric: tabular-nums;
+}
+
+.history-events {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 22px;
+  border-left: 2px solid #e3e8f7;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-events > li {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  font-size: 16px;
+  line-height: 1.65;
+  color: #222a40;
+}
+
+/* 연표 위의 점 */
+.history-events > li::before {
+  content: "";
+  position: absolute;
+  left: -28px;
+  top: .55em;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #2450f5;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.history-month {
+  flex: none;
+  min-width: 2.4em;
+  color: #6b7396;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.history-panel-foot {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #eef1fa;
+  text-align: center;
+}
+
+.history-close-wide {
+  padding: 12px 30px;
+  border: 1px solid #c3cae6;
+  border-radius: 999px;
+  background: #fff;
+  color: #0b1560;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color .15s ease, color .15s ease;
+}
+
+.history-close-wide:hover { border-color: #2450f5; color: #2450f5; }
+
+@media (max-width: 980px) and (min-width: 721px) {
+  .history-body { grid-template-columns: 240px 1fr; gap: 24px; }
+  .history-visual-range { font-size: 26px; }
+}
+
+/* 모바일 */
+@media (max-width: 720px) {
+  .history-block { margin: 30px 0 4px; }
+
+  .history-button-face { flex-wrap: wrap; gap: 6px 12px; padding: 18px 20px; }
+  .history-button-label { font-size: 19px; }
+  .history-button-sub { flex: 1 0 100%; order: 3; font-size: 13px; }
+
+  .history-panel { padding: 22px 18px 20px; border-radius: 14px; }
+  .history-panel-head { margin-bottom: 20px; }
+  .history-panel-head h2 { font-size: 21px; }
+
+  /* 그래픽은 위에 납작하게 눕히고, 그 아래 연표를 둔다. */
+  .history-body { grid-template-columns: 1fr; gap: 22px; }
+  .history-visual { min-height: 0; padding: 22px 20px; }
+  .history-visual-mark { width: 150px; height: 150px; top: -22px; right: -30px; }
+  .history-visual-range { font-size: 25px; }
+
+  /* 좁은 화면에서는 연도를 위로 올리고 아래에 그 해의 일들을 붙인다. */
+  .history-timeline > li { grid-template-columns: 1fr; gap: 10px; }
+  .history-year { font-size: 20px; }
+  .history-events { padding-left: 18px; gap: 10px; }
+  .history-events > li { font-size: 15px; }
+  .history-events > li::before { left: -24px; }
+}
+
+/* ---------------------------------------------------------------- 찾아오시는 길 (개편)
+   예전에는 본사만 커다란 가짜 지도가 차지하고 나머지 사업장은 작은 카드였다.
+   그림이 실제 지도가 아니라 자리만 넓게 쓰고 정보를 주지 못했으므로,
+   세 곳을 같은 크기의 카드로 두고 길찾기는 카카오맵으로 넘긴다. */
+.location-panel {
+  display: block;
+  margin-top: var(--section-space);
+  padding-top: clamp(56px, 6vw, 92px);
+  border-top: 1px solid var(--line);
+}
+
+.loc-head { max-width: 44rem; margin-bottom: clamp(28px, 3.5vw, 44px); }
+
+.loc-head h2 {
+  margin: .35em 0 .4em;
+  font-size: clamp(32px, 3.4vw, 48px);
+  letter-spacing: -.045em;
+  line-height: 1.12;
+}
+
+.loc-head p { margin: 0; color: #4d5578; font-size: 16px; }
+
+.loc-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.loc-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 26px 26px 22px;
+  border: 1px solid #dfe4f5;
+  border-radius: 16px;
+  background: #fff;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.loc-card:hover {
+  border-color: #b9c6ef;
+  box-shadow: 0 18px 40px rgba(11, 21, 83, .1);
+  transform: translateY(-3px);
+}
+
+.loc-card-type {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #2450f5;
+}
+
+.loc-card h3 {
+  margin: .55em 0 .5em;
+  font-size: 19px;
+  letter-spacing: -.02em;
+  color: #071037;
+}
+
+.loc-card address {
+  margin: 0;
+  font-style: normal;
+  font-size: 15px;
+  line-height: 1.65;
+  color: #4d5578;
+}
+
+.loc-card-contacts {
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid #eef1fa;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.loc-card-contacts > div { display: flex; align-items: baseline; gap: 12px; }
+.loc-card-contacts dt { flex: none; min-width: 4.2em; color: #7b83a4; }
+.loc-card-contacts dd { margin: 0; color: #131a3d; font-weight: 600; }
+.loc-card-contacts a { color: inherit; text-decoration: none; }
+.loc-card-contacts a:hover { color: #2450f5; text-decoration: underline; }
+
+/* 길찾기 버튼은 카드 바닥에 붙여 카드 높이가 달라도 줄이 맞게 한다. */
+.loc-card-link {
+  margin-top: auto;
+  padding-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #0b1560;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.loc-card-link svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: #2450f5;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.loc-card-link span { color: #6b7396; font-size: 13px; }
+.loc-card-link:hover { color: #2450f5; }
+.loc-card-link:hover span { color: #2450f5; }
+
+@media (max-width: 900px) {
+  .loc-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 620px) {
+  .loc-grid { grid-template-columns: 1fr; gap: 14px; }
+  .loc-card { padding: 22px 20px 18px; }
+  .loc-card:hover { transform: none; }
+  .loc-head h2 { font-size: clamp(28px, 8vw, 36px); }
+}

@@ -8,6 +8,7 @@ import CoreValues from '../components/home/CoreValues.jsx';
 import FAQSection from '../components/home/FAQSection.jsx';
 import GuideSection from '../components/home/GuideSection.jsx';
 import HeroSection from '../components/home/HeroSection.jsx';
+import HistorySection from '../components/home/HistorySection.jsx';
 import LocationSection from '../components/home/LocationSection.jsx';
 import NewsSection from '../components/home/NewsSection.jsx';
 import PartnersSection from '../components/home/PartnersSection.jsx';
@@ -31,6 +32,8 @@ export default function HomePage() {
           <article className="ceo-greeting reveal">
             <CeoGreeting />
           </article>
+
+          <HistorySection />
 
           <div className="section-heading split-heading company-heading reveal">
             <CompanyOverview />
