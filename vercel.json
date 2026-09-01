@@ -4,6 +4,20 @@
   "buildCommand": null,
   "installCommand": null,
   "outputDirectory": ".",
+  "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "groupware.jeakyung.com" }],
+      "destination": "https://jeakyung.com/groupware/",
+      "permanent": false
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "groupware.jeakyung.com" }],
+      "destination": "https://jeakyung.com/:path*",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/groupware",
