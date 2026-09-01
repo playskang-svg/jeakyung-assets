@@ -3,6 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 import PopupRichEditor from '../editor/PopupRichEditor.jsx';
 import PopupDocumentContent from '../../../shared/popup/PopupDocumentContent.jsx';
 import { sanitizePopupHtml } from '../../../shared/popup/popupHtml.js';
+
+// 공개 소식 화면이 본문을 감싸는 선택자. 글쓴이가 적은 <style> 은 이 안으로 갇힌다.
+const NEWS_STYLE_SCOPE = '.news-article-body';
 import {
   deleteSiteArticle,
   getSiteArticleAdminCatalog,
@@ -19,7 +22,7 @@ function localDateTime(value = new Date()) {
 }
 
 const createEmptyArticle = () => ({
-  id: '', title: '', category: '', summary: '', thumbnail_url: '',
+  id: '', title: '', category: '', summary: '', author: '', thumbnail_url: '',
   content_mode: 'editor', content_html: '<p>본문을 입력하세요.</p>',
   published_at: localDateTime(), sort_order: 100, is_active: true, archived: false,
 });
@@ -64,6 +67,7 @@ export default function SiteArticleAdminPanel() {
       ...article,
       category: article.category ?? '',
       summary: article.summary ?? '',
+      author: article.author ?? '',
       thumbnail_url: article.thumbnail_url ?? '',
       published_at: localDateTime(article.published_at),
       archived: Boolean(article.archived_at),
@@ -110,7 +114,7 @@ export default function SiteArticleAdminPanel() {
 
   const submit = async (event) => {
     event.preventDefault();
-    const safeHtml = sanitizePopupHtml(form.content_html);
+    const safeHtml = sanitizePopupHtml(form.content_html, { styleScope: NEWS_STYLE_SCOPE });
     if (!safeHtml.replace(/<[^>]*>/g, '').trim()) { setError('본문을 입력해 주세요.'); return; }
     setSaving(true); setError(''); setStatus('');
     try {
@@ -186,6 +190,9 @@ export default function SiteArticleAdminPanel() {
           </label>
           <label className="gw-field"><span>분류 (선택)</span>
             <input maxLength={40} value={form.category} onChange={(event) => patch({ category: event.target.value })} placeholder="예: 물류 동향" />
+          </label>
+          <label className="gw-field"><span>작성자 (선택)</span>
+            <input maxLength={60} value={form.author} onChange={(event) => patch({ author: event.target.value })} placeholder="예: 재경닷컴 편집팀" />
           </label>
           <label className="gw-field"><span>게시 일시</span>
             <input required type="datetime-local" value={form.published_at} onChange={(event) => patch({ published_at: event.target.value })} />

@@ -127,6 +127,7 @@ export default function NewsPage() {
                 <p className="news-article-meta">
                   {current.category && <span className="site-news-chip">{current.category}</span>}
                   <time dateTime={current.published_at}>{formatDate(current.published_at)}</time>
+                  {(detail?.author || current.author) && <span className="news-article-author">{detail?.author || current.author}</span>}
                 </p>
                 <h2 id="news-article-title">{current.title}</h2>
                 {current.summary && <p className="news-article-summary">{current.summary}</p>}
@@ -138,7 +139,13 @@ export default function NewsPage() {
               )}
               {detailState === 'loading' && <p className="site-news-dialog-state" role="status">본문을 불러오고 있습니다.</p>}
               {detailState === 'failed' && <p className="site-news-dialog-state" role="alert">본문을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>}
-              {detailState === 'ready' && detail && <PopupDocumentContent html={detail.content_html} />}
+              {detailState === 'ready' && detail && (
+                <PopupDocumentContent
+                  html={detail.content_html}
+                  className="news-article-body"
+                  styleScope=".news-article-body"
+                />
+              )}
               <div className="news-article-footer">
                 <button type="button" className="news-secondary-button" onClick={closeArticle}>목록 보기</button>
               </div>
@@ -186,6 +193,7 @@ export default function NewsPage() {
                         <span className="news-card-meta">
                           {article.category && <span className="site-news-chip">{article.category}</span>}
                           <time dateTime={article.published_at}>{formatDate(article.published_at)}</time>
+                          {article.author && <span className="news-card-author">{article.author}</span>}
                         </span>
                         <strong>{article.title}</strong>
                         {article.summary && <span className="news-card-summary">{article.summary}</span>}
