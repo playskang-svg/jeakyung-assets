@@ -243,15 +243,6 @@ table.doc-table th, .doc-content table th { background: #eef2f8; text-align: lef
 
 .sig-wrap { display: inline-flex; align-items: center; gap: 4px; margin-left: 4px; }
 .sig-img { height: 48px; width: auto; vertical-align: middle; }
-.sig-draft-badge {
-  font-size: 10px;
-  background: var(--check-bg);
-  color: #6b4e00;
-  border: 1px solid #e8d38a;
-  border-radius: 6px;
-  padding: 1px 5px;
-  cursor: help;
-}
 
 .doc-nav {
   display: flex;
