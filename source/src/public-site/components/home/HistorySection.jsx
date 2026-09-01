@@ -99,10 +99,19 @@ export default function HistorySection() {
         aria-controls={panelId}
         onClick={() => (open ? close() : setOpen(true))}
       >
-        <span className="history-button-face">
-          <span className="history-button-label">History</span>
-          <span className="history-button-sub">재경닷컴 연혁</span>
-          <span className="history-button-arrow" aria-hidden="true" />
+        <span className="history-button-text">
+          <span className="history-button-eyebrow">History</span>
+          <span className="history-button-title">재경닷컴이 걸어온 길</span>
+        </span>
+
+        {/* 연혁에서 실제로 할 말은 "얼마나 오래 해왔는가"다. 버튼에서 먼저 보여 준다. */}
+        <span className="history-button-span">
+          <span className="history-button-years">{firstYear}<i aria-hidden="true" />{latestYear}</span>
+          <span className="history-button-note">현장에서 {spanYears}년</span>
+        </span>
+
+        <span className="history-button-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" role="presentation"><path d="m5 8.5 7 7 7-7" /></svg>
         </span>
       </button>
 
