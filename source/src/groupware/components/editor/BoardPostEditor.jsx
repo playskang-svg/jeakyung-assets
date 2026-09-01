@@ -2,6 +2,8 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { Extension } from '@tiptap/core';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+
+import ExternalImage from './ExternalImage.js';
 import { BackgroundColor, Color, TextStyle } from '@tiptap/extension-text-style';
 import Highlight from '@tiptap/extension-highlight';
 import TextAlign from '@tiptap/extension-text-align';
@@ -163,6 +165,7 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
         resolveUrl: (attachmentId) => urlsRef.current[attachmentId] ?? '',
         replaceImage: async (file, attachmentId) => uploadOne(file, attachmentId),
       }),
+      ExternalImage,
       ImageTransfer.configure({ receiveFiles }),
     ],
     content: initialDocument,
@@ -195,6 +198,17 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
     editor.chain().focus().extendMarkRange('link').setLink({ href }).run();
   };
 
+  // 주소로 이미지 넣기. 파일을 올리지 않으므로 용량·장수 제한과는 무관하고,
+  // 대신 원본이 사라지면 깨진다는 점을 노드뷰에서 안내한다.
+  const insertImageUrl = () => {
+    const input = window.prompt('본문에 넣을 이미지 주소를 입력하세요.', 'https://');
+    if (input === null) return;
+    const src = input.trim();
+    if (!/^https:\/\//i.test(src)) { window.alert('https:// 로 시작하는 주소만 넣을 수 있습니다.'); return; }
+    if (src.length > 2000) { window.alert('주소가 너무 깁니다.'); return; }
+    editor.chain().focus().insertContent({ type: 'externalImage', attrs: { src } }).run();
+  };
+
   const applyHtml = () => {
     editor.commands.setContent(htmlDraft, { emitUpdate: true });
     setHtmlMode(false);
@@ -220,6 +234,7 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
       <ColorMenu label="글자 배경색" icon="🖍" colors={HIGHLIGHT_COLORS} onPick={(c) => editor.chain().focus().setHighlight({ color: c }).run()} onClear={() => editor.chain().focus().unsetHighlight().run()} />
       <span className="gw-editor-divider" aria-hidden="true" />
       <ToolbarButton label="링크 추가·해제" active={editor.isActive('link')} onClick={toggleLink}>🔗</ToolbarButton>
+      <ToolbarButton label="주소로 이미지 넣기" onClick={insertImageUrl}>🌐</ToolbarButton>
       {board.settings.allow_images && <ToolbarButton label="사진 추가" onClick={() => fileInputRef.current?.click()}>🖼</ToolbarButton>}
       <ToolbarButton label="구분선" onClick={() => editor.chain().focus().setHorizontalRule().run()}>―</ToolbarButton>
       <span className="gw-editor-divider" aria-hidden="true" />

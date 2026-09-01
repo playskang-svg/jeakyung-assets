@@ -2715,6 +2715,15 @@ body.groupware-root a.gw-secondary-button {
   font-size: 14px;
 }
 
+/* 주소로 연결한 이미지에만 붙는 안내. 파일이 우리 것이 아니라는 점을
+   글쓴이가 편집 중에 알아야 나중에 깨졌을 때 당황하지 않는다. */
+.gw-inline-image-note {
+  margin: 0;
+  color: var(--gw-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .gw-inline-image-controls {
   display: grid;
   gap: 10px;
