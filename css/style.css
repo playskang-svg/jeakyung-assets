@@ -3294,3 +3294,48 @@ p {
   margin: 0 .45em;
   color: #b9c0d8;
 }
+
+/* 소식/정보 목록 위 자료 링크 줄.
+   글이 아니라 바깥 문서로 나가는 자리라, 분류 탭과 구별되도록
+   테두리를 둘러 알약 모양으로 두고 화살표로 새 탭임을 알린다. */
+.news-documents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 20px;
+}
+
+.news-document-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .5em;
+  padding: 10px 20px;
+  border: 1px solid #c3cae6;
+  border-radius: 999px;
+  background: #fff;
+  color: #0b1560;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color .15s ease, box-shadow .15s ease, color .15s ease;
+}
+
+.news-document-link:hover,
+.news-document-link:focus-visible {
+  border-color: #2450f5;
+  color: #2450f5;
+  box-shadow: 0 8px 20px rgba(11, 21, 83, .08);
+}
+
+.news-document-link i {
+  font-style: normal;
+  font-size: 13px;
+  color: #6b7396;
+}
+
+.news-document-link:hover i,
+.news-document-link:focus-visible i { color: #2450f5; }
+
+@media (max-width: 480px) {
+  .news-document-link { flex: 1 1 100%; justify-content: center; }
+}
