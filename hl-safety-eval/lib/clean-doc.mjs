@@ -176,7 +176,7 @@ function insertSignatures(html) {
     result += html.slice(lastIndex, m.index + marker.length);
     if (signer) {
       const src = marker === '(인)' ? signer.stamp : signer.hand;
-      result += `<span class="sig-wrap"><img class="sig-img" src="${src}" alt="${signer.alt} ${marker === '(인)' ? '인' : '서명'}" height="48"><span class="sig-draft-badge" title="본 웹 게시본은 초안이며, 제출본은 실제 날인본으로 대체됩니다">초안</span></span>`;
+      result += `<span class="sig-wrap"><img class="sig-img" src="${src}" alt="${signer.alt} ${marker === '(인)' ? '인' : '서명'}" height="48"></span>`;
     }
     lastIndex = m.index + marker.length;
   }
