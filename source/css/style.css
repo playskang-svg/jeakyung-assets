@@ -3297,69 +3297,148 @@ p {
 /* ---------------------------------------------------------------- 연혁 (History)
    대표이사 인사말과 회사 소개 사이에 놓이는 버튼과, 눌렀을 때 그 자리에서
    갈라지듯 열리는 패널. */
-.history-block { margin: 40px 0 8px; }
+.history-block { margin: 44px 0 8px; }
 
-/* 입체 버튼: 아래쪽에 짙은 층을 깔아 두께를 만들고, 누르면 그만큼 내려앉는다. */
+/* 연혁 여는 버튼. 예전에는 파란 덩어리 하나가 폭을 다 차지했는데, 흰 카드와
+   가는 실선으로 짜인 이 페이지에서 혼자 광고 배너처럼 떠 보였다. 그래서
+   주변 카드와 같은 문법으로 다시 짰다. 깊이는 눌린 층이 아니라 그림자와
+   1px 테두리로만 준다. */
 .history-button {
-  position: relative;
-  display: block;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  border-radius: 18px;
-  background: #0a1147;
-  box-shadow: 0 18px 34px rgba(11, 21, 83, .22);
-  cursor: pointer;
-  font: inherit;
-  transition: transform .18s cubic-bezier(.2, .8, .3, 1), box-shadow .18s ease;
-}
-
-.history-button-face {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 22px 26px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #2450f5 0%, #1b3ad4 55%, #16309f 100%);
-  transform: translateY(-6px);
-  transition: transform .18s cubic-bezier(.2, .8, .3, 1);
+  gap: clamp(16px, 3vw, 40px);
+  width: 100%;
+  padding: 22px clamp(20px, 2.4vw, 30px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }
 
-.history-button:hover { box-shadow: 0 24px 44px rgba(11, 21, 83, .28); }
-.history-button:hover .history-button-face { transform: translateY(-9px); }
-
-.history-button:active .history-button-face,
-.history-button.is-open .history-button-face { transform: translateY(-2px); }
-.history-button:active { box-shadow: 0 10px 20px rgba(11, 21, 83, .2); }
-
-.history-button:focus-visible { outline: 3px solid #94a9ff; outline-offset: 3px; }
-
-.history-button-label {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: .04em;
-  color: #fff;
+.history-button:hover {
+  border-color: #b9c6ef;
+  box-shadow: var(--shadow-card);
+  transform: translateY(-3px);
 }
 
-.history-button-sub {
-  flex: 1;
-  font-size: 14px;
-  color: rgba(255, 255, 255, .74);
+.history-button:focus-visible { outline: 3px solid var(--blue-500); outline-offset: 3px; }
+.history-button.is-open { border-color: var(--blue-600); box-shadow: var(--shadow-card); }
+
+.history-button-text { flex: 1; min-width: 0; }
+
+.history-button-eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--blue-600);
 }
 
-/* 화살표: 닫혀 있으면 아래, 열리면 위를 가리킨다. */
+.history-button-title {
+  display: block;
+  margin-top: .45em;
+  font-size: clamp(17px, 1.5vw, 20px);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: #071037;
+}
+
+/* 연도 구간. 이 버튼이 파는 것은 "오래 해왔다"는 사실이라 숫자를 크게 둔다. */
+.history-button-span {
+  flex: none;
+  text-align: right;
+  line-height: 1.15;
+}
+
+.history-button-years {
+  display: block;
+  font-size: clamp(19px, 1.9vw, 25px);
+  font-weight: 750;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+  color: #071037;
+  white-space: nowrap;
+}
+
+/* 두 연도를 잇는 선. 문자 대신 그려서 글꼴에 상관없이 같은 길이가 된다. */
+.history-button-years i {
+  display: inline-block;
+  width: clamp(14px, 1.6vw, 22px);
+  height: 2px;
+  margin: 0 .42em;
+  vertical-align: .28em;
+  background: #c2cbe6;
+}
+
+.history-button-note {
+  display: block;
+  margin-top: .5em;
+  font-size: 13px;
+  color: var(--ink-500);
+  white-space: nowrap;
+}
+
 .history-button-arrow {
   flex: none;
-  width: 11px;
-  height: 11px;
-  border-right: 2.5px solid #fff;
-  border-bottom: 2.5px solid #fff;
-  transform: rotate(45deg) translate(-2px, -2px);
-  transition: transform .25s ease;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--blue-600);
+  transition: background-color .16s ease, border-color .16s ease, color .16s ease, transform .22s var(--ease-out);
+}
+
+.history-button-arrow svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.history-button:hover .history-button-arrow {
+  border-color: var(--blue-600);
+  background: var(--blue-600);
+  color: var(--white);
 }
 
 .history-button.is-open .history-button-arrow {
-  transform: rotate(-135deg) translate(-2px, -2px);
+  border-color: var(--blue-600);
+  background: var(--blue-600);
+  color: var(--white);
+  transform: rotate(180deg);
+}
+
+/* 좁은 화면: 연도 구간을 제목 아래로 내리고 화살표만 오른쪽에 남긴다. */
+@media (max-width: 640px) {
+  .history-button {
+    flex-wrap: wrap;
+    gap: 14px 16px;
+    padding: 20px;
+  }
+
+  .history-button-text { flex: 1 1 auto; }
+
+  .history-button-span {
+    order: 3;
+    flex: 1 0 100%;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid #eef1fa;
+    text-align: left;
+  }
+
+  .history-button-note { margin-top: 0; }
 }
 
 /* 패널: 위아래로 갈라지듯 펼쳐진다. */
@@ -3381,8 +3460,8 @@ p {
 @media (prefers-reduced-motion: reduce) {
   .history-panel { animation: none; }
   .history-button,
-  .history-button-face,
   .history-button-arrow { transition: none; }
+  .history-button:hover { transform: none; }
 }
 
 .history-panel-head {
@@ -3574,10 +3653,6 @@ p {
 /* 모바일 */
 @media (max-width: 720px) {
   .history-block { margin: 30px 0 4px; }
-
-  .history-button-face { flex-wrap: wrap; gap: 6px 12px; padding: 18px 20px; }
-  .history-button-label { font-size: 19px; }
-  .history-button-sub { flex: 1 0 100%; order: 3; font-size: 13px; }
 
   .history-panel { padding: 22px 18px 20px; border-radius: 14px; }
   .history-panel-head { margin-bottom: 20px; }

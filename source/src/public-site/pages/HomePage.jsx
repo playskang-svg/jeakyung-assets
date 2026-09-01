@@ -25,8 +25,6 @@ export default function HomePage() {
     <>
       <HeroSection />
 
-      <NewsSection />
-
       <section className="intro section" id="about" aria-labelledby="about-title">
         <div className="content-width">
           <article className="ceo-greeting reveal">
@@ -48,6 +46,8 @@ export default function HomePage() {
           </section>
         </div>
       </section>
+
+      <NewsSection />
 
       <section className="services section" id="services" aria-labelledby="services-title">
         <ServicesSection onSelectService={setSelectedService} />
