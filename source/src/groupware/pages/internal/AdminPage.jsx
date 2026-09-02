@@ -5,6 +5,7 @@ import MembershipApprovalPanel from '../../components/admin/MembershipApprovalPa
 import OrganizationManagementPanel from '../../components/admin/OrganizationManagementPanel.jsx';
 import DashboardWidgetPanel from '../../components/admin/DashboardWidgetPanel.jsx';
 import LinkPageAdminPanel from '../../components/admin/LinkPageAdminPanel.jsx';
+import QuickLinkAdminPanel from '../../components/admin/QuickLinkAdminPanel.jsx';
 import ButtonBoxAdminPanel from '../../components/admin/ButtonBoxAdminPanel.jsx';
 import SiteArticleAdminPanel from '../../components/admin/SiteArticleAdminPanel.jsx';
 import SystemUsagePanel from '../../components/admin/SystemUsagePanel.jsx';
@@ -63,6 +64,7 @@ export default function AdminPage() {
       {section === 'organization' && <OrganizationManagementPanel directory={directory} onReload={load} />}
       {section === 'widgets' && <DashboardWidgetPanel directory={directory} />}
       {section === 'linkpages' && <LinkPageAdminPanel />}
+      {section === 'quicklinks' && <QuickLinkAdminPanel />}
       {section === 'buttonboxes' && <ButtonBoxAdminPanel />}
       {section === 'sitearticles' && <SiteArticleAdminPanel />}
       {section === 'usage' && <SystemUsagePanel usage={overview.usage} loading={loading} onReload={load} />}

@@ -8,7 +8,7 @@ import { getButtonBox } from '../../services/buttonBoxService.js';
 import ProfileCard from '../../components/profile/ProfileCard.jsx';
 import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { quickLinks } from '../../config/navigation.js';
+import { getQuickLinks } from '../../services/quickLinkService.js';
 
 // 홈 화면에 내보내지 않는 위젯.
 //   앞의 셋 — 홈 화면 위쪽이 직접 그린다. 위젯으로 또 그리면 같은 목록이 한
@@ -30,6 +30,28 @@ const shortDate = (value) => {
 // 다섯 줄짜리 글 목록. 공지사항과 최신 게시글이 같은 모양을 쓴다.
 // 공지사항·최신 게시글 두 줄은 같은 길이로 나란히 선다.
 const FEED_ROWS = 3;
+
+// 홈 화면 '페이지' 박스의 버튼 하나. 색·크기는 관리자가 고른 값이고,
+// 어디로 어떻게 여는지는 주소 모양과 open_in 이 정한다.
+//
+//   /approval        → 그 자리에서 이동
+//   https://… frame  → /view/link/<id> 액자 안에서
+//   https://… tab    → 새 탭 (액자를 거부하는 사이트)
+//
+// 액자로 보낼 때도 주소를 경로에 싣지 않는다. 그렇게 하면 누구나 주소만 바꿔
+// 임의의 사이트를 우리 화면 안에 띄울 수 있다. id 만 넘긴다.
+function QuickLinkButton({ link }) {
+  const className = `gw-quickbtn is-${link.variant} is-${link.size}`;
+  if (link.url.startsWith('/')) return <Link className={className} to={link.url}>{link.label}</Link>;
+  if (link.open_in === 'tab') {
+    return (
+      <a className={className} href={link.url} target="_blank" rel="noopener noreferrer">
+        {link.label}<span aria-hidden="true">↗</span>
+      </a>
+    );
+  }
+  return <Link className={className} to={`/view/link/${link.id}`}>{link.label}</Link>;
+}
 
 function PostLines({ title, posts, to, emptyText, showBoard = false }) {
   return (
@@ -67,6 +89,7 @@ export default function DashboardPage() {
   const [widgets, setWidgets] = useState([]);
   const [boards, setBoards] = useState([]);
   const [linkPages, setLinkPages] = useState([]);
+  const [quickLinkRows, setQuickLinkRows] = useState([]);
   const [notices, setNotices] = useState([]);
   const [recent, setRecent] = useState([]);
   const [buttonBoxes, setButtonBoxes] = useState({});
@@ -77,9 +100,10 @@ export default function DashboardPage() {
   const load = async () => {
     // 위젯 외에는 없어도 화면이 서야 하므로 각각 따로 받는다. 공지 게시판이
     // 없거나 권한이 없으면 그 줄만 비고 나머지는 그대로 나온다.
-    const [widgetResult, boardResult, linkPageResult, noticeResult, recentResult] = await Promise.allSettled([
+    const [widgetResult, boardResult, linkPageResult, noticeResult, recentResult, quickResult] = await Promise.allSettled([
       getMyDashboardWidgets(), getVisibleBoards(), getMyLinkPages(),
       getBoardPosts(NOTICE_SLUG, { page: 1 }), getRecentBoardPosts(FEED_ROWS),
+      getQuickLinks(),
     ]);
     if (widgetResult.status === 'fulfilled') setWidgets(widgetResult.value);
     else setError('대시보드 구성을 불러오지 못했습니다.');
@@ -89,6 +113,7 @@ export default function DashboardPage() {
       setNotices((noticeResult.value.items ?? []).slice(0, FEED_ROWS).map((item) => ({ ...item, board_slug: NOTICE_SLUG })));
     }
     if (recentResult.status === 'fulfilled') setRecent(recentResult.value);
+    if (quickResult.status === 'fulfilled') setQuickLinkRows(quickResult.value);
     setLoading(false);
   };
 
@@ -137,6 +162,7 @@ export default function DashboardPage() {
 
       {/* 메일·전자결재 같은 기능은 게시판이 아니다. 같은 판에 담으면 '게시판'
           제목 아래 게시판이 아닌 것이 섞여 무엇이 무엇인지 알기 어렵다. */}
+      {quickLinkRows.length > 0 && (
       <section className="gw-panel gw-launch-panel" aria-labelledby="dashboard-goto-title">
         <div className="gw-panel-heading">
           <h2 id="dashboard-goto-title">페이지</h2>
@@ -144,12 +170,10 @@ export default function DashboardPage() {
         {/* 바깥 주소도 /view/<key> 로 간다. 새 탭으로 튕겨 나가지 않고
             상단 메뉴를 그대로 둔 채 이 화면 안에서 열린다. */}
         <div className="gw-quickrow">
-          {quickLinks().map((item) => (item.to
-            ? <Link key={item.key} to={item.to}>{item.label}</Link>
-            // 액자를 거부하는 사이트는 새 탭으로. 액자에 넣으면 빈 화면만 남는다.
-            : <a key={item.key} href={item.href} target="_blank" rel="noopener noreferrer">{item.label}<span aria-hidden="true">↗</span></a>))}
+          {quickLinkRows.map((item) => <QuickLinkButton key={item.id} link={item} />)}
         </div>
       </section>
+      )}
 
       {/* 게시판으로 가는 길을 한 덩어리로 묶는다. 낱개로 흩어 두면 화면이
           버튼밭처럼 보이고 무엇이 한 묶음인지 알기 어렵다. */}
