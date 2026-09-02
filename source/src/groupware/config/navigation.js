@@ -10,6 +10,8 @@ export const GROUPWARE_NAVIGATION = [
   { key: 'mail', label: '사내메일', href: 'https://mail.jeakyung.com/', newTab: true, quick: 10 },
   { key: 'approval', label: '전자결재', path: '/approval', quick: 20 },
   { key: 'organization', label: '조직도', path: '/organization', quick: 30 },
+  // 사내일정은 바깥 페이지다. 액자 안에서 열어 상단 메뉴를 잃지 않게 한다.
+  { key: 'schedule', label: '사내일정', href: 'https://jeakyung.quv.kr/36' },
   { key: 'calendar', label: '일정', path: '/calendar' },
   { key: 'files', label: '파일', path: '/files', quick: 40 },
   { key: 'boards', label: '게시판', path: '/boards' },
@@ -38,6 +40,7 @@ const TRAIL_RULES = [
   [/^\/organization$/, ['조직도', null]],
   [/^\/calendar$/, ['일정', null]],
   [/^\/files$/, ['파일', null]],
+  [/^\/view\/link\/[^/]+$/, ['바로가기', null]],
   [/^\/view\/[^/]+$/, ['바로가기', null]],
   [/^\/profile$/, ['내 프로필', null]],
   [/^\/business-card$/, ['내 프로필', '/profile'], ['명함관리', null]],

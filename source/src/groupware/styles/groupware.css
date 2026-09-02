@@ -5624,31 +5624,90 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
   padding-bottom: 14px;
   border-bottom: 1px solid var(--gw-border);
 }
-.gw-quickrow a {
+/* 버튼 하나. 색(variant)과 크기(size)는 관리자가 정해진 몇 가지 중에서 고른다.
+   색상표를 열어 두면 화면마다 제각각인 버튼이 쌓이고, 대비가 모자란 조합도
+   막을 수 없다. 그래서 조합을 여기서 다섯 가지로 못박는다.
+
+   관리자 화면의 목록·미리보기도 같은 클래스를 쓴다 — 고른 것이 홈에서 어떻게
+   보이는지 다른 규칙으로 흉내 내면 언젠가 어긋난다. */
+.gw-quickbtn {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   border: 1px solid var(--gw-border);
   border-radius: 8px;
-  padding: 9px 15px;
   background: #fbfcfe;
-  color: var(--gw-text);
-  font-size: 13px;
   font-weight: 650;
   text-decoration: none;
   transition: border-color .15s ease, background .15s ease, color .15s ease;
 }
-.gw-quickrow a span { opacity: .55; font-size: 11px; }
-.gw-quickrow a:hover { border-color: var(--gw-blue-600); background: var(--gw-blue-100); color: var(--gw-blue-700); }
-.gw-quickrow a:focus-visible { outline: 2px solid var(--gw-blue-600); outline-offset: 2px; }
-/* 메일은 매일 쓰는 것이라 한눈에 찾히게 첫 칸만 채워 둔다. */
-.gw-quickrow a:first-child {
-  border-color: transparent;
-  background: var(--gw-blue-600);
-  color: #fff;
+
+.gw-quickbtn > span { opacity: .55; font-size: 11px; }
+.gw-quickbtn:focus-visible { outline: 2px solid var(--gw-blue-600); outline-offset: 2px; }
+
+/* 크기 */
+.gw-quickbtn.is-sm { padding: 6px 11px; font-size: 12px; }
+.gw-quickbtn.is-md { padding: 9px 15px; font-size: 13px; }
+.gw-quickbtn.is-lg { padding: 12px 20px; font-size: 14.5px; }
+
+/* 색. 채운 버튼은 흰 글씨를 body.groupware-root 로 한 번 더 못박는다 —
+   그 리셋이 (0,1,2) 라서 클래스 하나짜리 색 지정을 이긴다. */
+.gw-quickbtn.is-plain { color: var(--gw-text); }
+body.groupware-root a.gw-quickbtn.is-plain { color: var(--gw-text); }
+.gw-quickbtn.is-plain:hover { border-color: var(--gw-blue-600); background: var(--gw-blue-100); color: var(--gw-blue-700); }
+
+.gw-quickbtn.is-primary { border-color: transparent; background: var(--gw-blue-600); }
+body.groupware-root a.gw-quickbtn.is-primary { color: #fff; }
+.gw-quickbtn.is-primary { color: #fff; }
+.gw-quickbtn.is-primary:hover { background: var(--gw-blue-700); }
+
+.gw-quickbtn.is-navy { border-color: transparent; background: var(--gw-navy-950); }
+body.groupware-root a.gw-quickbtn.is-navy { color: #fff; }
+.gw-quickbtn.is-navy { color: #fff; }
+.gw-quickbtn.is-navy:hover { background: #050b2e; }
+
+.gw-quickbtn.is-mint { border-color: transparent; background: #0f766e; }
+body.groupware-root a.gw-quickbtn.is-mint { color: #fff; }
+.gw-quickbtn.is-mint { color: #fff; }
+.gw-quickbtn.is-mint:hover { background: #115e58; }
+
+.gw-quickbtn.is-amber { border-color: transparent; background: #b45309; }
+body.groupware-root a.gw-quickbtn.is-amber { color: #fff; }
+.gw-quickbtn.is-amber { color: #fff; }
+.gw-quickbtn.is-amber:hover { background: #92400e; }
+
+/* ── 관리자: 페이지 이동 ────────────────────────────────────────────── */
+.gw-quicklink-admin-list { display: grid; gap: 6px; margin: 0 0 12px; padding: 0; list-style: none; }
+
+.gw-quicklink-admin-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--gw-border);
+  border-radius: var(--gw-radius);
+  padding: 8px 12px;
+  background: var(--gw-surface);
 }
-body.groupware-root .gw-quickrow a:first-child { color: #fff; }
-.gw-quickrow a:first-child:hover { background: var(--gw-blue-700); }
+
+.gw-quicklink-admin-meta { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.gw-quicklink-admin-meta code {
+  min-width: 0;
+  color: var(--gw-text);
+  font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gw-quicklink-admin-meta small { color: var(--gw-muted); font-size: 12px; }
+
+.gw-quicklink-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid var(--gw-border);
+  padding-top: 12px;
+}
+.gw-quicklink-preview > span:first-child { color: var(--gw-muted); font-size: 12.5px; font-weight: 700; }
 
 /* ── 경로 줄 ────────────────────────────────────────────────────────── */
 .gw-routebar {

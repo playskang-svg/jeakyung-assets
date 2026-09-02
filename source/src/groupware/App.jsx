@@ -14,7 +14,7 @@ import LinkTreePage from './pages/internal/LinkTreePage.jsx';
 import BoardsPage from './pages/internal/BoardsPage.jsx';
 import CalendarPage from './pages/internal/CalendarPage.jsx';
 import DashboardPage from './pages/internal/DashboardPage.jsx';
-import ExternalViewPage from './pages/internal/ExternalViewPage.jsx';
+import ExternalViewPage, { QuickLinkViewPage } from './pages/internal/ExternalViewPage.jsx';
 import SearchPage from './pages/internal/SearchPage.jsx';
 import BusinessCardPage from './pages/internal/BusinessCardPage.jsx';
 import FilesPage from './pages/internal/FilesPage.jsx';
@@ -85,6 +85,7 @@ export default function App() {
               <Route path="approval/*" element={<ApprovalRoute />} />
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="files" element={<FilesPage />} />
+              <Route path="view/link/:linkId" element={<QuickLinkViewPage />} />
               <Route path="view/:viewKey" element={<ExternalViewPage />} />
               <Route path="search" element={<SearchPage />} />
               <Route path="business-card" element={<BusinessCardPage />} />
