@@ -113,7 +113,7 @@ export default function NewsPage() {
         <div className="content-width">
           <span className="eyebrow eyebrow-light"><i /> Insight &amp; Trends</span>
           <h1>소식/정보</h1>
-          <p>물류 시장의 흐름과 재경닷컴의 소식을 전해드립니다.</p>
+          <p>물류 시장의 흐름과 재경로지스&물류의 소식을 전해드립니다.</p>
         </div>
       </section>
 

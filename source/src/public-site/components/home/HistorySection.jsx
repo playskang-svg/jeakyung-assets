@@ -101,7 +101,7 @@ export default function HistorySection() {
       >
         <span className="history-button-text">
           <span className="history-button-eyebrow">History</span>
-          <span className="history-button-title">재경닷컴이 걸어온 길</span>
+          <span className="history-button-title">재경로지스&물류가 걸어온 길</span>
         </span>
 
         {/* 연혁에서 실제로 할 말은 "얼마나 오래 해왔는가"다. 버튼에서 먼저 보여 준다. */}
@@ -125,7 +125,7 @@ export default function HistorySection() {
         <header className="history-panel-head">
           <div>
             <span className="eyebrow"><i /> History</span>
-            <h2 id={`${panelId}-title`}>재경닷컴이 걸어온 길</h2>
+            <h2 id={`${panelId}-title`}>재경로지스&물류가 걸어온 길</h2>
           </div>
           <button type="button" className="history-close" onClick={close} aria-label="연혁 닫기">×</button>
         </header>
