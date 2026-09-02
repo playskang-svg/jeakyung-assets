@@ -2870,7 +2870,8 @@ body.groupware-root a.gw-secondary-button {
 .gw-attachment-list { display: grid; gap: 8px; }
 .gw-attachment-list > div { display: flex; justify-content: space-between; gap: 10px; }
 .gw-attachment-list button { border: 0; color: var(--gw-blue-700); background: transparent; text-align: left; }
-.gw-file-button { display: inline-flex; margin-top: 15px; border-radius: 10px; padding: 10px 14px; color: #fff; background: var(--gw-blue-600); cursor: pointer; }
+.gw-file-button { position: relative; display: inline-flex; margin-top: 15px; border-radius: 10px; padding: 10px 14px; color: #fff; background: var(--gw-blue-600); cursor: pointer; }
+.gw-file-button:has(input:disabled) { background: var(--gw-muted); cursor: progress; }
 .gw-file-button input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
 .gw-compose-attachments { display: grid; gap: 14px; border: 1px solid var(--gw-border); border-radius: 16px; padding: 18px; background: #fbfcff; }
 .gw-compose-attachments h2 { margin: 0; font-size: 16px; }
@@ -5263,4 +5264,63 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
   .gw-board-card { padding: 22px 12px 20px; }
   .gw-board-card h3 { font-size: 16px; }
   .gw-board-card-go { padding: 9px 22px; font-size: 13px; }
+}
+
+/* ── 바로가기 줄 ────────────────────────────────────────────────────────
+   사이드바를 없앤 뒤 게시판 말고 다른 곳으로 가는 유일한 길이다. */
+.gw-shortcut-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+.gw-shortcut-row a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 11px 20px;
+  border-radius: 3px;
+  background: #6f7379;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.gw-shortcut-row a:hover { background: #55585d; }
+.gw-shortcut-row a:focus-visible { outline: 2px solid var(--gw-accent, #2f6fed); outline-offset: 2px; }
+.gw-shortcut-row a span { font-size: 11px; opacity: .75; }
+/* 바깥 서비스 줄은 성격이 달라 조금 눌러 둔다. */
+.gw-shortcut-row--tool { margin-top: 30px; justify-content: center; }
+.gw-shortcut-row--tool a { background: #85898f; font-weight: 500; }
+.gw-shortcut-row--tool a:hover { background: #6b6f74; }
+
+/* ── 전자결재 이동 줄 ──────────────────────────────────────────────── */
+.gw-subnav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.gw-subnav a,
+.gw-subnav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 15px;
+  border: 1px solid var(--gw-border, #dcdfe5);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--gw-text, #33373d);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.gw-subnav a:hover,
+.gw-subnav button:hover { background: #f2f4f7; }
+.gw-subnav a:focus-visible,
+.gw-subnav button:focus-visible { outline: 2px solid var(--gw-accent, #2f6fed); outline-offset: 2px; }
+.gw-subnav-back { margin-right: auto; }
+@media (max-width: 480px) {
+  .gw-shortcut-row a { flex: 1 1 calc(50% - 8px); justify-content: center; padding: 11px 8px; }
 }

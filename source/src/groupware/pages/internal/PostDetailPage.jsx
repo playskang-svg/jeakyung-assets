@@ -14,7 +14,7 @@ export default function PostDetailPage({ boardSlug: boardSlugProp, postId: postI
   const postId = postIdProp ?? routeParams.postId;
   const navigate = useNavigate(); const auth = useAuth();
   const goToList = () => (onBack ? onBack() : navigate(`/boards/${boardSlug}`));
-  const [data, setData] = useState(null); const [overview, setOverview] = useState(null); const [reactions, setReactions] = useState({ counts: {}, mine: [] }); const [error, setError] = useState(''); const [actionError, setActionError] = useState(''); const [replyTo, setReplyTo] = useState(null); const [editingComment, setEditingComment] = useState(null); const [commentStatus, setCommentStatus] = useState(''); const [commentSaving, setCommentSaving] = useState(false); const commentBoxRef = useRef(null);
+  const [data, setData] = useState(null); const [overview, setOverview] = useState(null); const [reactions, setReactions] = useState({ counts: {}, mine: [] }); const [error, setError] = useState(''); const [actionError, setActionError] = useState(''); const [replyTo, setReplyTo] = useState(null); const [editingComment, setEditingComment] = useState(null); const [commentStatus, setCommentStatus] = useState(''); const [commentSaving, setCommentSaving] = useState(false); const [uploading, setUploading] = useState(false); const commentBoxRef = useRef(null);
   const load = () => Promise.all([getBoardPost(postId), getBoardOverview(boardSlug), getBoardReactions(postId).catch(() => ({ counts: {}, mine: [] }))]).then(([postData, boardData, reactionData]) => { setData(postData); setOverview(boardData); setReactions(reactionData); setError(''); }).catch(() => setError('게시글을 볼 권한이 없거나 글을 찾을 수 없습니다.'));
   useEffect(() => { load(); }, [boardSlug, postId]);
   if (error) return <div className="gw-route-state"><div className="gw-notice gw-notice--warning" role="alert">{error}<br />{onBack
@@ -42,7 +42,35 @@ export default function PostDetailPage({ boardSlug: boardSlugProp, postId: postI
     } catch (cause) { setActionError(cause.message || '댓글을 저장하지 못했습니다.'); }
     finally { setCommentSaving(false); }
   };
-  const upload = async (event) => { const file = event.target.files?.[0]; if (!file) return; try { setActionError(''); await uploadBoardAttachment({ boardId: data.post.board_id, postId, file, userId: auth.user.id, maxSizeMb: overview.board.settings.max_file_size_mb }); load(); } catch (uploadError) { setActionError(uploadError.message); } event.target.value = ''; };
+  // 파일 입력은 값이 그대로면 같은 파일을 다시 골라도 change 가 일어나지 않는다.
+  // 방금 지운 첨부를 그대로 다시 올리는 것이 정확히 그 경우라, 파일 선택창에서
+  // 같은 파일을 골라도 아무 일이 없고 버튼이 죽은 것처럼 보였다. 그래서 값을
+  // await 전에 먼저 비운다(글쓰기 화면은 원래 이렇게 하고 있었다).
+  const upload = async (event) => {
+    const input = event.target;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    setUploading(true);
+    try {
+      setActionError('');
+      await uploadBoardAttachment({ boardId: data.post.board_id, postId, file, userId: auth.user.id, maxSizeMb: overview.board.settings.max_file_size_mb });
+      await load();
+    } catch (uploadError) {
+      setActionError(uploadError?.message || '첨부파일을 올리지 못했습니다.');
+    } finally {
+      setUploading(false);
+    }
+  };
+  const removeAttachment = async (attachment) => {
+    try {
+      setActionError('');
+      await deleteBoardAttachment(attachment.id);
+      await load();
+    } catch (deleteError) {
+      setActionError(deleteError?.message || '첨부파일을 삭제하지 못했습니다.');
+    }
+  };
   const generalAttachments = data.attachments.filter((item) => item.purpose !== 'inline_image');
   const documentValue = data.post.content_document?.type === 'doc' ? data.post.content_document : legacyTextToDocument(data.post.content);
   const authorMeta = [data.post.author_name, overview.board.settings.show_author_department && data.post.author_department, overview.board.settings.show_author_position && data.post.author_position, overview.board.settings.show_author_job_title && data.post.author_job_title].filter(Boolean).join(' · ');
@@ -84,7 +112,7 @@ export default function PostDetailPage({ boardSlug: boardSlugProp, postId: postI
 
     {overview.board.settings.allow_reactions && <section className="gw-reactions" aria-label="게시글 반응">{[['like','좋아요'],['helpful','도움돼요'],['support','응원해요']].map(([type, label]) => <button key={type} type="button" aria-pressed={reactions.mine.includes(type)} onClick={async () => setReactions(await toggleBoardReaction(postId, type))}>{label} {reactions.counts[type] ?? 0}</button>)}</section>}
 
-    {overview.board.settings.allow_attachments && <section className="gw-attachment-section"><h2>첨부파일</h2><div className="gw-attachment-list">{generalAttachments.map((item) => <div key={item.id}><button type="button" onClick={async () => { try { setActionError(''); window.open(await getAttachmentDownloadUrl(item.id), '_blank', 'noopener'); } catch (downloadError) { setActionError(downloadError.message); } }}>{item.original_name} <span>{Math.ceil(item.file_size / 1024)}KB</span></button>{data.post.can_edit && <button type="button" onClick={async () => { try { setActionError(''); await deleteBoardAttachment(item.id); load(); } catch (deleteError) { setActionError(deleteError.message); } }} aria-label={`${item.original_name} 삭제`}>삭제</button>}</div>)}</div>{generalAttachments.length === 0 && <p className="gw-empty-state">첨부파일이 없습니다.</p>}{overview.permissions.upload && <label className="gw-file-button">파일 첨부<input type="file" onChange={upload} /></label>}</section>}
+    {overview.board.settings.allow_attachments && <section className="gw-attachment-section"><h2>첨부파일</h2><div className="gw-attachment-list">{generalAttachments.map((item) => <div key={item.id}><button type="button" onClick={async () => { try { setActionError(''); window.open(await getAttachmentDownloadUrl(item.id), '_blank', 'noopener'); } catch (downloadError) { setActionError(downloadError.message); } }}>{item.original_name} <span>{Math.ceil(item.file_size / 1024)}KB</span></button>{data.post.can_edit && <button type="button" onClick={() => removeAttachment(item)} aria-label={`${item.original_name} 삭제`}>삭제</button>}</div>)}</div>{generalAttachments.length === 0 && <p className="gw-empty-state">첨부파일이 없습니다.</p>}{overview.permissions.upload && <label className="gw-file-button">{uploading ? '올리는 중…' : '파일 첨부'}<input type="file" disabled={uploading} onChange={upload} /></label>}</section>}
 
     {overview.board.settings.allow_comments && <section className="gw-comments">
       <h2>댓글 {data.comments.length > 0 && <span className="gw-comment-count">{data.comments.length}</span>}</h2>

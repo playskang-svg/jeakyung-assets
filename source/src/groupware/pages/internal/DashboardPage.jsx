@@ -8,8 +8,22 @@ import { getButtonBox } from '../../services/buttonBoxService.js';
 import ProfileCard from '../../components/profile/ProfileCard.jsx';
 import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { shortcutsOf } from '../../config/navigation.js';
 
 const PREPARING = new Set(['approval_status', 'today_schedule', 'week_schedule']);
+
+// 바로가기 줄. 내부 경로는 Link, 바깥 주소는 새 탭으로 연다.
+function ShortcutRow({ kind, label }) {
+  const items = shortcutsOf(kind);
+  if (items.length === 0) return null;
+  return (
+    <nav className={`gw-shortcut-row gw-shortcut-row--${kind}`} aria-label={label}>
+      {items.map((item) => (item.external
+        ? <a key={item.key} href={item.href} target="_blank" rel="noopener noreferrer">{item.label}<span aria-hidden="true">↗</span></a>
+        : <Link key={item.key} to={item.path}>{item.label}</Link>))}
+    </nav>
+  );
+}
 
 export default function DashboardPage() {
   const auth = useAuth();
@@ -76,6 +90,7 @@ export default function DashboardPage() {
     <article className="gw-page" aria-labelledby="page-title">
       <header className="gw-page-header"><div><h1 id="page-title">대시보드</h1></div></header>
       <ProfileCard />
+      <ShortcutRow kind="module" label="그룹웨어 기능 바로가기" />
       {/* 게시판 바로가기는 내 프로필 바로 아래에 둔다. 접속 직후 가장 먼저 쓰는
           동선이면서, 누구의 화면인지 확인한 다음 이동하는 순서가 자연스럽다. */}
       {/* 사이드바를 없앤 뒤로 여기가 유일한 이동 경로다. 그래서 목록이 아니라
@@ -147,6 +162,7 @@ export default function DashboardPage() {
           {widgets.every((widget) => widget.is_hidden) && <p className="gw-empty-state">표시 중인 위젯이 없습니다. 관리자에게 문의해 주세요.</p>}
         </div>
       )}
+      <ShortcutRow kind="tool" label="외부 서비스 바로가기" />
       {!loading && widgets.some((widget) => widget.is_hidden) && <section className="gw-hidden-widgets" aria-labelledby="hidden-widgets-title"><h2 id="hidden-widgets-title">숨긴 위젯</h2>{widgets.filter((widget) => widget.is_hidden).map((widget) => <button type="button" key={widget.id} onClick={() => restore(widget)}>{widget.title} 복원</button>)}</section>}
     </article>
   );
