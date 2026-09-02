@@ -74,6 +74,13 @@ export default function AppShell() {
             <div><span>현재 위치</span><strong>{getRouteTitle(location.pathname)}</strong></div>
           </div>
           <div className="gw-topbar-tools" aria-label="사용자와 업무 도구">
+            <TopSearch />
+            <TopClock />
+            {/* 인트라넷 홈. 옆의 '홈페이지'는 회사 웹사이트로 나가므로, 여기
+                안으로 돌아오는 길을 따로 둔다. */}
+            <Link className="gw-intranet-home-button" to="/dashboard" title="인트라넷 홈" aria-label="인트라넷 홈">
+              <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="14" rx="2" /><path d="M8 21h8" /><path d="M12 18v3" /></svg>
+            </Link>
             <a className="gw-site-home-button" href="https://jeakyung.com/" target="_blank" rel="noopener noreferrer" title="회사 홈페이지" aria-label="회사 홈페이지, 새 창">
               <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11 12 4l9 7" /><path d="M6 10v9h12v-9" /></svg>
               <span className="gw-tool-label">홈페이지</span>
@@ -95,6 +102,70 @@ export default function AppShell() {
         </main>
         <GroupwareFooter />
       </div>
+    </div>
+  );
+}
+
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+// 게시판 전체 검색. 어느 게시판에 썼는지 기억나지 않는 글을 찾는 자리라
+// 화면마다 있어야 한다.
+//
+// 좁은 화면에서는 입력칸을 접고 돋보기만 남긴다. 누르면 펼쳐지며 커서가
+// 들어간다 — 접힌 채로는 무엇을 하는 버튼인지 알 수 없으니 aria-label 을 둔다.
+function TopSearch() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [open, setOpen] = useState(false);
+  const [term, setTerm] = useState('');
+  const inputRef = useRef(null);
+
+  // 검색 화면을 벗어나면 입력칸을 비운다. 다른 화면 상단에 지난 검색어가
+  // 남아 있으면 그 화면이 그 검색 결과인 것처럼 보인다.
+  useEffect(() => {
+    if (!location.pathname.startsWith('/search')) setTerm('');
+  }, [location.pathname]);
+
+  const submit = (event) => {
+    event.preventDefault();
+    const query = term.trim();
+    if (!query) { inputRef.current?.focus(); return; }
+    navigate(`/search?q=${encodeURIComponent(query)}`);
+  };
+
+  return (
+    <form className={open ? 'gw-topsearch is-open' : 'gw-topsearch'} role="search" onSubmit={submit}>
+      <button type="submit" aria-label="검색" onClick={() => { if (!open) { setOpen(true); window.setTimeout(() => inputRef.current?.focus(), 0); } }}>
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.6-3.6" /></svg>
+      </button>
+      <input
+        ref={inputRef}
+        type="search"
+        value={term}
+        placeholder="게시판 검색"
+        aria-label="게시판 전체 검색"
+        onChange={(event) => setTerm(event.target.value)}
+        onBlur={() => { if (!term.trim()) setOpen(false); }}
+      />
+    </form>
+  );
+}
+
+// 날짜·시계와 일정 버튼. 홈 화면 위쪽에 있던 것을 상단바로 올렸다 — 매일
+// 보는 값이라 홈에서만 보이면 다른 화면에서는 달력을 따로 열어야 했다.
+// 좁은 화면에서는 날짜와 시계를 접고 일정 버튼만 남긴다.
+function TopClock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+  return (
+    <div className="gw-topclock">
+      <span className="gw-topclock-date">{now.getMonth() + 1}월 {now.getDate()}일 {WEEKDAYS[now.getDay()]}</span>
+      <time className="gw-topclock-time" dateTime={now.toISOString()}>{time}</time>
+      <Link className="gw-topclock-button" to="/calendar">일정</Link>
     </div>
   );
 }

@@ -5643,7 +5643,7 @@ body.groupware-root .gw-quickrow a:first-child { color: #fff; }
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 12.5px;
+  font-size: 14px;
 }
 .gw-routebar li { display: flex; align-items: center; gap: 6px; color: var(--gw-muted); }
 .gw-routebar li + li::before { content: '/'; color: #c3c9d6; }
@@ -5668,6 +5668,145 @@ body.groupware-root .gw-quickrow a:first-child { color: #fff; }
 }
 .gw-routebar-actions a:hover,
 .gw-routebar-actions button:hover { border-color: #bfcdef; background: #f6f8fd; }
+
+/* ── 상단바 검색 ────────────────────────────────────────────────────
+   넓은 화면에서는 입력칸을 펼쳐 두고, 좁은 화면에서는 돋보기만 남긴다.
+   is-open 이 붙으면 좁은 화면에서도 펼친다. */
+.gw-topsearch {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 34px;
+  border: 1px solid var(--gw-border);
+  border-radius: 999px;
+  padding: 0 6px 0 10px;
+  background: var(--gw-surface);
+}
+
+.gw-topsearch:focus-within { border-color: #9eafe9; }
+
+.gw-topsearch button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--gw-muted);
+  cursor: pointer;
+}
+
+.gw-topsearch button:hover { color: var(--gw-blue-700); }
+
+.gw-topsearch input {
+  width: 150px;
+  min-width: 0;
+  border: 0;
+  padding: 0 4px;
+  background: transparent;
+  color: var(--gw-text);
+  font-size: 13px;
+}
+
+.gw-topsearch input:focus { outline: none; }
+.gw-topsearch input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+/* ── 상단바 시계 ───────────────────────────────────────────────────── */
+.gw-topclock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.gw-topclock-date { color: var(--gw-text); font-size: 12.5px; font-weight: 700; }
+
+.gw-topclock-time {
+  color: var(--gw-muted);
+  font-size: 12.5px;
+  font-weight: 650;
+  /* 초가 바뀔 때마다 옆 버튼이 흔들리지 않도록 숫자 폭을 고정한다. */
+  font-variant-numeric: tabular-nums;
+}
+
+.gw-topclock-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border: 1px solid var(--gw-border);
+  border-radius: 999px;
+  padding: 0 12px;
+  background: var(--gw-surface);
+  font-size: 12.5px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+body.groupware-root a.gw-topclock-button { color: var(--gw-text); }
+.gw-topclock-button:hover { border-color: #9eafe9; background: var(--gw-blue-100); }
+
+/* ── 인트라넷 홈 ───────────────────────────────────────────────────── */
+.gw-intranet-home-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--gw-border);
+  border-radius: 999px;
+  background: var(--gw-surface);
+  text-decoration: none;
+}
+
+body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
+.gw-intranet-home-button:hover { border-color: #9eafe9; background: var(--gw-blue-100); color: var(--gw-blue-700); }
+
+/* 좁은 화면: 검색은 돋보기만 남기고, 눌러야 펼쳐진다. 시계·날짜는 접고
+   일정 버튼만 남긴다. 상단바에 다 들어가지 않으면 문서 전체가 옆으로 밀리므로,
+   다른 데서도 갈 수 있는 것부터 접는다 — 인트라넷 홈은 왼쪽 로고가 같은 곳으로
+   간다. 이것 하나를 접으면 나머지는 390px 에 들어간다.
+
+   이 블록은 반드시 위의 기본 규칙 뒤에 와야 한다. 파일 앞쪽 640px 블록에 두면
+   나중에 나오는 기본 규칙에 밀려 아무 일도 일어나지 않는다. */
+@media (max-width: 640px) {
+  .gw-topsearch { padding: 0 4px; }
+  .gw-topsearch input { width: 0; padding: 0; }
+  .gw-topsearch.is-open { padding: 0 6px 0 10px; }
+  .gw-topsearch.is-open input { width: 128px; padding: 0 4px; }
+  .gw-topclock-date,
+  .gw-topclock-time { display: none; }
+  .gw-intranet-home-button { display: none; }
+}
+
+/* ── 검색 결과 ─────────────────────────────────────────────────────── */
+.gw-search-results { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.gw-search-results li { border-bottom: 1px solid var(--gw-border); }
+
+body.groupware-root .gw-search-results a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 2px;
+  color: var(--gw-text);
+  text-decoration: none;
+}
+
+body.groupware-root .gw-search-results a:hover { background: #f6f8fd; }
+.gw-search-results strong { min-width: 0; font-size: 14px; font-weight: 650; }
+
+.gw-search-meta {
+  display: flex;
+  flex: none;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--gw-muted);
+  font-size: 12.5px;
+}
+
+.gw-search-meta em { font-style: normal; font-weight: 700; color: var(--gw-blue-700); }
 
 /* ── 홈페이지 버튼 ──────────────────────────────────────────────────── */
 .gw-site-home-button {
