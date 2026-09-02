@@ -127,8 +127,7 @@ export default function DashboardPage() {
   const restorableWidgets = widgets.filter((widget) => widget.is_hidden && !NOT_ON_HOME.has(widget.widget_type));
 
   return (
-    <article className="gw-page" aria-labelledby="page-title">
-      <header className="gw-page-header"><div><h1 id="page-title">대시보드</h1></div></header>
+    <article className="gw-page gw-dashboard-page" aria-label="대시보드">
       <ProfileCard />
 
       <div className="gw-panel gw-panel--feeds">
