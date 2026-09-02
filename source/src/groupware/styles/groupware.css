@@ -4824,3 +4824,330 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
     margin-block: 24px;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   게시판 목록·본문 — 가볍고 각진 형태.
+   둥근 알약 버튼과 카드 그림자를 걷어내고 1px 선과 여백만으로 짠다.
+   정보가 많은 화면이라 장식이 줄수록 읽기 쉬워진다.
+   ───────────────────────────────────────────────────────────── */
+
+/* 분류 탭 */
+.gw-board-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.gw-board-tabs button {
+  min-width: 116px;
+  min-height: 40px;
+  border: 1px solid var(--gw-border);
+  border-radius: 0;
+  padding: 0 18px;
+  color: var(--gw-text);
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.gw-board-tabs button:hover { border-color: #b9c2d6; }
+
+.gw-board-tabs button.is-active {
+  border-color: #3f3f46;
+  background: #3f3f46;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 검색줄. 오른쪽 끝에 붙여 목록의 시선 흐름을 방해하지 않는다. */
+.gw-board-searchbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.gw-board-searchbar select,
+.gw-board-searchbar input {
+  min-height: 38px;
+  border: 1px solid var(--gw-border);
+  border-radius: 0;
+  background: #fff;
+  font-size: 14px;
+}
+
+.gw-board-searchbar select { width: 96px; padding: 0 8px; }
+.gw-board-searchbar input { width: min(260px, 42vw); border-left: 0; padding: 0 10px; }
+
+.gw-board-searchbar button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  min-height: 38px;
+  border: 1px solid var(--gw-border);
+  border-left: 0;
+  border-radius: 0;
+  color: var(--gw-text);
+  background: #fff;
+  cursor: pointer;
+}
+
+.gw-board-searchbar button:hover { background: #f4f6fa; }
+
+/* 표 목록 */
+.gw-post-table-wrap { overflow-x: auto; }
+
+.gw-post-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.gw-post-table th {
+  border-top: 1px solid #3f3f46;
+  border-bottom: 1px solid var(--gw-border);
+  padding: 13px 10px;
+  color: var(--gw-text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.gw-post-table td {
+  border-bottom: 1px solid #eef0f4;
+  padding: 13px 10px;
+  color: var(--gw-text);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.gw-post-table tbody tr:hover { background: #fafbfd; }
+
+.gw-post-table-no,
+.gw-post-table-date { width: 96px; color: var(--gw-muted); white-space: nowrap; }
+.gw-post-table-category { width: 148px; color: var(--gw-muted); }
+.gw-post-table-author { width: 116px; }
+
+/* 제목만 왼쪽 정렬. 가운데 정렬하면 길이가 제각각이라 줄이 흔들려 보인다. */
+.gw-post-table-title { text-align: left; }
+.gw-post-table-title a { color: var(--gw-text); text-decoration: none; }
+.gw-post-table-title a:hover { text-decoration: underline; }
+
+.gw-post-table-mark { margin-left: 7px; color: var(--gw-muted); vertical-align: -3px; }
+
+/* 댓글 수는 주황으로 둔다. 목록에서 대화가 오간 글을 먼저 찾게 된다. */
+.gw-post-table-comments {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 9px;
+  color: #e08a1e;
+  font-size: 13px;
+  vertical-align: -2px;
+}
+
+.gw-post-table-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--gw-blue-600);
+  color: var(--gw-blue-700);
+  font-size: 12px;
+}
+
+.gw-post-table tr.is-pinned td { background: #fbfcff; font-weight: 500; }
+.gw-post-table-empty { padding: 44px 10px !important; color: var(--gw-muted); }
+
+/* 페이지 번호 */
+.gw-page-numbers {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 26px 0 0;
+}
+
+.gw-page-numbers button {
+  display: grid;
+  place-items: center;
+  min-width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 0;
+  padding: 0 6px;
+  color: var(--gw-muted);
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.gw-page-numbers button:hover:not(:disabled) { color: var(--gw-text); }
+.gw-page-numbers button:disabled { opacity: .3; cursor: default; }
+.gw-page-numbers button.is-current { color: var(--gw-text); font-weight: 700; }
+
+/* 글쓰기 — 목록 오른쪽 아래 */
+.gw-board-write-row { display: flex; justify-content: flex-end; margin-top: 20px; }
+
+.gw-board-write-button {
+  display: inline-grid;
+  place-items: center;
+  min-width: 150px;
+  min-height: 44px;
+  border: 1px solid #3f3f46;
+  border-radius: 0;
+  padding: 0 22px;
+  background: #3f3f46;
+  color: #fff;
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.gw-board-write-button:hover { background: #27272a; border-color: #27272a; }
+
+@media (max-width: 720px) {
+  /* 좁은 화면에서 5칸 표는 읽을 수 없다. 글 번호·카테고리·작성자를 숨기고
+     제목과 날짜만 남긴다. 정보는 본문에 들어가면 다 있다. */
+  .gw-post-table thead { display: none; }
+  .gw-post-table tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; padding: 4px 0; }
+  .gw-post-table td { border: 0; padding: 3px 2px; text-align: left; }
+  .gw-post-table-no,
+  .gw-post-table-author { display: none; }
+  .gw-post-table-category { width: auto; grid-column: 1; font-size: 12px; }
+  .gw-post-table-title { grid-column: 1; }
+  .gw-post-table-date { width: auto; grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 12px; }
+  .gw-post-table tbody tr { border-bottom: 1px solid #eef0f4; }
+  .gw-board-tabs button { min-width: 0; flex: 1 1 auto; padding: 0 12px; }
+  .gw-board-searchbar input { width: 100%; }
+  .gw-board-searchbar { justify-content: stretch; }
+  .gw-board-write-button { width: 100%; }
+}
+
+/* 게시글 본문 — 목록과 같은 각진 형태 */
+.gw-post-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 22px;
+}
+
+.gw-post-actions > div { display: flex; gap: 8px; }
+.gw-post-view .gw-post-actions:last-child { margin: 26px 0 0; }
+
+/* 목록·답글·수정·삭제에 쓰는 각진 버튼. 강조가 필요한 하나만 채운다. */
+.gw-flat-button {
+  display: inline-grid;
+  place-items: center;
+  min-width: 96px;
+  min-height: 38px;
+  border: 1px solid var(--gw-border);
+  border-radius: 0;
+  padding: 0 16px;
+  color: var(--gw-text);
+  background: #fff;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.gw-flat-button:hover { border-color: #b9c2d6; background: #f7f9fc; }
+
+.gw-flat-button--strong {
+  border-color: #3f3f46;
+  background: #3f3f46;
+  color: #fff;
+}
+
+.gw-flat-button--strong:hover { border-color: #27272a; background: #27272a; }
+
+.gw-post-head { margin-bottom: 18px; }
+
+.gw-post-head-category {
+  margin: 0 0 6px;
+  color: var(--gw-muted);
+  font-size: 14px;
+}
+
+.gw-post-head h1 {
+  margin: 0 0 16px;
+  font-size: clamp(19px, 2vw, 23px);
+  font-weight: 600;
+  letter-spacing: -.02em;
+  line-height: 1.4;
+}
+
+/* 작성자와 날짜를 가는 선 사이에 둔다. 제목과 본문을 나누는 역할도 겸한다. */
+.gw-post-head-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--gw-border);
+  border-bottom: 1px solid var(--gw-border);
+  padding: 11px 2px;
+  color: var(--gw-muted);
+  font-size: 13px;
+}
+
+.gw-post-head-meta small { margin-right: 4px; }
+.gw-post-head-meta strong { color: var(--gw-text); font-weight: 600; }
+.gw-post-head-meta em { margin-left: 12px; font-style: normal; }
+
+.gw-post-view .gw-post-content { padding: 26px 0; }
+
+/* 댓글 입력 상자. 입력칸과 버튼을 붙여 한 덩어리로 보이게 한다. */
+.gw-comment-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 118px;
+  margin-top: 12px;
+  border: 1px solid var(--gw-border);
+}
+
+.gw-comment-box textarea {
+  min-height: 62px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 11px 12px !important;
+  resize: vertical;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.gw-comment-box textarea:focus { outline: 0; box-shadow: none !important; }
+
+.gw-comment-submit {
+  border: 0;
+  border-left: 1px solid var(--gw-border);
+  border-radius: 0;
+  color: var(--gw-text);
+  background: #fafbfd;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.gw-comment-submit:hover:not(:disabled) { background: #f0f3f9; }
+.gw-comment-submit:disabled { color: var(--gw-muted); cursor: default; }
+
+.gw-comment-box-foot {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid #eef0f4;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.gw-comment-box-foot label { display: flex; align-items: center; gap: 6px; color: var(--gw-muted); }
+.gw-comment-box-foot .gw-form-status { margin: 0; }
+.gw-comment-box-foot .gw-flat-button { min-width: 72px; min-height: 30px; font-size: 13px; }
+.gw-comment-box-foot:empty { display: none; }
+
+.gw-comment-count {
+  margin-left: 4px;
+  color: #e08a1e;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .gw-flat-button { min-width: 0; flex: 1 1 auto; padding: 0 12px; }
+  .gw-post-actions > div { flex: 1 1 0; }
+  .gw-comment-box { grid-template-columns: minmax(0, 1fr) 88px; }
+}
