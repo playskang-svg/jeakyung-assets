@@ -24,13 +24,19 @@ export default function PostDetailPage({ boardSlug: boardSlugProp, postId: postI
   // 댓글·첨부파일 같은 부분 작업이 실패해도 글 전체를 에러 화면으로 덮지 않고,
   // 화면 상단에 알림만 띄운다.
   const submitComment = async (event) => {
-    event.preventDefault(); const form = new FormData(event.currentTarget);
+    event.preventDefault();
+    // form 요소를 await 전에 잡아 둔다. React 는 핸들러가 끝나면 currentTarget 을
+    // 비우므로, await 뒤에 event.currentTarget 을 쓰면 null 이라 예외가 난다.
+    // 그러면 댓글은 이미 저장됐는데 화면에는 실패로 뜨고, 사용자가 다시 눌러
+    // 같은 댓글이 여러 번 등록된다(실제로 그렇게 8개가 쌓였다).
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     setCommentSaving(true); setCommentStatus('');
     try {
       setActionError('');
       const wasEditing = Boolean(editingComment);
       await saveBoardComment({ id: editingComment?.id, postId, parentCommentId: editingComment ? editingComment.parent_comment_id : replyTo, content: form.get('content'), isAnonymous: editingComment ? false : form.get('anonymous') === 'on' });
-      event.currentTarget.reset(); setReplyTo(null); setEditingComment(null);
+      formElement.reset(); setReplyTo(null); setEditingComment(null);
       await load();
       setCommentStatus(wasEditing ? '댓글을 수정했습니다.' : '댓글을 등록했습니다.');
     } catch (cause) { setActionError(cause.message || '댓글을 저장하지 못했습니다.'); }

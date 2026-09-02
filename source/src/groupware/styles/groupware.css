@@ -1901,7 +1901,7 @@ body.groupware-root a.gw-secondary-button {
 .gw-editor-form,
 .gw-comment-form {
   display: grid;
-  gap: 20px;
+  gap: 9px;
 }
 
 .gw-builder-fieldset {
@@ -2455,9 +2455,11 @@ body.groupware-root a.gw-secondary-button {
   margin-top: 12px;
   border: 1px solid var(--gw-border);
   border-radius: var(--gw-radius-lg);
-  padding: 14px 16px;
+  padding: 12px 16px;
   background: #fff;
 }
+
+.gw-comments > h2 { margin: 0 0 4px; font-size: 15px; }
 
 .gw-post-content p { white-space: pre-wrap; }
 .gw-rich-editor {
@@ -2879,12 +2881,27 @@ body.groupware-root a.gw-secondary-button {
 .gw-compose-attachments li strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
 .gw-compose-attachments li small { color: var(--gw-muted); }
 .gw-compose-attachments li button { border: 0; color: var(--gw-danger); background: transparent; }
-.gw-comments > article { border-top: 1px solid var(--gw-border); padding: 16px 0; }
-.gw-comments > article.is-reply { margin-left: 30px; padding-left: 18px; border-left: 3px solid var(--gw-blue-100); }
-.gw-comments article header { display: flex; justify-content: space-between; gap: 10px; }
-.gw-comments time { color: var(--gw-muted); font-size: 14px; }
-.gw-comments article > div button { border: 0; color: var(--gw-blue-700); background: transparent; font-size: 14px; }
-.gw-comment-form { margin-top: 20px; border-top: 1px solid var(--gw-border); padding-top: 20px; }
+/* 댓글은 한 건이 화면을 크게 차지하면 안 된다. 여러 건을 훑어보는 자리라
+   세로 여백을 줄이고, 작성자와 시각을 본문과 같은 줄 흐름에 붙인다. */
+.gw-comments > article { display: grid; gap: 3px; border-top: 1px solid var(--gw-border); padding: 9px 0; }
+.gw-comments > article.is-reply { margin-left: 18px; padding-left: 12px; border-left: 3px solid var(--gw-blue-100); }
+.gw-comments article header { display: flex; align-items: baseline; justify-content: flex-start; gap: 8px; }
+.gw-comments article header strong { font-size: 14px; }
+.gw-comments time { color: var(--gw-muted); font-size: 12px; }
+.gw-comments article p { margin: 0; font-size: 14px; line-height: 1.55; white-space: pre-wrap; }
+
+/* 답글·수정·삭제는 평소에 옅게 두고 마우스를 올린 댓글에서만 또렷해진다.
+   버튼 줄이 항상 진하면 댓글 목록이 버튼 목록처럼 보인다. */
+.gw-comments article > div { display: flex; gap: 10px; opacity: .55; transition: opacity .14s ease; }
+.gw-comments article:hover > div,
+.gw-comments article:focus-within > div { opacity: 1; }
+.gw-comments article > div button { border: 0; padding: 0; color: var(--gw-blue-700); background: transparent; font-size: 13px; cursor: pointer; }
+.gw-comments article > div button:hover { text-decoration: underline; }
+
+.gw-comment-form { margin-top: 12px; border-top: 1px solid var(--gw-border); padding-top: 12px; }
+/* 댓글 입력칸은 본문 편집기가 아니다. 두세 줄이면 충분하고, 길게 쓸 사람은
+   오른쪽 아래를 끌어 늘리면 된다. */
+body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
 
 .gw-popup-admin-list {
   display: grid;
