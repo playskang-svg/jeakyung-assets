@@ -5324,3 +5324,29 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
 @media (max-width: 480px) {
   .gw-shortcut-row a { flex: 1 1 calc(50% - 8px); justify-content: center; padding: 11px 8px; }
 }
+
+/* ── 첨부파일 정리 ────────────────────────────────────────────────────
+   되돌릴 수 없는 삭제라, 미리보기 버튼을 먼저 두고 실행 버튼은 위험한
+   색으로 구분한다. */
+.gw-usage-cleanup-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+  border: 1px solid var(--gw-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #fffdf7;
+}
+.gw-usage-cleanup-actions > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.gw-usage-cleanup-actions .gw-usage-retention-note { margin: 0; }
+.gw-usage-cleanup-result {
+  margin: 0;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  background: #f1f3f6;
+}
+.gw-usage-cleanup-result--ok { background: #eaf6ee; color: #1d6b39; }
+.gw-usage-cleanup-result--warning { background: #fdf3e2; color: #8a5a10; }
+.gw-usage-cleanup-result--error { background: #fdecec; color: #a32020; }
