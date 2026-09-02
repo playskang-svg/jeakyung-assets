@@ -133,16 +133,39 @@ export async function uploadInlineBoardImage({ boardId, postId, file, originalNa
   return data.attachment;
 }
 
-async function createAttachmentSignedUrl(attachmentId, download) {
+// 본문 이미지처럼 화면에 그대로 띄우는 용도. 내려받기는 downloadAttachment 가
+// 따로 맡는다(저장소가 만드는 파일명 헤더가 한글을 깨뜨린다).
+export async function getAttachmentViewUrl(attachmentId) {
   const metadata = await rpc('get_board_attachment_path', { p_attachment_id: attachmentId });
-  const options = download ? { download: metadata.original_name } : undefined;
-  const { data, error } = await requireSupabase().storage.from(BUCKET).createSignedUrl(metadata.storage_path, 60, options);
+  const { data, error } = await requireSupabase().storage.from(BUCKET).createSignedUrl(metadata.storage_path, 60);
   if (error) throw error;
   return data.signedUrl;
 }
 
-export const getAttachmentDownloadUrl = (attachmentId) => createAttachmentSignedUrl(attachmentId, true);
-export const getAttachmentViewUrl = (attachmentId) => createAttachmentSignedUrl(attachmentId, false);
+// 첨부파일 내려받기.
+//
+// 서명 주소에 이름을 실어 보내면 저장소가 Content-Disposition 헤더를 만들어
+// 주는데, 그 헤더는 ASCII 만 안전하게 담는다. 한글 이름이 깨져 내려오던 것이
+// 이 때문이다. 그래서 파일을 먼저 받아 온 뒤 이름은 브라우저에 직접 준다.
+// 이름을 문자열로 넘기므로 한글이든 무엇이든 그대로 저장된다.
+export async function downloadAttachment(attachmentId) {
+  const metadata = await rpc('get_board_attachment_path', { p_attachment_id: attachmentId });
+  const { data, error } = await requireSupabase().storage.from(BUCKET).download(metadata.storage_path);
+  if (error) throw error;
+
+  const href = URL.createObjectURL(data);
+  try {
+    const link = document.createElement('a');
+    link.href = href;
+    link.download = metadata.original_name || 'attachment';
+    document.body.append(link);
+    link.click();
+    link.remove();
+  } finally {
+    // 곧바로 지우면 내려받기가 시작되기 전에 주소가 사라지는 브라우저가 있다.
+    setTimeout(() => URL.revokeObjectURL(href), 60000);
+  }
+}
 
 export async function getInlineAttachmentUrls(attachments = []) {
   const inlineAttachments = attachments.filter((item) => item.purpose === 'inline_image');

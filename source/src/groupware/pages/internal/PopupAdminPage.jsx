@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import PopupRichEditor from '../../components/editor/PopupRichEditor.jsx';
-import { loadPopupAdminCatalog, managePopupDocument } from '../../services/popupService.js';
+import { loadPopupAdminCatalog, managePopupDocument, removePopupDocument } from '../../services/popupService.js';
 import PopupDocumentContent from '../../../shared/popup/PopupDocumentContent.jsx';
 import { sanitizePopupHtml } from '../../../shared/popup/popupHtml.js';
 
@@ -69,6 +69,24 @@ export default function PopupAdminPage() {
   useEffect(() => { load(); }, []);
 
   const targetLabels = useMemo(() => Object.fromEntries(TARGETS), []);
+  // 팝업 삭제는 되돌릴 수 없다. '보관'과 헷갈리지 않도록 무엇이 사라지는지
+  // 제목까지 넣어 한 번 되묻는다.
+  const removeDocument = async () => {
+    if (!form.id) return;
+    if (!window.confirm(`'${form.title}' 팝업을 삭제할까요? 되돌릴 수 없습니다. 잠시 내리려는 것이라면 '게시 중지'를 쓰세요.`)) return;
+    setSaving(true);
+    try {
+      await removePopupDocument(form.id);
+      setForm(createEmptyDocument());
+      setStatus('삭제했습니다.');
+      await load();
+    } catch (cause) {
+      setStatus(cause.message || '삭제하지 못했습니다.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const selectDocument = (item) => setForm({
     ...item,
     size: item.size ?? 'medium',
@@ -121,7 +139,7 @@ export default function PopupAdminPage() {
 
       <fieldset className="gw-builder-fieldset"><legend>미리보기</legend><div className="gw-popup-preview"><h3>{form.title || '팝업 제목'}</h3><PopupDocumentContent html={form.content_html} /></div></fieldset>
       <div className="gw-check-grid"><label><input type="checkbox" checked={form.is_active} onChange={(event) => setForm({ ...form, is_active: event.target.checked })} /> 게시 활성</label>{form.id && <label><input type="checkbox" checked={form.archived} onChange={(event) => setForm({ ...form, archived: event.target.checked })} /> 보관</label>}</div>
-      <div className="gw-admin-actions"><button className="gw-primary-button" type="submit" disabled={saving}>{saving ? '저장 중…' : form.id ? '변경 저장' : '팝업 문서 생성'}</button>{form.id && <button className="gw-secondary-button" type="button" onClick={() => setForm(createEmptyDocument())}>수정 취소</button>}</div>
+      <div className="gw-admin-actions"><button className="gw-primary-button" type="submit" disabled={saving}>{saving ? '저장 중…' : form.id ? '변경 저장' : '팝업 문서 생성'}</button>{form.id && <button className="gw-secondary-button" type="button" onClick={() => setForm(createEmptyDocument())}>수정 취소</button>}{form.id && <button className="gw-secondary-button gw-secondary-button--danger" type="button" disabled={saving} onClick={removeDocument}>삭제</button>}</div>
       {status && <p className="gw-form-status" role="status">{status}</p>}
     </form>
   </article>;

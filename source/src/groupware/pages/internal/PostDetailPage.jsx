@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import BoardDocumentRenderer from '../../components/editor/BoardDocumentRenderer.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { deleteBoardAttachment, deleteBoardComment, deleteBoardPost, getAttachmentDownloadUrl, getBoardOverview, getBoardPost, getBoardReactions, saveBoardComment, toggleBoardReaction, uploadBoardAttachment } from '../../services/boardService.js';
+import { deleteBoardAttachment, deleteBoardComment, deleteBoardPost, downloadAttachment, getBoardOverview, getBoardPost, saveBoardComment, uploadBoardAttachment } from '../../services/boardService.js';
 import { legacyTextToDocument } from '../../utils/boardDocument.js';
 
 // 팝업 안에서도 쓰기 위해 라우트 파라미터 대신 props 로도 받을 수 있게 한다.
@@ -14,8 +14,8 @@ export default function PostDetailPage({ boardSlug: boardSlugProp, postId: postI
   const postId = postIdProp ?? routeParams.postId;
   const navigate = useNavigate(); const auth = useAuth();
   const goToList = () => (onBack ? onBack() : navigate(`/boards/${boardSlug}`));
-  const [data, setData] = useState(null); const [overview, setOverview] = useState(null); const [reactions, setReactions] = useState({ counts: {}, mine: [] }); const [error, setError] = useState(''); const [actionError, setActionError] = useState(''); const [replyTo, setReplyTo] = useState(null); const [editingComment, setEditingComment] = useState(null); const [commentStatus, setCommentStatus] = useState(''); const [commentSaving, setCommentSaving] = useState(false); const [uploading, setUploading] = useState(false); const commentBoxRef = useRef(null);
-  const load = () => Promise.all([getBoardPost(postId), getBoardOverview(boardSlug), getBoardReactions(postId).catch(() => ({ counts: {}, mine: [] }))]).then(([postData, boardData, reactionData]) => { setData(postData); setOverview(boardData); setReactions(reactionData); setError(''); }).catch(() => setError('게시글을 볼 권한이 없거나 글을 찾을 수 없습니다.'));
+  const [data, setData] = useState(null); const [overview, setOverview] = useState(null); const [error, setError] = useState(''); const [actionError, setActionError] = useState(''); const [replyTo, setReplyTo] = useState(null); const [editingComment, setEditingComment] = useState(null); const [commentStatus, setCommentStatus] = useState(''); const [commentSaving, setCommentSaving] = useState(false); const [uploading, setUploading] = useState(false); const commentBoxRef = useRef(null);
+  const load = () => Promise.all([getBoardPost(postId), getBoardOverview(boardSlug)]).then(([postData, boardData]) => { setData(postData); setOverview(boardData); setError(''); }).catch(() => setError('게시글을 볼 권한이 없거나 글을 찾을 수 없습니다.'));
   useEffect(() => { load(); }, [boardSlug, postId]);
   if (error) return <div className="gw-route-state"><div className="gw-notice gw-notice--warning" role="alert">{error}<br />{onBack
     ? <button type="button" className="gw-secondary-button" onClick={goToList}>목록 보기</button>
@@ -110,9 +110,8 @@ export default function PostDetailPage({ boardSlug: boardSlugProp, postId: postI
     <section className="gw-post-content"><BoardDocumentRenderer documentValue={documentValue} attachments={data.attachments} /></section>
     {actionError && <div className="gw-notice gw-notice--warning" role="alert">{actionError}</div>}
 
-    {overview.board.settings.allow_reactions && <section className="gw-reactions" aria-label="게시글 반응">{[['like','좋아요'],['helpful','도움돼요'],['support','응원해요']].map(([type, label]) => <button key={type} type="button" aria-pressed={reactions.mine.includes(type)} onClick={async () => setReactions(await toggleBoardReaction(postId, type))}>{label} {reactions.counts[type] ?? 0}</button>)}</section>}
 
-    {overview.board.settings.allow_attachments && <section className="gw-attachment-section"><h2>첨부파일</h2><div className="gw-attachment-list">{generalAttachments.map((item) => <div key={item.id}><button type="button" onClick={async () => { try { setActionError(''); window.open(await getAttachmentDownloadUrl(item.id), '_blank', 'noopener'); } catch (downloadError) { setActionError(downloadError.message); } }}>{item.original_name} <span>{Math.ceil(item.file_size / 1024)}KB</span></button>{data.post.can_edit && <button type="button" onClick={() => removeAttachment(item)} aria-label={`${item.original_name} 삭제`}>삭제</button>}</div>)}</div>{generalAttachments.length === 0 && <p className="gw-empty-state">첨부파일이 없습니다.</p>}{overview.permissions.upload && <label className="gw-file-button">{uploading ? '올리는 중…' : '파일 첨부'}<input type="file" disabled={uploading} onChange={upload} /></label>}</section>}
+    {overview.board.settings.allow_attachments && <section className="gw-attachment-section"><h2>첨부파일</h2><div className="gw-attachment-list">{generalAttachments.map((item) => <div key={item.id}><button type="button" onClick={async () => { try { setActionError(''); await downloadAttachment(item.id); } catch (downloadError) { setActionError(downloadError.message); } }}>{item.original_name} <span>{Math.ceil(item.file_size / 1024)}KB</span></button>{data.post.can_edit && <button type="button" onClick={() => removeAttachment(item)} aria-label={`${item.original_name} 삭제`}>삭제</button>}</div>)}</div>{generalAttachments.length === 0 && <p className="gw-empty-state">첨부파일이 없습니다.</p>}{overview.permissions.upload && <label className="gw-file-button">{uploading ? '올리는 중…' : '파일 첨부'}<input type="file" disabled={uploading} onChange={upload} /></label>}</section>}
 
     {overview.board.settings.allow_comments && <section className="gw-comments">
       <h2>댓글 {data.comments.length > 0 && <span className="gw-comment-count">{data.comments.length}</span>}</h2>

@@ -70,7 +70,6 @@ export default function LinkTreePage() {
           </nav>
         )}
       </header>
-      {data.page.description && <p className="gw-linktree-lede">{data.page.description}</p>}
       {/* 고른 탭에 매달린 버튼 줄. 탭을 바꾸면 이 줄도 함께 바뀐다. */}
       {activeItem?.button_box && (
         <div className="gw-linktree-buttons">

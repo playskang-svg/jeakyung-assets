@@ -48,6 +48,10 @@ export default function BoardBuilderPanel({ directory }) {
   const [previewUser, setPreviewUser] = useState('');
   const [preview, setPreview] = useState(null);
   const [status, setStatus] = useState('');
+  // '안전 삭제'는 글이 있는 게시판을 지우지 않고 보관한다. 그 게시판이 목록에
+  // 계속 남아 있으면 지운 것처럼 보이지 않는다. 평소에는 감추되, 되살릴 수
+  // 있어야 하므로 보관함을 여는 길은 남긴다.
+  const [showArchived, setShowArchived] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const load = () => getBoardAdminCatalog().then(setCatalog).catch(() => setStatus('게시판 관리 데이터를 불러오지 못했습니다.'));
@@ -79,6 +83,9 @@ export default function BoardBuilderPanel({ directory }) {
     write: permissionRows.filter((row) => row.effect === 'allow' && row.write).length,
     comment: permissionRows.filter((row) => row.effect === 'allow' && row.comment).length,
   }), [permissionRows]);
+
+  const archivedCount = catalog.boards.filter((board) => board.archived_at).length;
+  const shownBoards = showArchived ? catalog.boards : catalog.boards.filter((board) => !board.archived_at);
 
   const selectBoard = (board) => {
     const split = splitPermissionRules(catalog.rules.filter((item) => item.board_id === board.id));
@@ -149,7 +156,7 @@ export default function BoardBuilderPanel({ directory }) {
 
   return <section className="gw-admin-section" aria-labelledby="board-builder-title">
     <div className="gw-admin-section-heading"><div><span className="gw-eyebrow">BOARD BUILDER</span><h2 id="board-builder-title">게시판 만들기·권한 관리</h2><p>종류를 선택하고 게시판별 읽기·쓰기·댓글 권한을 역할, 부서 또는 사용자에게 부여합니다.</p></div><div className="gw-admin-actions gw-builder-heading-actions"><span className="gw-count-badge">{catalog.boards.length}개</span><button className="gw-secondary-button" type="button" onClick={resetForm}>새 게시판</button></div></div>
-    <div className="gw-builder-layout"><aside className="gw-builder-sidebar"><div className="gw-builder-sidebar-heading"><strong>게시판 목록</strong><span>수정할 게시판을 선택하세요.</span></div><div className="gw-compact-list" aria-label="게시판 목록">{catalog.boards.map((board) => <button type="button" className={form.id === board.id ? 'is-selected' : ''} key={board.id} onClick={() => selectBoard(board)}><strong>{board.name}</strong><span>{getBoardType(board.board_type).label} · /{board.slug}{board.archived_at ? ' · 보관' : ''}</span></button>)}{catalog.boards.length === 0 && <p>등록된 게시판이 없습니다.</p>}</div></aside>
+    <div className="gw-builder-layout"><aside className="gw-builder-sidebar"><div className="gw-builder-sidebar-heading"><strong>게시판 목록</strong><span>수정할 게시판을 선택하세요.</span></div><div className="gw-compact-list" aria-label="게시판 목록">{shownBoards.map((board) => <button type="button" className={form.id === board.id ? 'is-selected' : ''} key={board.id} onClick={() => selectBoard(board)}><strong>{board.name}</strong><span>{getBoardType(board.board_type).label} · /{board.slug}{board.archived_at ? ' · 보관' : ''}</span></button>)}{shownBoards.length === 0 && <p>{showArchived ? '등록된 게시판이 없습니다.' : '운영 중인 게시판이 없습니다.'}</p>}{archivedCount > 0 && <button type="button" className="gw-archived-toggle" onClick={() => setShowArchived((current) => !current)}>{showArchived ? '보관함 숨기기' : `보관함 보기 (${archivedCount}개)`}</button>}</div></aside>
       <form className="gw-builder-form" onSubmit={submit}>
         <fieldset className="gw-builder-fieldset"><legend>1. 게시판 종류</legend><div className="gw-board-type-grid">{Object.entries(BOARD_TYPES).map(([type, config]) => <button type="button" key={type} className={form.board_type === type ? 'is-selected' : ''} aria-pressed={form.board_type === type} onClick={() => selectType(type)}><span className="gw-board-type-copy"><strong>{config.label}</strong><small>{config.description}</small></span></button>)}</div>{!BOARD_TYPES[form.board_type] && <p>현재 게시판은 기존 유형인 <strong>{selectedType.label}</strong>입니다. 위 유형을 선택하면 새 방식으로 전환됩니다.</p>}</fieldset>
 

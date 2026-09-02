@@ -29,6 +29,9 @@ const shortDate = (value) => {
 };
 
 // 다섯 줄짜리 글 목록. 공지사항과 최신 게시글이 같은 모양을 쓴다.
+// 공지사항·최신 게시글 두 줄은 같은 길이로 나란히 선다.
+const FEED_ROWS = 3;
+
 function PostLines({ title, posts, to, emptyText, showBoard = false }) {
   return (
     <section className="gw-feed" aria-label={title}>
@@ -93,14 +96,14 @@ export default function DashboardPage() {
     // 없거나 권한이 없으면 그 줄만 비고 나머지는 그대로 나온다.
     const [widgetResult, boardResult, linkPageResult, noticeResult, recentResult] = await Promise.allSettled([
       getMyDashboardWidgets(), getVisibleBoards(), getMyLinkPages(),
-      getBoardPosts(NOTICE_SLUG, { page: 1 }), getRecentBoardPosts(5),
+      getBoardPosts(NOTICE_SLUG, { page: 1 }), getRecentBoardPosts(FEED_ROWS),
     ]);
     if (widgetResult.status === 'fulfilled') setWidgets(widgetResult.value);
     else setError('대시보드 구성을 불러오지 못했습니다.');
     if (boardResult.status === 'fulfilled') setBoards(boardResult.value);
     if (linkPageResult.status === 'fulfilled') setLinkPages(linkPageResult.value);
     if (noticeResult.status === 'fulfilled') {
-      setNotices((noticeResult.value.items ?? []).slice(0, 5).map((item) => ({ ...item, board_slug: NOTICE_SLUG })));
+      setNotices((noticeResult.value.items ?? []).slice(0, FEED_ROWS).map((item) => ({ ...item, board_slug: NOTICE_SLUG })));
     }
     if (recentResult.status === 'fulfilled') setRecent(recentResult.value);
     setLoading(false);
@@ -162,9 +165,9 @@ export default function DashboardPage() {
           {/* 메일·전자결재 같은 기능은 게시판이 아니므로 격자에 섞지 않고
               그 위에 한 줄로 세운다. 주소는 navigation.js 한곳에 있다. */}
           <div className="gw-quickrow">
-            {quickLinks().map((item) => (item.external
-              ? <a key={item.key} href={item.href} target="_blank" rel="noopener noreferrer">{item.label}<span aria-hidden="true">↗</span></a>
-              : <Link key={item.key} to={item.path}>{item.label}</Link>))}
+            {/* 바깥 주소도 /view/<key> 로 간다. 새 탭으로 튕겨 나가지 않고
+                상단 메뉴를 그대로 둔 채 이 화면 안에서 열린다. */}
+            {quickLinks().map((item) => <Link key={item.key} to={item.to}>{item.label}</Link>)}
           </div>
           <div className="gw-launch-grid">
             {boards.map((board) => (
