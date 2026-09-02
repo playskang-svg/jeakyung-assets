@@ -5,9 +5,14 @@ import { getLinkPage } from '../../services/linkPageService.js';
 import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
 import PageSection, { isInlineItem } from '../../components/PageSection.jsx';
 
-// 업무 페이지. 제목과 버튼 줄이 고정 머리글로 남고, 버튼을 누르면 그 아래
-// 영역만 해당 항목으로 바뀐다. 항목은 게시판·외부 화면·HTML 문서·글·바로가기
-// 버튼 중 하나이고, 다른 페이지나 새 탭으로 나가는 주소는 머리글의 링크로 남는다.
+// 업무 페이지. 탭 → 버튼 → 내용 세 층으로 쌓인다.
+//
+//   [탭1][탭2][탭3]      탭을 고르면 아래 두 층이 함께 바뀐다
+//   [버튼][버튼]         그 탭에 매달린 버튼 박스(없으면 이 줄이 없다)
+//   게시판·문서·외부화면  그 탭의 내용
+//
+// 항목은 게시판·외부 화면·HTML 문서·글·바로가기 버튼 중 하나이고, 다른
+// 페이지나 새 탭으로 나가는 주소는 탭 줄의 링크로 남는다.
 export default function LinkTreePage() {
   const { pageSlug } = useParams();
   const [params, setParams] = useSearchParams();
@@ -39,7 +44,7 @@ export default function LinkTreePage() {
           <h1 id="linktree-title">{data.page.title}</h1>
           {data.page.description && <p>{data.page.description}</p>}
         </div>
-        {!data.button_box && items.length > 0 && (
+        {items.length > 0 && (
           <nav className="gw-linktree-tabs" aria-label={`${data.page.title} 항목`}>
             {items.map((item) => (isInlineItem(item) ? (
               <button
@@ -60,10 +65,17 @@ export default function LinkTreePage() {
           </nav>
         )}
       </header>
-      {data.button_box ? (
-        <div className="gw-linktree-content"><ButtonBoxGrid box={data.button_box} items={data.button_box.items} /></div>
-      ) : activeItem ? (
+      {/* 고른 탭에 매달린 버튼 줄. 탭을 바꾸면 이 줄도 함께 바뀐다. */}
+      {activeItem?.button_box && (
+        <div className="gw-linktree-buttons">
+          <ButtonBoxGrid box={activeItem.button_box} items={activeItem.button_box.items} />
+        </div>
+      )}
+      {activeItem ? (
         <div className="gw-linktree-content"><PageSection key={activeItem.id} item={activeItem} /></div>
+      ) : data.button_box ? (
+        // 항목 없이 버튼 박스만 두고 쓰던 예전 페이지. 그대로 동작해야 한다.
+        <div className="gw-linktree-content"><ButtonBoxGrid box={data.button_box} items={data.button_box.items} /></div>
       ) : (
         <p className="gw-empty-state">표시할 항목이 없습니다. 관리자 화면에서 항목을 추가해 주세요.</p>
       )}

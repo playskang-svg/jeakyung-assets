@@ -7,7 +7,7 @@ import LinkTargetFields, { SECTION_TYPES, emptyLinkTarget, isContentType, isLink
 import PageSectionEditor from './PageSectionEditor.jsx';
 
 const EMPTY_FORM = { id: null, title: '', slug: '', description: '', is_active: true, content_type: 'boards', button_box_id: '', items: [] };
-const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', content: {}, ...emptyLinkTarget('board') });
+const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', content: {}, button_box_id: '', ...emptyLinkTarget('board') });
 
 // 제목만 입력해도 쓸 수 있는 주소를 얻도록 영문·숫자만 남기고, 전부 걸러지면
 // (한글 제목) 무작위 접미사로 만든다. 관리자가 직접 고칠 수 있다.
@@ -53,6 +53,7 @@ export default function LinkPageAdminPanel() {
         link_type: item.item_type ?? 'board',
         board_id: item.board_id ?? '', target_page_id: item.target_page_id ?? '', url: item.url ?? '',
         content: item.content ?? {},
+        button_box_id: item.button_box_id ?? '',
       })),
     });
   };
@@ -88,6 +89,7 @@ export default function LinkPageAdminPanel() {
               target_page_id: target.target_page_id,
               url: target.url,
               content: isContentType(target.link_type) ? (item.content ?? {}) : {},
+              button_box_id: item.button_box_id ?? '',
             };
           }),
       );
@@ -186,6 +188,14 @@ export default function LinkPageAdminPanel() {
               <button type="button" className="gw-secondary-button" onClick={() => moveItem(index, -1)} disabled={index === 0} aria-label="위로">↑</button>
               <button type="button" className="gw-secondary-button" onClick={() => moveItem(index, 1)} disabled={index === form.items.length - 1} aria-label="아래로">↓</button>
               <button type="button" className="gw-secondary-button gw-icon-danger-button" onClick={() => patchForm({ items: form.items.filter((entry) => entry.key !== item.key) })} aria-label="항목 삭제">삭제</button>
+              {/* 이 탭에 매달 버튼 줄. 고르면 탭 아래·내용 위에 그 버튼들이 나온다. */}
+              <label className="gw-linkpage-item-box">
+                <span>버튼 줄</span>
+                <select value={item.button_box_id ?? ''} onChange={(event) => patchItem(item.key, { button_box_id: event.target.value })}>
+                  <option value="">없음</option>
+                  {buttonBoxes.map((box) => <option key={box.id} value={box.id}>{box.title}</option>)}
+                </select>
+              </label>
               {isContentType(item.link_type) && (
                 <div className="gw-linkpage-item-content">
                   <PageSectionEditor
