@@ -2320,16 +2320,6 @@ body.groupware-root a.gw-secondary-button {
   letter-spacing: .02em;
   color: var(--gw-muted);
 }
-.gw-board-write-button {
-  flex: 0 0 auto;
-  align-self: flex-start;
-  min-height: 42px;
-  border-radius: 10px;
-  padding: 0 16px;
-  font-size: 14px;
-  box-shadow: 0 6px 14px rgba(36, 80, 245, 0.16);
-}
-
 /* 게시판 머리글은 한 줄이다: 뒤로 · 제목 · (분류 · 검색 · 목록 이동 · 글쓰기). */
 .gw-board-header {
   align-items: center;
@@ -5103,7 +5093,12 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
   text-decoration: none;
 }
 
+/* color 는 반드시 a 를 포함한 선택자로 둔다. body.groupware-root a 의
+   color: inherit 가 명시도(0,1,2)에서 클래스 하나(0,1,0)를 이기기 때문이다.
+   이걸 빼면 흰 글씨가 부모 색으로 되돌려져 어두운 바탕에 글자가 묻힌다. */
+body.groupware-root a.gw-board-write-button { color: #fff; }
 .gw-board-write-button:hover { background: #27272a; border-color: #27272a; }
+.gw-board-write-button:focus-visible { outline: 2px solid var(--gw-blue-600); outline-offset: 3px; }
 
 @media (max-width: 720px) {
   /* 좁은 화면에서 5칸 표는 읽을 수 없다. 글 번호·카테고리·작성자를 숨기고
