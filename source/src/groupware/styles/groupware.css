@@ -5641,29 +5641,23 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 
 /* 색. 채운 버튼은 흰 글씨를 body.groupware-root 로 한 번 더 못박는다 —
    그 리셋이 (0,1,2) 라서 클래스 하나짜리 색 지정을 이긴다. */
-.gw-quickbtn.is-plain { color: var(--gw-text); }
-body.groupware-root a.gw-quickbtn.is-plain { color: var(--gw-text); }
-.gw-quickbtn.is-plain:hover { border-color: var(--gw-blue-600); background: var(--gw-blue-100); color: var(--gw-blue-700); }
+/* 색 여덟 가지. 원색을 가득 채우는 대신 옅은 바탕에 같은 계열의 진한 글씨로
+   간다 — 버튼 여럿이 한 줄에 서도 서로 싸우지 않고, 어느 조합을 골라도 글씨가
+   묻히지 않는다. 채운 버튼이 없으니 흰 글씨를 못박을 일도 없다. */
+.gw-quickbtn.is-plain   { background: #fbfcfe; color: #111b2b; }
+.gw-quickbtn.is-primary { background: #e8eeff; border-color: #ccd9fb; color: #1d3fb8; }
+.gw-quickbtn.is-navy    { background: #e6e9f2; border-color: #c9d0e2; color: #1b2440; }
+.gw-quickbtn.is-mint    { background: #e2f3f0; border-color: #bfe2dc; color: #0f5f57; }
+.gw-quickbtn.is-amber   { background: #fdefda; border-color: #f2ddb8; color: #8a4b09; }
+.gw-quickbtn.is-rose    { background: #fdeaee; border-color: #f4cdd6; color: #9b1c39; }
+.gw-quickbtn.is-violet  { background: #f1eafc; border-color: #ddcdf5; color: #5f2ba0; }
+.gw-quickbtn.is-green   { background: #e6f3e9; border-color: #c6e2cd; color: #1a6134; }
 
-.gw-quickbtn.is-primary { border-color: transparent; background: var(--gw-blue-600); }
-body.groupware-root a.gw-quickbtn.is-primary { color: #fff; }
-.gw-quickbtn.is-primary { color: #fff; }
-.gw-quickbtn.is-primary:hover { background: var(--gw-blue-700); }
+/* 링크로 만든 버튼도 위에서 정한 색을 그대로 쓴다.
+   body.groupware-root a { color: inherit } 는 :where() 로 감싸 우선순위가 0
+   이므로 클래스 하나로 충분하다. */
 
-.gw-quickbtn.is-navy { border-color: transparent; background: var(--gw-navy-950); }
-body.groupware-root a.gw-quickbtn.is-navy { color: #fff; }
-.gw-quickbtn.is-navy { color: #fff; }
-.gw-quickbtn.is-navy:hover { background: #050b2e; }
-
-.gw-quickbtn.is-mint { border-color: transparent; background: #0f766e; }
-body.groupware-root a.gw-quickbtn.is-mint { color: #fff; }
-.gw-quickbtn.is-mint { color: #fff; }
-.gw-quickbtn.is-mint:hover { background: #115e58; }
-
-.gw-quickbtn.is-amber { border-color: transparent; background: #b45309; }
-body.groupware-root a.gw-quickbtn.is-amber { color: #fff; }
-.gw-quickbtn.is-amber { color: #fff; }
-.gw-quickbtn.is-amber:hover { background: #92400e; }
+.gw-quickbtn:hover { border-color: currentColor; filter: brightness(0.97); }
 
 /* ── 관리자: 페이지 이동 ────────────────────────────────────────────── */
 .gw-quicklink-admin-list { display: grid; gap: 6px; margin: 0 0 12px; padding: 0; list-style: none; }

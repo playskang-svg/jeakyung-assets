@@ -9,7 +9,10 @@ const VARIANTS = [
   ['primary', '파랑'],
   ['navy', '남색'],
   ['mint', '민트'],
+  ['green', '초록'],
   ['amber', '주황'],
+  ['rose', '장미'],
+  ['violet', '보라'],
 ];
 const SIZES = [['sm', '작게'], ['md', '보통'], ['lg', '크게']];
 
