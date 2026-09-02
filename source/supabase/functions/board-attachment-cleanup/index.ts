@@ -17,6 +17,8 @@ type Target = {
   file_size: number;
 };
 
+const UUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
 function response(body: Record<string, unknown>, status = 200) {
   return Response.json(body, { status, headers: CORS_HEADERS });
 }
@@ -83,20 +85,35 @@ Deno.serve(async (request: Request) => {
   }
 
   let dryRun = false;
+  let attachmentIds: string[] = [];
   try {
     const body = await request.json();
     dryRun = body?.dryRun === true;
+    // 고른 것만 지우는 경우. 화면에서 목록의 파일을 골라 보낸다.
+    if (Array.isArray(body?.attachmentIds)) {
+      attachmentIds = body.attachmentIds
+        .filter((id: unknown): id is string => typeof id === 'string' && UUID.test(id))
+        .slice(0, BATCH_LIMIT);
+    }
   } catch {
     // 본문이 없으면 실제 정리로 본다.
   }
 
-  const { data: targets, error: targetError } = await admin
-    .rpc('collect_board_attachment_cleanup_targets', { p_limit: BATCH_LIMIT });
+  // 고른 것이 있으면 그것만, 없으면 유예가 지난 것을 스스로 훑는다.
+  // 둘 다 "살아 있는 글이 가리키는 파일은 건너뛴다"는 같은 규칙을 쓴다.
+  const selecting = attachmentIds.length > 0;
+  const { data: targets, error: targetError } = selecting
+    ? await admin.rpc('select_board_attachment_cleanup_targets', { p_attachment_ids: attachmentIds })
+    : await admin.rpc('collect_board_attachment_cleanup_targets', { p_limit: BATCH_LIMIT });
   if (targetError) return response({ error: targetError.message }, 500);
 
   const list = (targets ?? []) as Target[];
   const summary = {
     called_by: authorizedAs,
+    selected: selecting ? attachmentIds.length : null,
+    // 고른 것 중 살아 있는 글이 아직 가리켜 건너뛴 개수. 지웠다고만 말하고
+    // 남은 것을 알려 주지 않으면 왜 목록에 그대로 있는지 알 수 없다.
+    skipped_in_use: selecting ? attachmentIds.length - list.length : null,
     attachments: list.filter((item) => item.kind === 'attachment').length,
     orphans: list.filter((item) => item.kind === 'orphan').length,
     freed_bytes: list.reduce((sum, item) => sum + Number(item.file_size ?? 0), 0),

@@ -17,9 +17,11 @@ export async function getAdminSystemUsage() {
 // 마찬가지다. 실제 삭제는 Storage API 를 거쳐야 하므로 서비스 역할로 도는 엣지
 // 함수에 맡긴다. 호출자의 세션이 그대로 전달되고, 함수 쪽에서 최고관리자인지
 // 다시 확인한다.
-export async function runAttachmentCleanup({ dryRun = false } = {}) {
+// attachmentIds 를 주면 그것만 지운다. 주지 않으면 유예가 지난 것을 함수가
+// 스스로 훑는다. 어느 쪽이든 살아 있는 글이 가리키는 파일은 건너뛴다.
+export async function runAttachmentCleanup({ dryRun = false, attachmentIds } = {}) {
   const { data, error } = await requireSupabase().functions.invoke('board-attachment-cleanup', {
-    body: { dryRun },
+    body: attachmentIds?.length ? { dryRun, attachmentIds } : { dryRun },
   });
   if (error) {
     // 엣지 함수는 실패 사유를 본문에 담아 보낸다. error.message 만 보면

@@ -43,6 +43,48 @@ export default function SystemUsagePanel({ usage: incoming, loading = false, onR
   const { members, content, attachments, dashboards, activity, boards } = usage;
   const fileDetails = usage.file_details ?? EMPTY_USAGE.file_details;
   const [cleanupState, setCleanupState] = useState({ busy: false, message: '', tone: '' });
+  // 목록에서 고른 파일. 지운 뒤에는 목록이 새로 오므로 함께 비운다.
+  const [picked, setPicked] = useState(() => new Set());
+
+  const candidates = fileDetails.cleanup_candidates ?? [];
+  // 미등록(저장소에만 남은) 파일은 첨부 기록이 없어 하나씩 고를 수 없다.
+  // 그것들은 '영구 삭제 실행'이 유예 규칙에 따라 함께 정리한다.
+  const pickable = candidates.filter((item) => item.id);
+  const togglePick = (id) => setPicked((current) => {
+    const next = new Set(current);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
+  const allPicked = pickable.length > 0 && pickable.every((item) => picked.has(item.id));
+
+  // 고른 것만 지운다. 유예 시간은 보지 않는다 — 목록에서 고르고 한 번 더
+  // 확인까지 한 사람에게 다시 기다리라 할 이유가 없다. 다만 살아 있는 글이
+  // 가리키는 파일은 서버가 건너뛴다(글이 깨지므로).
+  const deletePicked = async (ids) => {
+    const list = [...ids];
+    if (list.length === 0) return;
+    const names = pickable.filter((item) => list.includes(item.id)).map((item) => item.original_name);
+    const preview = names.slice(0, 3).join(', ') + (names.length > 3 ? ` 외 ${names.length - 3}개` : '');
+    if (!window.confirm(`${preview}\n\n저장소와 기록에서 영구 삭제합니다. 되돌릴 수 없습니다. 계속할까요?`)) return;
+
+    setCleanupState({ busy: true, message: '', tone: '' });
+    try {
+      const result = await runAttachmentCleanup({ attachmentIds: list });
+      const skipped = Number(result.skipped_in_use ?? 0);
+      const note = skipped > 0
+        ? ` 살아 있는 글이 쓰고 있는 ${number(skipped)}개는 건너뛰었습니다.`
+        : '';
+      setCleanupState({
+        busy: false,
+        tone: skipped > 0 ? 'warning' : 'ok',
+        message: `${number(result.removed)}개를 지웠습니다 (${bytes(result.freed_bytes)}).${note}`,
+      });
+      setPicked(new Set());
+      onReload?.();
+    } catch (cleanupError) {
+      setCleanupState({ busy: false, message: cleanupError.message, tone: 'error' });
+    }
+  };
 
   // 미리보기로 무엇이 지워질지 먼저 보여 준다. 지운 파일은 되돌릴 수 없으므로
   // 확인 없이 바로 지우지 않는다.
@@ -178,7 +220,49 @@ export default function SystemUsagePanel({ usage: incoming, loading = false, onR
             </div>
             {cleanupState.message && <p className={`gw-usage-cleanup-result gw-usage-cleanup-result--${cleanupState.tone}`} role="status">{cleanupState.message}</p>}
           </div>
-          {fileDetails.cleanup_candidates.length > 0 && <section className="gw-usage-cleanup-list" aria-labelledby="cleanup-candidate-title"><h3 id="cleanup-candidate-title">정리 후보 파일</h3><ul>{fileDetails.cleanup_candidates.map((item) => <li key={item.id}><span><strong>{item.original_name}</strong><small>{item.board_name} · {item.purpose}</small></span><b>{bytes(item.file_size)}</b><time>{item.cleanup_after ? new Date(item.cleanup_after).toLocaleString('ko-KR') : '정리 시각 미정'}</time></li>)}</ul></section>}
+          {candidates.length > 0 && (
+            <section className="gw-usage-cleanup-list" aria-labelledby="cleanup-candidate-title">
+              <div className="gw-usage-cleanup-head">
+                <h3 id="cleanup-candidate-title">정리 후보 파일</h3>
+                {pickable.length > 0 && (
+                  <div className="gw-usage-cleanup-pick">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={allPicked}
+                        onChange={() => setPicked(allPicked ? new Set() : new Set(pickable.map((item) => item.id)))}
+                      />
+                      <span>전체 선택</span>
+                    </label>
+                    <button
+                      type="button"
+                      className="gw-secondary-button gw-secondary-button--danger"
+                      disabled={picked.size === 0 || cleanupState.busy}
+                      onClick={() => deletePicked(picked)}
+                    >
+                      선택 {picked.size > 0 ? `${number(picked.size)}개 ` : ''}영구 삭제
+                    </button>
+                  </div>
+                )}
+              </div>
+              <ul>
+                {candidates.map((item) => (
+                  <li key={item.id ?? item.storage_path}>
+                    {item.id
+                      ? <input type="checkbox" checked={picked.has(item.id)} aria-label={`${item.original_name} 선택`} onChange={() => togglePick(item.id)} />
+                      : <span className="gw-usage-cleanup-nopick" title="첨부 기록이 없는 파일이라 하나씩 고를 수 없습니다" aria-hidden="true" />}
+                    <span><strong>{item.original_name}</strong><small>{item.board_name} · {item.purpose}</small></span>
+                    <b>{bytes(item.file_size)}</b>
+                    <time>{item.created_at ? new Date(item.created_at).toLocaleString('ko-KR') : (item.cleanup_after ? new Date(item.cleanup_after).toLocaleString('ko-KR') : '정리 시각 미정')}</time>
+                    {item.id && (
+                      <button type="button" className="gw-icon-danger-button" disabled={cleanupState.busy}
+                        onClick={() => deletePicked([item.id])} aria-label={`${item.original_name} 영구 삭제`}>삭제</button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </>
       )}
     </section>
