@@ -144,7 +144,10 @@ export default function DashboardPage() {
         {/* 바깥 주소도 /view/<key> 로 간다. 새 탭으로 튕겨 나가지 않고
             상단 메뉴를 그대로 둔 채 이 화면 안에서 열린다. */}
         <div className="gw-quickrow">
-          {quickLinks().map((item) => <Link key={item.key} to={item.to}>{item.label}</Link>)}
+          {quickLinks().map((item) => (item.to
+            ? <Link key={item.key} to={item.to}>{item.label}</Link>
+            // 액자를 거부하는 사이트는 새 탭으로. 액자에 넣으면 빈 화면만 남는다.
+            : <a key={item.key} href={item.href} target="_blank" rel="noopener noreferrer">{item.label}<span aria-hidden="true">↗</span></a>))}
         </div>
       </section>
 

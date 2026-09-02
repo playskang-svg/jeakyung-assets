@@ -11,7 +11,8 @@ import { GROUPWARE_NAVIGATION } from '../../config/navigation.js';
 // 적어 둔 항목의 key 로만 찾는다.
 export default function ExternalViewPage() {
   const { viewKey } = useParams();
-  const item = GROUPWARE_NAVIGATION.find((entry) => entry.key === viewKey && entry.href);
+  // newTab 항목은 액자를 거부하는 곳이라 여기서 열면 빈 화면만 남는다.
+  const item = GROUPWARE_NAVIGATION.find((entry) => entry.key === viewKey && entry.href && !entry.newTab);
   if (!item) return <Navigate to="/dashboard" replace />;
 
   return (

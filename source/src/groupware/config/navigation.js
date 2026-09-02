@@ -5,7 +5,9 @@
 // 여기에는 게시판별 항목을 두지 않는다.
 export const GROUPWARE_NAVIGATION = [
   { key: 'dashboard', label: '대시보드', path: '/dashboard' },
-  { key: 'mail', label: '사내메일', href: 'https://mail.jeakyung.com', quick: 10 },
+  // 웹메일은 다른 화면 안에 실리는 것을 막아 둔다(X-Frame-Options). 액자에
+  // 넣으면 빈 화면만 남으므로 이것만 새 탭으로 연다.
+  { key: 'mail', label: '사내메일', href: 'https://mail.jeakyung.com/', newTab: true, quick: 10 },
   { key: 'approval', label: '전자결재', path: '/approval', quick: 20 },
   { key: 'organization', label: '조직도', path: '/organization', quick: 30 },
   { key: 'calendar', label: '일정', path: '/calendar' },
@@ -53,4 +55,6 @@ export function getRouteTrail(pathname) {
 export const quickLinks = () => GROUPWARE_NAVIGATION
   .filter((item) => typeof item.quick === 'number')
   .sort((a, b) => a.quick - b.quick)
-  .map((item) => ({ ...item, to: item.path ?? `/view/${item.key}` }));
+  .map((item) => (item.newTab
+    ? { ...item, to: null }
+    : { ...item, to: item.path ?? `/view/${item.key}` }));
