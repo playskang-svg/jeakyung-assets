@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 
 import EmbeddedSite from '../../components/EmbeddedSite.jsx';
 import { GROUPWARE_NAVIGATION } from '../../config/navigation.js';
@@ -42,6 +42,22 @@ export function QuickLinkViewPage() {
 
   if (link === undefined) return <p className="gw-empty-state" role="status">화면을 준비하고 있습니다.</p>;
   if (!link) return <Navigate to="/dashboard" replace />;
+
+  // 볼 권한이 없으면 서버가 주소를 내려주지 않는다. 화면에서 감추는 것이
+  // 아니라 애초에 받지 못한 것이라, 응답을 열어 봐도 주소가 없다.
+  if (!link.url) {
+    return (
+      <article className="gw-page gw-denied-page" aria-labelledby="denied-title">
+        <div className="gw-denied-card">
+          <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+          <h1 id="denied-title">이 페이지의 조회 권한이 없습니다</h1>
+          <p><strong>{link.label}</strong> 은(는) 지정된 사람만 볼 수 있습니다. 열람이 필요하면 관리자에게 요청해 주세요.</p>
+          <Link className="gw-primary-button" to="/dashboard">홈으로</Link>
+        </div>
+      </article>
+    );
+  }
+
   return <ViewFrame label={link.label} url={link.url} />;
 }
 
