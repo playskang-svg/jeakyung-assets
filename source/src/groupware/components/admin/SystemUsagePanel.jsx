@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+
+import { runAttachmentCleanup } from '../../services/adminUsageService.js';
 
 const EMPTY_USAGE = {
   generated_at: null,
@@ -39,6 +42,30 @@ export default function SystemUsagePanel({ usage: incoming, loading = false, onR
 
   const { members, content, attachments, dashboards, activity, boards } = usage;
   const fileDetails = usage.file_details ?? EMPTY_USAGE.file_details;
+  const [cleanupState, setCleanupState] = useState({ busy: false, message: '', tone: '' });
+
+  // 미리보기로 무엇이 지워질지 먼저 보여 준다. 지운 파일은 되돌릴 수 없으므로
+  // 확인 없이 바로 지우지 않는다.
+  const runCleanup = async (dryRun) => {
+    setCleanupState({ busy: true, message: '', tone: '' });
+    try {
+      const result = await runAttachmentCleanup({ dryRun });
+      const scope = `첨부 ${number(result.attachments)}개 · 미등록 파일 ${number(result.orphans)}개 (${bytes(result.freed_bytes)})`;
+      if (dryRun) {
+        if (result.attachments + result.orphans === 0) {
+          setCleanupState({ busy: false, message: '지울 파일이 없습니다.', tone: 'ok' });
+          return;
+        }
+        setCleanupState({ busy: false, message: `지울 대상: ${scope}. 아래 "영구 삭제 실행"을 누르면 되돌릴 수 없습니다.`, tone: 'warning' });
+        return;
+      }
+      setCleanupState({ busy: false, message: `삭제 완료 — ${scope}, 저장소에서 ${number(result.removed)}개를 지웠습니다.`, tone: 'ok' });
+      onReload?.();
+    } catch (cleanupError) {
+      setCleanupState({ busy: false, message: cleanupError.message, tone: 'error' });
+    }
+  };
+
   const generatedAt = usage.generated_at
     ? new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(usage.generated_at))
     : '집계 전';
@@ -135,9 +162,22 @@ export default function SystemUsagePanel({ usage: incoming, loading = false, onR
               ))}
             </div>
           )}
-          <p className="gw-usage-retention-note">
-            정리 후보는 최소 24시간의 복구 유예를 거칩니다. 이 화면에서는 물리 삭제하지 않으며, 미등록 Storage 객체와 기한 도래 항목은 운영 점검 대상으로만 표시합니다.
-          </p>
+          <div className="gw-usage-cleanup-actions">
+            <p className="gw-usage-retention-note">
+              정리 후보는 최소 24시간의 복구 유예를 거칩니다. 유예가 지난 첨부와, 등록에 실패해 저장소에만 남은 파일이 삭제 대상입니다.
+              살아 있는 글이 아직 가리키고 있는 파일은 유예가 지났어도 건너뜁니다. <strong>삭제한 파일은 되돌릴 수 없습니다.</strong>
+            </p>
+            <div>
+              <button className="gw-secondary-button" type="button" onClick={() => runCleanup(true)} disabled={cleanupState.busy}>
+                {cleanupState.busy ? '확인 중…' : '무엇이 지워지는지 먼저 보기'}
+              </button>
+              <button className="gw-secondary-button gw-secondary-button--danger" type="button" disabled={cleanupState.busy}
+                onClick={() => { if (window.confirm('유예가 지난 파일을 저장소에서 영구 삭제합니다. 되돌릴 수 없습니다. 계속할까요?')) runCleanup(false); }}>
+                영구 삭제 실행
+              </button>
+            </div>
+            {cleanupState.message && <p className={`gw-usage-cleanup-result gw-usage-cleanup-result--${cleanupState.tone}`} role="status">{cleanupState.message}</p>}
+          </div>
           {fileDetails.cleanup_candidates.length > 0 && <section className="gw-usage-cleanup-list" aria-labelledby="cleanup-candidate-title"><h3 id="cleanup-candidate-title">정리 후보 파일</h3><ul>{fileDetails.cleanup_candidates.map((item) => <li key={item.id}><span><strong>{item.original_name}</strong><small>{item.board_name} · {item.purpose}</small></span><b>{bytes(item.file_size)}</b><time>{item.cleanup_after ? new Date(item.cleanup_after).toLocaleString('ko-KR') : '정리 시각 미정'}</time></li>)}</ul></section>}
         </>
       )}
