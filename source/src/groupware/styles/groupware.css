@@ -5704,3 +5704,22 @@ body.groupware-root .gw-quickrow a:first-child { color: #fff; }
 .gw-usage-cleanup-result--ok { background: #eaf6ee; color: #1d6b39; }
 .gw-usage-cleanup-result--warning { background: #fdf3e2; color: #8a5a10; }
 .gw-usage-cleanup-result--error { background: #fdecec; color: #a32020; }
+
+/* ── 업무 페이지: 탭 아래 버튼 줄 ─────────────────────────────────────
+   탭을 고르면 그 탭의 버튼이 여기 나오고, 그 아래에 탭의 게시판이 붙는다. */
+.gw-linktree-buttons {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--gw-border);
+}
+
+/* 관리자 화면에서 항목마다 버튼 줄을 고르는 칸. */
+.gw-linkpage-item-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  grid-column: 1 / -1;
+  color: var(--gw-muted);
+  font-size: 12.5px;
+}
+.gw-linkpage-item-box select { min-width: 180px; }
