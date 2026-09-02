@@ -5327,13 +5327,7 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 .gw-panel-heading a { color: var(--gw-blue-700); font-size: 12.5px; font-weight: 650; text-decoration: none; }
 .gw-panel-heading a:hover { text-decoration: underline; }
 
-.gw-home-split {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 268px;
-  gap: 14px;
-  margin: 16px 0;
-}
-.gw-panel--feeds { padding: 6px 20px 10px; }
+.gw-panel--feeds { margin: 14px 0; padding: 6px 20px 10px; }
 
 /* ── 글 다섯 줄 ─────────────────────────────────────────────────────── */
 .gw-feed { padding: 14px 0; }
@@ -5401,26 +5395,7 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 .gw-feed li time { flex: 0 0 auto; color: var(--gw-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 .gw-feed-empty { margin: 8px 0; color: var(--gw-muted); font-size: 13px; }
 
-/* ── 사내메일 · 시계 ─────────────────────────────────────────────────── */
-.gw-mail-button {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  border-radius: 12px;
-  padding: 13px 15px;
-  background: linear-gradient(135deg, var(--gw-blue-600), #1b3fd8);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
-  box-shadow: 0 8px 18px -10px rgba(23, 57, 209, .8);
-  transition: transform .18s ease, box-shadow .18s ease;
-}
-.gw-mail-button span { margin-left: auto; opacity: .8; font-size: 12px; }
-.gw-mail-button:hover { transform: translateY(-1px); box-shadow: 0 12px 22px -10px rgba(23, 57, 209, .9); }
-.gw-mail-button:focus-visible { outline: 2px solid var(--gw-blue-700); outline-offset: 2px; }
-.gw-home-aside { align-self: start; display: grid; gap: 10px; }
-
+/* ── 시계 ────────────────────────────────────────────────────────────── */
 /* 시계는 프로필 바로 아래 한 줄로 눕는다. 늘 같은 자리에 있으면 되는
    정보라 세로로 자리를 많이 차지할 이유가 없다. */
 .gw-nowbar {
@@ -5505,26 +5480,41 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 .gw-launch-card:hover strong { color: var(--gw-blue-700); }
 .gw-launch-card:focus-visible { outline: 2px solid var(--gw-blue-600); outline-offset: 2px; }
 
-.gw-launch-modules {
+/* 빠른 실행 줄. 게시판이 아닌 기능과 바깥 서비스를 게시판 격자 위에 한 줄로
+   세운다. 격자에 섞으면 게시판인 줄 알고 누르게 된다. */
+.gw-quickrow {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--gw-border);
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--gw-border);
 }
-.gw-launch-modules a {
+.gw-quickrow a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   border: 1px solid var(--gw-border);
-  border-radius: 999px;
-  padding: 7px 16px;
+  border-radius: 8px;
+  padding: 9px 15px;
+  background: #fbfcfe;
   color: var(--gw-text);
   font-size: 13px;
   font-weight: 650;
   text-decoration: none;
-  transition: background .15s ease, border-color .15s ease, color .15s ease;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
 }
-.gw-launch-modules a:hover { border-color: var(--gw-blue-600); background: var(--gw-blue-100); color: var(--gw-blue-700); }
-.gw-launch-modules a:focus-visible { outline: 2px solid var(--gw-blue-600); outline-offset: 2px; }
+.gw-quickrow a span { opacity: .55; font-size: 11px; }
+.gw-quickrow a:hover { border-color: var(--gw-blue-600); background: var(--gw-blue-100); color: var(--gw-blue-700); }
+.gw-quickrow a:focus-visible { outline: 2px solid var(--gw-blue-600); outline-offset: 2px; }
+/* 메일은 매일 쓰는 것이라 한눈에 찾히게 첫 칸만 채워 둔다. */
+.gw-quickrow a:first-child {
+  border-color: transparent;
+  background: var(--gw-blue-600);
+  color: #fff;
+}
+body.groupware-root .gw-quickrow a:first-child { color: #fff; }
+.gw-quickrow a:first-child:hover { background: var(--gw-blue-700); }
 
 /* ── 경로 줄 ────────────────────────────────────────────────────────── */
 .gw-routebar {
@@ -5603,11 +5593,8 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 .gw-footer a:hover { color: var(--gw-blue-700); text-decoration: underline; }
 
 @media (prefers-reduced-motion: reduce) {
-  .gw-launch-card, .gw-mail-button, .gw-feed > header a svg { transition: none; }
-  .gw-launch-card:hover, .gw-mail-button:hover { transform: none; }
-}
-@media (max-width: 900px) {
-  .gw-home-split { grid-template-columns: 1fr; }
+  .gw-launch-card, .gw-quickrow a, .gw-feed > header a svg { transition: none; }
+  .gw-launch-card:hover { transform: none; }
 }
 @media (max-width: 560px) {
   .gw-launch-grid { grid-template-columns: 1fr 1fr; }
