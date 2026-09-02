@@ -1617,6 +1617,43 @@ body.groupware-root a.gw-secondary-button {
 
 .gw-profile-card-hero h2 { margin: 0; color: var(--gw-navy-950); font-size: 17px; letter-spacing: -0.02em; }
 .gw-profile-card-hero p { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 1px 0 0; color: var(--gw-muted); font-size: 13px; }
+/* 이름과 연락처를 한 줄에. 좁아지면 연락처가 다음 줄로 내려간다 — 이름을
+   줄이는 것보다 낫다. */
+.gw-profile-card-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  min-width: 0;
+}
+
+.gw-profile-card-contact {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  color: var(--gw-muted);
+  font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 이름과 연락처 사이의 가는 세로선. 값이 있을 때만 그려진다. */
+.gw-profile-card-contact::before {
+  content: '';
+  flex: none;
+  width: 1px;
+  height: 11px;
+  background: var(--gw-border);
+}
+
+/* 좁은 화면에서는 연락처가 다음 줄로 내려간다. 그때 세로선은 줄 맨 앞에
+   혼자 남아 무엇을 가르는지 알 수 없게 되므로 지운다. */
+@media (max-width: 640px) {
+  .gw-profile-card-contact::before { display: none; }
+}
+
 .gw-profile-card-hero .gw-secondary-button { display: grid; place-items: center; text-decoration: none; }
 /* 값 하나짜리 항목이라 카드 안에 또 카드를 두지 않고, 옅은 구분선만으로
    나눈다. (이중 카드가 세로 공간을 크게 낭비하던 부분) */
