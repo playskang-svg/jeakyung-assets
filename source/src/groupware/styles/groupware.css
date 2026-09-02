@@ -2195,29 +2195,131 @@ body.groupware-root a.gw-secondary-button {
   margin-top: 22px;
 }
 
+/* ── 게시판 카드 ────────────────────────────────────────────────────────
+   목록 화면과 대시보드가 같은 카드를 쓴다. 예전에는 두 곳이 .gw-board-card 라는
+   같은 이름으로 서로 다른 규칙을 두고 있어, 나중에 선언된 쪽이 이겨 가운데 정렬과
+   왼쪽 정렬이 뒤섞였다.
+
+   카드 전체가 링크다. 제목 글자만 정확히 겨냥할 필요가 없다. */
 .gw-board-card-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(236px, 1fr));
+  gap: 14px;
 }
 
 .gw-board-card {
+  position: relative;
   min-width: 0;
-  display: grid;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
   border: 1px solid var(--gw-border);
-  border-radius: 14px;
-  padding: 16px;
-  background: #fff;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  border-radius: 16px;
+  padding: 20px;
+  background: var(--gw-surface);
+  overflow: hidden;
+  transition: transform .22s cubic-bezier(.2, .7, .3, 1), box-shadow .22s ease, border-color .22s ease;
 }
 
-.gw-board-card:hover { border-color: var(--gw-blue-300, #aebdf2); box-shadow: 0 4px 14px rgba(20, 30, 70, 0.06); }
+/* 위쪽 가는 띠. 평소에는 접혀 있다가 마우스를 올리면 카드 너비만큼 퍼진다.
+   그림자만으로는 어느 카드를 가리키는지 잘 보이지 않아 한 겹 더 둔다. */
+.gw-board-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gw-blue-600), #6f8cff 55%, #a9bcff);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s cubic-bezier(.2, .7, .3, 1);
+}
 
-.gw-board-card h3 { margin: 6px 0; }
-.gw-board-card p { color: var(--gw-muted); font-size: 14px; }
-.gw-board-card button { justify-self: start; border: 0; color: var(--gw-blue-700); background: transparent; }
-.gw-board-type-label { display: inline-flex; align-items: center; gap: 5px; color: var(--gw-blue-700); font-size: 14px; font-weight: 850; }
+.gw-board-card:hover {
+  transform: translateY(-3px);
+  border-color: #c5d0f0;
+  box-shadow: 0 16px 32px -14px rgba(23, 57, 209, .3);
+}
+
+.gw-board-card:hover::before,
+.gw-board-card:focus-within::before { transform: scaleX(1); }
+.gw-board-card:focus-within { border-color: var(--gw-blue-600); }
+
+/* 게시판 종류는 제목을 읽기 전에 스치듯 보는 것이라 작고 조용하게 둔다.
+   예전에는 굵기 850 에 14px 이라 제목과 무게가 비슷해 서로를 눌렀다. */
+.gw-board-type-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--gw-blue-700);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.gw-board-card h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 750;
+  letter-spacing: -.02em;
+  line-height: 1.32;
+  word-break: keep-all;
+}
+
+/* 밑줄은 빼고 색으로만 반응한다. 카드 안에서는 이미 눌리는 것이 분명하다. */
+.gw-board-card h3 a {
+  color: var(--gw-text);
+  text-decoration: none;
+  transition: color .18s ease;
+}
+.gw-board-card h3 a::after { content: ''; position: absolute; inset: 0; }
+.gw-board-card:hover h3 a,
+.gw-board-card:focus-within h3 a { color: var(--gw-blue-700); }
+.gw-board-card h3 a:focus-visible { outline: none; }
+
+.gw-board-card p {
+  margin: 0;
+  color: var(--gw-muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+  word-break: keep-all;
+  /* 설명 길이가 제각각이라 두 줄에서 끊어 카드 높이를 고르게 한다. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 들어가기 표시. 화살표만 마우스를 따라 조금 움직인다. */
+.gw-board-card-enter {
+  margin-top: auto;
+  padding-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--gw-blue-700);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.gw-board-card-enter svg { transition: transform .22s cubic-bezier(.2, .7, .3, 1); }
+.gw-board-card:hover .gw-board-card-enter svg { transform: translateX(4px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .gw-board-card,
+  .gw-board-card::before,
+  .gw-board-card-enter svg { transition: none; }
+  .gw-board-card:hover { transform: none; }
+}
+
+/* 그룹 제목은 카드보다 한 단 위라는 것만 알면 된다. */
+.gw-board-directory > section > h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: var(--gw-muted);
+}
 .gw-board-write-button {
   flex: 0 0 auto;
   align-self: flex-start;
@@ -5159,8 +5261,11 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
    자리만큼 빈 칸이 남는다. */
 .gw-app-shell--flat {
   display: block;
+  /* 사이드바가 사라졌으니 그 자리를 비워 두던 왼쪽 여백도 함께 걷는다.
+     이것을 남겨 두면 화면 전체가 사이드바 너비만큼 오른쪽으로 밀린다. */
+  padding-left: 0;
   min-height: 100vh;
-  background: var(--gw-surface-muted, #f5f6f8);
+  background: var(--gw-background, #f3f5fa);
 }
 .gw-app-shell--flat .gw-workspace {
   width: 100%;
@@ -5206,64 +5311,104 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
 }
 
 /* ── 대시보드 게시판 박스 ─────────────────────────────────────────────── */
-.gw-board-card-section { margin: 20px 0 8px; }
-.gw-board-card-grid {
+
+/* ── 대시보드 바로가기 박스 ───────────────────────────────────────────
+   게시판 카드와 같은 결이되, 사이드바가 없어진 뒤 여기가 유일한 이동 경로라
+   조금 더 크고 눈에 띄게 둔다. */
+.gw-launch-section { margin: 18px 0 6px; }
+.gw-launch-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
 }
-.gw-board-card {
+.gw-launch-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 30px 20px 26px;
-  border: 1px solid var(--gw-border, #e2e4e9);
-  border-radius: 4px;
-  background: #fff;
-  text-align: center;
+  gap: 6px;
+  padding: 22px 20px 20px;
+  border: 1px solid var(--gw-border);
+  border-radius: 16px;
+  background: var(--gw-surface);
+  overflow: hidden;
+  transition: transform .22s cubic-bezier(.2, .7, .3, 1), box-shadow .22s ease, border-color .22s ease;
 }
-.gw-board-card-no {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1;
-  color: #4f9ff0;
+.gw-launch-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gw-blue-600), #6f8cff 55%, #a9bcff);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s cubic-bezier(.2, .7, .3, 1);
 }
-.gw-board-card h3 {
+.gw-launch-card:hover {
+  transform: translateY(-3px);
+  border-color: #c5d0f0;
+  box-shadow: 0 16px 32px -14px rgba(23, 57, 209, .3);
+}
+.gw-launch-card:hover::before,
+.gw-launch-card:focus-within::before { transform: scaleX(1); }
+.gw-launch-card:focus-within { border-color: var(--gw-blue-600); }
+
+.gw-launch-no {
   margin: 0;
-  font-size: 20px;
+  font-size: 11px;
   font-weight: 700;
-  color: #33373d;
+  letter-spacing: .1em;
+  color: #9aa4c0;
+}
+.gw-launch-card h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 750;
+  letter-spacing: -.02em;
+  line-height: 1.3;
+  color: var(--gw-text);
+  word-break: keep-all;
+  transition: color .18s ease;
+}
+.gw-launch-card:hover h3,
+.gw-launch-card:focus-within h3 { color: var(--gw-blue-700); }
+.gw-launch-desc {
+  margin: 0;
+  color: var(--gw-muted);
+  font-size: 13.5px;
+  line-height: 1.55;
   word-break: keep-all;
 }
-.gw-board-card-desc {
-  margin: 0;
-  font-size: 13px;
-  color: var(--gw-text-muted, #7b8089);
-  word-break: keep-all;
-}
-/* 설명이 없는 박스가 섞여도 버튼 줄이 어긋나지 않게 아래로 민다. */
-.gw-board-card-go {
+.gw-launch-go {
   margin-top: auto;
-  padding: 11px 34px;
-  border-radius: 999px;
-  background: #cd7c7c;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
+  padding-top: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--gw-blue-700);
+  font-size: 13px;
+  font-weight: 700;
   text-decoration: none;
 }
-.gw-board-card-go:hover { background: #b96a6a; }
-.gw-board-card-go:focus-visible {
-  outline: 2px solid #7a3b3b;
-  outline-offset: 2px;
+.gw-launch-go::after { content: ''; position: absolute; inset: 0; }
+.gw-launch-go:focus-visible { outline: none; }
+.gw-launch-go svg { transition: transform .22s cubic-bezier(.2, .7, .3, 1); }
+.gw-launch-card:hover .gw-launch-go svg { transform: translateX(4px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .gw-launch-card,
+  .gw-launch-card::before,
+  .gw-launch-go svg { transition: none; }
+  .gw-launch-card:hover { transform: none; }
 }
-@media (max-width: 720px) {
-  .gw-board-card-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .gw-board-card { padding: 22px 12px 20px; }
+@media (max-width: 560px) {
+  .gw-launch-grid,
+  .gw-board-card-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .gw-launch-card { padding: 18px 14px 16px; }
+  .gw-launch-card h3 { font-size: 16px; }
+  .gw-board-card { padding: 16px 14px; }
   .gw-board-card h3 { font-size: 16px; }
-  .gw-board-card-go { padding: 9px 22px; font-size: 13px; }
 }
 
 /* ── 바로가기 줄 ────────────────────────────────────────────────────────

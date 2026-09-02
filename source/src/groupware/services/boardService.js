@@ -41,7 +41,6 @@ export const saveBoardComment = (comment) => rpc('save_board_comment', {
   p_is_anonymous: Boolean(comment.isAnonymous),
 });
 export const deleteBoardComment = (commentId) => rpc('delete_board_comment', { p_comment_id: commentId });
-export const toggleBoardFavorite = (boardId) => rpc('toggle_board_favorite', { p_board_id: boardId });
 export const getBoardAdminCatalog = () => rpc('get_board_admin_catalog').then((data) => data ?? { groups: [], boards: [] });
 export const saveBoardDefinition = (board, rules, categories, managers = []) => rpc('manage_board', { p_board: board, p_rules: rules, p_categories: categories, p_managers: managers });
 export const saveBoardGroup = (group) => rpc('manage_board_group', { p_group: group });
