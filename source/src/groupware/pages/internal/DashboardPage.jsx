@@ -48,7 +48,9 @@ function PostLines({ title, posts, to, emptyText, showBoard = false }) {
 }
 
 // 초 단위로 흐르는 시계. 날짜와 요일은 한국어로 읽히게 직접 조립한다.
-function NowPanel() {
+// 프로필 바로 아래 한 줄로 눕는다. 늘 같은 자리에 있으면 되는 정보라
+// 세로로 자리를 많이 차지할 이유가 없다.
+function NowBar() {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000);
@@ -56,10 +58,10 @@ function NowPanel() {
   }, []);
   const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
   return (
-    <div className="gw-now">
-      <p className="gw-now-date">{now.getFullYear()}년 {now.getMonth() + 1}월 {now.getDate()}일 {WEEKDAYS[now.getDay()]}요일</p>
-      <p className="gw-now-time"><time dateTime={now.toISOString()}>{time}</time></p>
-      <Link className="gw-now-button" to="/calendar">일정</Link>
+    <div className="gw-nowbar">
+      <p className="gw-nowbar-date">{now.getFullYear()}년 {now.getMonth() + 1}월 {now.getDate()}일 {WEEKDAYS[now.getDay()]}요일</p>
+      <p className="gw-nowbar-time"><time dateTime={now.toISOString()}>{time}</time></p>
+      <Link className="gw-nowbar-button" to="/calendar">일정</Link>
     </div>
   );
 }
@@ -129,6 +131,7 @@ export default function DashboardPage() {
     <article className="gw-page" aria-labelledby="page-title">
       <header className="gw-page-header"><div><h1 id="page-title">대시보드</h1></div></header>
       <ProfileCard />
+      <NowBar />
 
       {/* 글 목록과 오른쪽 도구를 한 줄로 둔다. 좁은 화면에서는 아래로 쌓인다. */}
       <div className="gw-home-split">
@@ -136,13 +139,12 @@ export default function DashboardPage() {
           <PostLines title="공지사항" posts={notices} to={`/boards/${NOTICE_SLUG}`} emptyText="등록된 공지가 없습니다." />
           <PostLines title="최신 게시글" posts={recent} to="/boards" emptyText="등록된 글이 없습니다." showBoard />
         </div>
-        <aside className="gw-panel gw-panel--now" aria-label="바로 쓰는 도구">
+        <aside className="gw-home-aside" aria-label="바로 쓰는 도구">
           <a className="gw-mail-button" href="https://mail.jeakyung.com" target="_blank" rel="noopener noreferrer">
             <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m3.5 7 8.5 6 8.5-6" /></svg>
             사내메일
             <span aria-hidden="true">↗</span>
           </a>
-          <NowPanel />
         </aside>
       </div>
 
