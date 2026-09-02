@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 import { getLinkPage } from '../../services/linkPageService.js';
 import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
@@ -7,7 +7,7 @@ import PageSection, { isInlineItem } from '../../components/PageSection.jsx';
 
 // 업무 페이지. 위에 고정된 메뉴줄, 그 아래 바뀌는 두 층으로 되어 있다.
 //
-//   [홈] 지입업무 │ [탭1][탭2][탭3]   상단바 밑에 붙어 스크롤해도 남는 메뉴줄
+//   지입업무 │ [탭1][탭2][탭3]   상단바 밑에 붙어 스크롤해도 남는 메뉴줄
 //   ─────────────────────────────
 //   [버튼][버튼]        그 탭에 매달린 버튼 박스(없으면 이 줄이 없다)
 //   게시판·문서·외부화면  그 탭의 내용
@@ -41,12 +41,9 @@ export default function LinkTreePage() {
 
   return (
     <article className="gw-page gw-linktree-page" aria-labelledby="linktree-title">
-      {/* 고정 메뉴줄. 어느 탭에 들어가 있든 나머지 탭과 나갈 길이 함께 보인다. */}
+      {/* 고정 메뉴줄. 어느 탭에 들어가 있든 나머지 탭이 함께 보인다. */}
       <header className="gw-linktree-menubar">
         <div className="gw-linktree-menubar-title">
-          <Link className="gw-linktree-home" to="/dashboard" title="대시보드" aria-label="대시보드로 이동">
-            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11 12 4l8 7" /><path d="M6 10v9h12v-9" /></svg>
-          </Link>
           <h1 id="linktree-title">{data.page.title}</h1>
         </div>
         {items.length > 0 && (

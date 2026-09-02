@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import GroupwareBrand from '../components/GroupwareBrand.jsx';
 import UserAccountMenu from '../components/profile/UserAccountMenu.jsx';
-import { getRouteTitle, getRouteTrail } from '../config/navigation.js';
+import { getRouteTrail } from '../config/navigation.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { supabase } from '../lib/supabase.js';
 import { APPROVAL_STATE_CHANGED_EVENT, approvalService } from '../services/approvalService.js';
@@ -71,7 +71,6 @@ export default function AppShell() {
         <header className="gw-topbar">
           <div className="gw-topbar-title">
             <Link className="gw-topbar-brand" to="/" aria-label="대시보드로 이동"><GroupwareBrand /></Link>
-            <div><span>현재 위치</span><strong>{getRouteTitle(location.pathname)}</strong></div>
           </div>
           <div className="gw-topbar-tools" aria-label="사용자와 업무 도구">
             <TopSearch />
