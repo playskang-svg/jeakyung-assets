@@ -98,23 +98,29 @@ export default function DashboardPage() {
           처음 들어온 사람도 어디로 가야 할지 안다. 번호는 순서를 눈에 익히기
           위한 것으로, 관리자가 정한 정렬을 그대로 따른다. */}
       {!loading && (boards.length > 0 || linkPages.length > 0) && (
-        <section className="gw-board-card-section" aria-labelledby="dashboard-boards-title">
-          <h2 id="dashboard-boards-title" className="gw-visually-hidden">게시판</h2>
-          <div className="gw-board-card-grid">
+        <section className="gw-launch-section" aria-labelledby="dashboard-boards-title">
+          <h2 id="dashboard-boards-title" className="gw-visually-hidden">바로가기</h2>
+          <div className="gw-launch-grid">
             {boards.map((board, index) => (
-              <article className="gw-board-card" key={board.id}>
-                <p className="gw-board-card-no" aria-hidden="true">{index + 1}</p>
+              <article className="gw-launch-card" key={board.id}>
+                <p className="gw-launch-no" aria-hidden="true">{String(index + 1).padStart(2, '0')}</p>
                 <h3>{board.name}</h3>
-                {board.description && <p className="gw-board-card-desc">{board.description}</p>}
-                <Link className="gw-board-card-go" to={`/boards/${board.slug}`}>바로가기<span className="gw-visually-hidden"> — {board.name}</span></Link>
+                {board.description && <p className="gw-launch-desc">{board.description}</p>}
+                <Link className="gw-launch-go" to={`/boards/${board.slug}`}>
+                  바로가기<span className="gw-visually-hidden"> — {board.name}</span>
+                  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12h14" /><polyline points="13 6 19 12 13 18" /></svg>
+                </Link>
               </article>
             ))}
             {linkPages.map((page) => (
-              <article className="gw-board-card" key={page.id}>
-                <p className="gw-board-card-no" aria-hidden="true">*</p>
+              <article className="gw-launch-card" key={page.id}>
+                <p className="gw-launch-no" aria-hidden="true">PAGE</p>
                 <h3>{page.title}</h3>
-                <p className="gw-board-card-desc">{page.item_count}개 항목</p>
-                <Link className="gw-board-card-go" to={`/pages/${page.slug}`}>바로가기<span className="gw-visually-hidden"> — {page.title}</span></Link>
+                <p className="gw-launch-desc">{page.item_count}개 항목</p>
+                <Link className="gw-launch-go" to={`/pages/${page.slug}`}>
+                  바로가기<span className="gw-visually-hidden"> — {page.title}</span>
+                  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12h14" /><polyline points="13 6 19 12 13 18" /></svg>
+                </Link>
               </article>
             ))}
           </div>
