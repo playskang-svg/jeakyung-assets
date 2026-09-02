@@ -11,190 +11,301 @@
   이 파일을 액자 안에서 연다.
 
   손으로 관리하는 쪽이다 — scripts/sync-build.mjs 가 건드리지 않는다.
+
+  액자(iframe) 안에서 열리므로 바깥으로 나가는 링크는 target="_top" 을 쓴다.
+  그렇게 하지 않으면 그룹웨어 안에 옛 인트라넷이 겹쳐 열린다.
 -->
 <style>
   :root{
-    --gray:#6c6c6c;
-    --gray-hover:#000;
-    --red:#d57373;
-    --red-hover:#d6a5a5;
-    --line:#cecece;
-    --bg-bar:#e7e7e7;
-    --num:#42a5f5;
-    --title:#444;
+    --navy:#071044;
+    --navy-2:#0d1a5c;
+    --blue:#2450f5;
+    --sky:#63a2ff;
+    --ink:#111b2b;
+    --muted:#6b7391;
+    --line:#e3e7f2;
+    --card:#ffffff;
   }
   *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
   body{
     margin:0;
-    padding:24px 16px 48px;
-    font-family:"Noto Sans KR","Apple SD Gothic Neo",sans-serif;
-    color:var(--title);
-    background:#fff;
+    padding:0 0 56px;
+    font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
+    color:var(--ink);
+    background:#f4f6fb;
+    /* 액자 안에서도 배경이 이어지도록 최소 높이를 준다. */
+    min-height:100vh;
   }
-  .wrap{max-width:1000px;margin:0 auto;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px;}
 
-  /* 상단 바 버튼 */
-  .bar{
-    background:var(--bg-bar);
-    padding:20px 16px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:12px;
-    justify-content:center;
-    margin-bottom:24px;
-  }
-  .btn-bar{
-    display:inline-block;
-    min-width:172px;
-    padding:10px 16px;
-    background:var(--gray);
+  /* ── 머리 ──────────────────────────────────────────────────────────
+     남색 판 위에 흐릿한 빛 두 덩이가 아주 천천히 흐른다. 배경이라 눈에
+     띄면 안 되고, 멈춰 있으면 판이 죽어 보인다. */
+  .hero{
+    position:relative;
+    overflow:hidden;
+    margin-bottom:34px;
+    padding:52px 0 46px;
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 60%,#122a7a 100%);
     color:#fff;
-    font-size:18px;
-    text-align:center;
-    text-decoration:none;
-    border:1px solid transparent;
-    transition:.2s;
   }
-  .btn-bar:hover{background:var(--gray-hover);color:#fff;}
-
-  /* 홈 버튼 */
-  .btn-home{
+  .hero::before,
+  .hero::after{
+    content:"";
+    position:absolute;
+    border-radius:50%;
+    filter:blur(60px);
+    opacity:.5;
+    pointer-events:none;
+  }
+  .hero::before{
+    width:420px;height:420px;top:-190px;left:-90px;
+    background:radial-gradient(circle,#3b6bff 0%,transparent 70%);
+    animation:drift-a 22s ease-in-out infinite;
+  }
+  .hero::after{
+    width:360px;height:360px;right:-120px;bottom:-200px;
+    background:radial-gradient(circle,#00c2b2 0%,transparent 70%);
+    animation:drift-b 27s ease-in-out infinite;
+  }
+  @keyframes drift-a{
+    0%,100%{transform:translate3d(0,0,0) scale(1);}
+    50%{transform:translate3d(70px,50px,0) scale(1.12);}
+  }
+  @keyframes drift-b{
+    0%,100%{transform:translate3d(0,0,0) scale(1);}
+    50%{transform:translate3d(-60px,-40px,0) scale(1.15);}
+  }
+  /* 옅은 격자. 물류 도면 같은 결을 준다. */
+  .hero-grid{
+    position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(ellipse at 50% 0%,#000 30%,transparent 78%);
+    pointer-events:none;
+  }
+  .hero-inner{position:relative;}
+  .hero .eyebrow{
     display:inline-block;
-    padding:10px 28px;
-    background:#fff;
-    color:#333;
-    border:1px solid var(--line);
-    border-radius:25px;
-    text-decoration:none;
-    font-size:16px;
-    transition:.2s;
+    margin:0 0 12px;
+    border:1px solid rgba(255,255,255,.28);
+    border-radius:999px;
+    padding:5px 13px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.08em;
+    color:#c9d8ff;
   }
-  .btn-home:hover{background:var(--bg-bar);color:#000;}
-  .home-wrap{margin-bottom:24px;}
+  .hero h1{
+    margin:0 0 8px;
+    font-size:clamp(24px,4vw,34px);
+    font-weight:800;
+    letter-spacing:-.03em;
+  }
+  .hero p{margin:0;color:#a9bae4;font-size:14.5px;line-height:1.6;}
 
-  /* 카드 그리드 */
+  /* ── 카드 ────────────────────────────────────────────────────────── */
+  .section-label{
+    display:flex;align-items:center;gap:10px;
+    margin:0 0 14px;
+    color:var(--muted);font-size:12.5px;font-weight:800;letter-spacing:.06em;
+  }
+  .section-label::after{content:"";flex:1;height:1px;background:var(--line);}
+
   .grid{
     display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:20px;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:14px;
+    margin-bottom:34px;
   }
   .card{
+    position:relative;
+    display:block;
+    overflow:hidden;
     border:1px solid var(--line);
-    padding:28px 16px;
-    text-align:center;
+    border-radius:16px;
+    padding:20px 18px 18px;
+    background:var(--card);
+    color:inherit;
+    text-decoration:none;
+    box-shadow:0 1px 2px rgba(16,26,54,.04);
+    /* 들어 올리는 느낌. 그림자와 함께 움직여야 떠 보인다. */
+    transition:transform .22s cubic-bezier(.2,.7,.3,1),box-shadow .22s ease,border-color .22s ease;
+    animation:rise .5s cubic-bezier(.2,.7,.3,1) backwards;
   }
+  .card:hover,.card:focus-visible{
+    transform:translateY(-4px);
+    border-color:#c3d2f7;
+    box-shadow:0 18px 34px -22px rgba(16,26,54,.55);
+    outline:none;
+  }
+  .card:focus-visible{outline:2px solid var(--blue);outline-offset:3px;}
+  /* 위쪽에 색 띠. 평소엔 왼쪽에 짧게 있다가 올리면 끝까지 흐른다. */
+  .card::before{
+    content:"";
+    position:absolute;top:0;left:0;
+    height:3px;width:38px;
+    background:linear-gradient(90deg,var(--blue),var(--sky));
+    transition:width .28s cubic-bezier(.2,.7,.3,1);
+  }
+  .card:hover::before,.card:focus-visible::before{width:100%;}
   .card .num{
-    font-family:Oswald,sans-serif;
-    font-size:34px;
-    color:var(--num);
-    line-height:1.2;
+    display:block;
+    margin-bottom:10px;
+    color:#b9c2dc;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.1em;
   }
   .card .name{
-    font-family:Oswald,"Noto Sans KR",sans-serif;
-    font-size:28px;
-    color:var(--title);
-    margin:4px 0 6px;
+    display:block;
+    margin-bottom:4px;
+    font-size:18px;
+    font-weight:750;
+    letter-spacing:-.02em;
   }
-  .card .desc{font-size:14px;color:#777;margin-bottom:18px;min-height:20px;}
-  .btn-go{
-    display:inline-block;
-    width:134px;
-    padding:10px 0;
-    background:var(--red);
-    color:#fff;
-    border:1px solid var(--red);
-    border-radius:25px;
-    text-decoration:none;
-    font-family:Montserrat,sans-serif;
-    transition:.2s;
+  .card .desc{
+    display:block;
+    min-height:19px;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.5;
   }
-  .btn-go:hover{background:var(--red-hover);border-color:var(--red-hover);color:#fff;}
+  .card .go{
+    display:inline-flex;align-items:center;gap:5px;
+    margin-top:14px;
+    color:var(--blue);
+    font-size:12.5px;
+    font-weight:750;
+  }
+  .card .go svg{transition:transform .22s cubic-bezier(.2,.7,.3,1);}
+  .card:hover .go svg,.card:focus-visible .go svg{transform:translateX(3px);}
 
-  @media (max-width:767px){
-    .grid{grid-template-columns:1fr;}
-    .btn-bar{width:100%;}
+  /* 한 장씩 차례로 올라온다. 한꺼번에 나타나면 움직임이 뭉개진다. */
+  @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  .card:nth-child(1){animation-delay:.02s}
+  .card:nth-child(2){animation-delay:.06s}
+  .card:nth-child(3){animation-delay:.10s}
+  .card:nth-child(4){animation-delay:.14s}
+  .card:nth-child(5){animation-delay:.18s}
+  .card:nth-child(6){animation-delay:.22s}
+  .card:nth-child(7){animation-delay:.26s}
+  .card:nth-child(8){animation-delay:.30s}
+
+  /* ── 아래 줄 버튼 ─────────────────────────────────────────────────── */
+  .row{display:flex;flex-wrap:wrap;gap:10px;}
+  .pill{
+    display:inline-flex;align-items:center;gap:7px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:11px 20px;
+    background:#fff;
+    color:var(--ink);
+    font-size:13.5px;
+    font-weight:700;
+    text-decoration:none;
+    transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+  }
+  .pill:hover,.pill:focus-visible{
+    transform:translateY(-2px);
+    border-color:#c3d2f7;
+    box-shadow:0 12px 22px -18px rgba(16,26,54,.6);
+    outline:none;
+  }
+  .pill:focus-visible{outline:2px solid var(--blue);outline-offset:3px;}
+  .pill--dark{border-color:transparent;background:var(--navy);color:#fff;}
+  .pill--dark:hover{background:#050b2e;}
+
+  /* 움직임을 줄여 달라고 한 사람에게는 전부 멈춘다. */
+  @media (prefers-reduced-motion:reduce){
+    .hero::before,.hero::after{animation:none;}
+    .card{animation:none;transition:none;}
+    .card:hover{transform:none;}
+    .card::before{transition:none;}
+    .pill{transition:none;}
+    .pill:hover{transform:none;}
+  }
+
+  @media (max-width:640px){
+    .hero{padding:38px 0 34px;margin-bottom:26px;}
+    .grid{grid-template-columns:1fr;gap:12px;}
+    .card{padding:17px 16px 15px;}
   }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <!-- 홈 -->
-  <div class="home-wrap">
-    <a class="btn-home" href="/groupware/dashboard" target="_top">← 홈</a>
+<header class="hero">
+  <span class="hero-grid" aria-hidden="true"></span>
+  <div class="wrap hero-inner">
+    <span class="eyebrow">ARCHIVE</span>
+    <h1>이전 인트라넷</h1>
+    <p>새 그룹웨어로 옮기는 동안 예전 자료를 여기서 찾을 수 있습니다.</p>
   </div>
+</header>
 
-  <!-- 상단 바 -->
-  <div class="bar">
-    <a class="btn-bar" href="https://mail.jeakyung.com/" target="_blank" rel="noopener">사내메일</a>
-    <a class="btn-bar" href="https://jeakyung.quv.kr/in01">공지사항</a>
-  </div>
-
-  <!-- 메뉴 카드 -->
+<main class="wrap">
+  <p class="section-label">게시판</p>
   <div class="grid">
-    <div class="card">
-      <div class="num">1</div>
-      <div class="name">업무보고</div>
-      <div class="desc"></div>
-      <a class="btn-go" href="https://jeakyung.quv.kr/27">바로가기</a>
-    </div>
-
-    <div class="card">
-      <div class="num">2</div>
-      <div class="name">사내게시판</div>
-      <div class="desc"></div>
-      <a class="btn-go" href="https://jeakyung.quv.kr/42">바로가기</a>
-    </div>
-
-    <div class="card">
-      <div class="num">3</div>
-      <div class="name">일반업무</div>
-      <div class="desc">사업장별 업무 구분</div>
-      <a class="btn-go" href="https://jeakyung.quv.kr/33">바로가기</a>
-    </div>
-
-    <div class="card">
-      <div class="num">4</div>
-      <div class="name">지입업무</div>
-      <div class="desc">운송사 및 차량 관련 업무</div>
-      <a class="btn-go" href="https://jeakyung.quv.kr/41">바로가기</a>
-    </div>
-
-    <div class="card">
-      <div class="num">5</div>
-      <div class="name">사내앨범</div>
-      <div class="desc">사업장 및 업무 관련 참고자료</div>
-      <a class="btn-go" href="https://jeakyung.quv.kr/29">바로가기</a>
-    </div>
-
-    <div class="card">
-      <div class="num">6</div>
-      <div class="name">자유게시판</div>
-      <div class="desc">직원 소통을 위한</div>
-      <a class="btn-go" href="https://jeakyung.quv.kr/37">바로가기</a>
-    </div>
-
-    <div class="card">
-      <div class="num">*</div>
-      <div class="name">사내일정</div>
-      <div class="desc">주요 공유 일정</div>
-      <a class="btn-go" href="https://jeakyung.quv.kr/36" target="_blank" rel="noopener">바로가기</a>
-    </div>
-
-    <div class="card">
-      <div class="num">*</div>
-      <div class="name">재경로지스｜물류</div>
-      <div class="desc">네이버 카페 (업무 정보공유)</div>
-      <a class="btn-go" href="https://cafe.naver.com/logisjk" target="_blank" rel="noopener">바로가기</a>
-    </div>
+    <a class="card" href="https://jeakyung.quv.kr/27" target="_top">
+      <span class="num">01</span>
+      <span class="name">업무보고</span>
+      <span class="desc"></span>
+      <span class="go">바로가기 <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="https://jeakyung.quv.kr/42" target="_top">
+      <span class="num">02</span>
+      <span class="name">사내게시판</span>
+      <span class="desc"></span>
+      <span class="go">바로가기 <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="https://jeakyung.quv.kr/33" target="_top">
+      <span class="num">03</span>
+      <span class="name">일반업무</span>
+      <span class="desc">사업장별 업무 구분</span>
+      <span class="go">바로가기 <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="https://jeakyung.quv.kr/41" target="_top">
+      <span class="num">04</span>
+      <span class="name">지입업무</span>
+      <span class="desc">운송사 및 차량 관련 업무</span>
+      <span class="go">바로가기 <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="https://jeakyung.quv.kr/29" target="_top">
+      <span class="num">05</span>
+      <span class="name">사내앨범</span>
+      <span class="desc">사업장 및 업무 관련 참고자료</span>
+      <span class="go">바로가기 <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="https://jeakyung.quv.kr/37" target="_top">
+      <span class="num">06</span>
+      <span class="name">자유게시판</span>
+      <span class="desc">직원 소통을 위한</span>
+      <span class="go">바로가기 <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="https://jeakyung.quv.kr/36" target="_top">
+      <span class="num">*</span>
+      <span class="name">사내일정</span>
+      <span class="desc">주요 공유 일정</span>
+      <span class="go">바로가기 <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="https://cafe.naver.com/logisjk" target="_top">
+      <span class="num">*</span>
+      <span class="name">재경로지스｜물류</span>
+      <span class="desc">네이버 카페 (업무 정보공유)</span>
+      <span class="go">바로가기 <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+    </a>
   </div>
 
-  <!-- 하단 바 -->
-  <div class="bar" style="margin-top:24px;">
-    <a class="btn-bar" href="https://jeakyung.quv.kr/17">대표님</a>
-    <a class="btn-bar" href="https://seller.payapp.kr/r/using_reg?payreqtype=krw" target="_blank" rel="noopener">결제 링크 발송</a>
+  <p class="section-label">바로가기</p>
+  <div class="row">
+    <a class="pill pill--dark" href="https://jeakyung.quv.kr/in01" target="_top">공지사항</a>
+    <a class="pill" href="https://jeakyung.quv.kr/17" target="_top">대표님</a>
+    <a class="pill" href="https://seller.payapp.kr/r/using_reg?payreqtype=krw" target="_top">결제 링크 발송</a>
   </div>
+</main>
 
-</div>
 </body>
 </html>

@@ -851,12 +851,95 @@ p {
 }
 
 .location-panel {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
     gap: clamp(36px, 7vw, 96px);
     margin-top: var(--section-space);
     padding-top: clamp(70px, 8vw, 118px);
     border-top: 1px solid var(--line);
+}
+
+/* 찾아오시는 길 뒤에 아주 옅은 배경. 물류의 결(항로선과 좌표 격자)을 깔되
+   글을 읽는 데 걸리적거리면 안 되므로 거의 보이지 않을 만큼만 둔다.
+   이 층은 장식이므로 화면 낭독기에는 잡히지 않는다(aria-hidden). */
+.location-backdrop {
+    position: absolute;
+    /* 좌우로 넘기지 않는다. -8vw 로 삐져나가게 두었더니 1280px 화면에서
+       문서 폭이 1331px 이 됐다(body overflow-x:hidden 이 가려 줄 뿐 넘침은
+       넘침이다). 가장자리는 아래 mask 가 이미 흐려 준다. */
+    inset: clamp(70px, 8vw, 118px) 0 0;
+    /* z-index:-1 로 두면 조상의 흰 배경 아래로 내려가 아예 보이지 않는다.
+       0 에 두고 내용을 위로 올린다. */
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at 50% 45%, #000 45%, transparent 88%);
+}
+
+/* 배경 위로 내용을 올린다. */
+.location-panel > *:not(.location-backdrop) {
+    position: relative;
+    z-index: 1;
+}
+
+/* 좌표 격자 — 아주 느리게 흘러 판이 멈춰 보이지 않게 한다. */
+.location-backdrop-grid {
+    position: absolute;
+    inset: -60px;
+    background-image: linear-gradient(rgba(36, 80, 245, .085) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(36, 80, 245, .085) 1px, transparent 1px);
+    background-size: 64px 64px;
+    animation: location-grid-drift 38s linear infinite;
+}
+
+/* 항로선. 점선이 천천히 흘러 '이동'을 느끼게 한다. */
+.location-backdrop svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.location-route {
+    fill: none;
+    stroke: rgba(36, 80, 245, .3);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-dasharray: 5 12;
+    animation: location-route-flow 5.5s linear infinite;
+}
+
+.location-route--soft { stroke: rgba(0, 178, 163, .26); animation-duration: 8s; }
+
+.location-pin {
+    fill: rgba(36, 80, 245, .22);
+    transform-origin: center;
+    animation: location-pin-pulse 4s ease-in-out infinite;
+}
+
+.location-pin--b { fill: rgba(0, 178, 163, .22); animation-delay: 1.4s; }
+
+@keyframes location-grid-drift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(64px, 64px, 0); }
+}
+
+@keyframes location-route-flow {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -34; }
+}
+
+@keyframes location-pin-pulse {
+    0%, 100% { transform: scale(1); opacity: .85; }
+    50% { transform: scale(1.5); opacity: .35; }
+}
+
+/* 움직임을 줄여 달라고 한 사람에게는 배경만 남기고 멈춘다. */
+@media (prefers-reduced-motion: reduce) {
+    .location-backdrop-grid,
+    .location-route,
+    .location-pin { animation: none; }
 }
 
 .location-info h2 {
