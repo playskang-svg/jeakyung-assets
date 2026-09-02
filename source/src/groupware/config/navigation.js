@@ -40,6 +40,7 @@ const TRAIL_RULES = [
   [/^\/files$/, ['파일', null]],
   [/^\/view\/[^/]+$/, ['바로가기', null]],
   [/^\/profile$/, ['내 프로필', null]],
+  [/^\/business-card$/, ['내 프로필', '/profile'], ['명함관리', null]],
 ];
 
 export function getRouteTrail(pathname) {

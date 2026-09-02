@@ -164,7 +164,10 @@ function TopClock() {
     <div className="gw-topclock">
       <span className="gw-topclock-date">{now.getMonth() + 1}월 {now.getDate()}일 {WEEKDAYS[now.getDay()]}</span>
       <time className="gw-topclock-time" dateTime={now.toISOString()}>{time}</time>
-      <Link className="gw-topclock-button" to="/calendar">일정</Link>
+      <Link className="gw-topclock-button" to="/calendar" title="일정" aria-label="일정">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M8 3v4M16 3v4M3 10h18" /></svg>
+        <span className="gw-tool-label">일정</span>
+      </Link>
     </div>
   );
 }

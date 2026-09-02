@@ -49,6 +49,7 @@ export default function ProfileCard() {
           >
             {expanded ? '접기' : '펼치기'}
           </button>
+          <Link className="gw-secondary-button" to="/business-card">명함관리</Link>
           <Link className="gw-secondary-button" to="/profile">편집</Link>
         </div>
       </div>
