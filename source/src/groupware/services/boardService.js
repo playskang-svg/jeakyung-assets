@@ -14,6 +14,8 @@ async function rpc(name, params = {}) {
 }
 
 export const getVisibleBoards = () => rpc('get_my_visible_boards').then((data) => data ?? []);
+// 대시보드의 "최신 게시글": 볼 수 있는 모든 게시판에서 최근 글을 한 번에 모은다.
+export const getRecentBoardPosts = (limit = 5) => rpc('get_my_recent_board_posts', { p_limit: limit }).then((data) => data ?? []);
 export const getBoardOverview = (slug) => rpc('get_board_overview', { p_slug: slug });
 export const getBoardPosts = (slug, { search = '', category = null, page = 1, scope = 'all' } = {}) => rpc('get_board_posts', { p_slug: slug, p_search: search || null, p_category: category, p_page: page, p_scope: scope });
 export const getBoardPost = (postId) => rpc('get_board_post', { p_post_id: postId });

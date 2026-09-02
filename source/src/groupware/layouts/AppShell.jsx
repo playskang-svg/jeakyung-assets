@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import GroupwareBrand from '../components/GroupwareBrand.jsx';
 import UserAccountMenu from '../components/profile/UserAccountMenu.jsx';
-import { getRouteTitle } from '../config/navigation.js';
+import { getRouteTitle, getRouteTrail } from '../config/navigation.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { supabase } from '../lib/supabase.js';
 import { APPROVAL_STATE_CHANGED_EVENT, approvalService } from '../services/approvalService.js';
@@ -74,6 +74,10 @@ export default function AppShell() {
             <div><span>현재 위치</span><strong>{getRouteTitle(location.pathname)}</strong></div>
           </div>
           <div className="gw-topbar-tools" aria-label="사용자와 업무 도구">
+            <a className="gw-site-home-button" href="https://jeakyung.com/" target="_blank" rel="noopener noreferrer" title="회사 홈페이지" aria-label="회사 홈페이지, 새 창">
+              <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11 12 4l9 7" /><path d="M6 10v9h12v-9" /></svg>
+              <span className="gw-tool-label">홈페이지</span>
+            </a>
             {isSuperAdmin && (
               <Link className="gw-admin-mode-button" to="/admin">
                 <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3 4 6.5v5c0 4.4 3.2 8.3 8 9.5 4.8-1.2 8-5.1 8-9.5v-5L12 3Z" /><path d="m9 12 2 2 4-4" /></svg>
@@ -85,10 +89,65 @@ export default function AppShell() {
           </div>
         </header>
         <main className="gw-content" id="groupware-content" tabIndex="-1">
+          <RouteBar />
           {signOutError && <div className="gw-notice gw-notice--warning" role="alert">{signOutError}</div>}
           <Outlet />
         </main>
+        <GroupwareFooter />
       </div>
     </div>
+  );
+}
+
+// 지금 어디에 있고 어떻게 빠져나가는지. 사이드바가 없어진 뒤로 이 줄이
+// 없으면 두세 단계 들어간 화면에서 돌아갈 길이 주소창밖에 남지 않는다.
+function RouteBar() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const trail = getRouteTrail(location.pathname);
+
+  // 대시보드에서는 굳이 "홈 > 대시보드"를 보여 줄 필요가 없다.
+  if (trail.length <= 1) return null;
+
+  // 새 탭이나 북마크로 바로 들어오면 돌아갈 이력이 없다. 그럴 때 navigate(-1)
+  // 은 그룹웨어 바깥으로 나가 버리므로 한 단계 위 화면으로 보낸다.
+  const goBack = () => {
+    if (window.history.state?.idx > 0) navigate(-1);
+    else navigate(trail[trail.length - 2].path);
+  };
+
+  return (
+    <nav className="gw-routebar" aria-label="현재 위치">
+      <ol>
+        {trail.map((step, index) => (
+          <li key={step.path}>
+            {index === trail.length - 1
+              ? <span aria-current="page">{step.label}</span>
+              : <Link to={step.path}>{step.label}</Link>}
+          </li>
+        ))}
+      </ol>
+      <div className="gw-routebar-actions">
+        <button type="button" onClick={goBack}>
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+          뒤로
+        </button>
+        <Link to="/dashboard">
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11 12 4l8 7" /><path d="M6 10v9h12v-9" /></svg>
+          홈으로
+        </Link>
+      </div>
+    </nav>
+  );
+}
+
+function GroupwareFooter() {
+  return (
+    <footer className="gw-footer">
+      <p><strong>재경로지스&물류</strong> 그룹웨어</p>
+      <p>유한회사 재경로지스 · 유한회사 재경물류</p>
+      <p><a href="https://jeakyung.com/" target="_blank" rel="noopener noreferrer">회사 홈페이지</a>
+        <a href="https://jeakyung.com/privacy/" target="_blank" rel="noopener noreferrer">개인정보처리방침</a></p>
+    </footer>
   );
 }
