@@ -139,7 +139,7 @@ export default function DashboardPage() {
           제목 아래 게시판이 아닌 것이 섞여 무엇이 무엇인지 알기 어렵다. */}
       <section className="gw-panel gw-launch-panel" aria-labelledby="dashboard-goto-title">
         <div className="gw-panel-heading">
-          <h2 id="dashboard-goto-title">이동하기</h2>
+          <h2 id="dashboard-goto-title">페이지</h2>
         </div>
         {/* 바깥 주소도 /view/<key> 로 간다. 새 탭으로 튕겨 나가지 않고
             상단 메뉴를 그대로 둔 채 이 화면 안에서 열린다. */}
