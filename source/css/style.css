@@ -215,6 +215,8 @@ p {
     font-size: 26px;
     font-weight: 900;
     letter-spacing: -0.05em;
+    /* 아홉 글자짜리 이름이라 좁아지면 줄바꿈부터 하려 든다. 머리글은 한 줄이다. */
+    white-space: nowrap;
 }
 
 .header-brand .brand-word {
@@ -1857,6 +1859,9 @@ p {
 
 .footer-nav {
     display: flex;
+    /* 세 칸이 한 줄에 다 못 들어가는 폭(태블릿 세로)이 있다. 줄바꿈을 막아
+       두면 바닥글이 화면 밖으로 삐져나간다. */
+    flex-wrap: wrap;
     gap: clamp(56px, 8vw, 120px);
 }
 
@@ -2294,7 +2299,9 @@ p {
     }
 
     .policy-hero h1 {
-        font-size: clamp(40px, 13vw, 56px);
+        /* '개인정보처리방침' 은 keep-all 이라 한 덩어리로 놓인다. 13vw 로 두면
+           좁은 화면에서 그 여덟 글자가 본문 폭을 넘겨 가로 스크롤을 만든다. */
+        font-size: clamp(30px, 10.5vw, 56px);
     }
 
     .policy-hero > .content-width > p {
@@ -2347,13 +2354,16 @@ p {
     }
 
     .header-brand {
-        font-size: 22px;
+        /* 좁은 화면에서는 이름과 햄버거만 남으니 폭에 맞춰 글자를 재운다.
+           320px 에서도 읽히고 430px 에서도 커 보이지 않는 구간이다. */
+        gap: 8px;
+        font-size: clamp(17px, 5vw, 21px);
         font-weight: 900;
     }
 
     .brand-mark {
-        width: 27px;
-        height: 27px;
+        width: 25px;
+        height: 25px;
     }
 
     .eyebrow {
