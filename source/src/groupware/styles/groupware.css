@@ -5368,7 +5368,9 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 .gw-app-shell--flat .gw-content {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 24px 20px 64px;
+  /* 아래 여백이 64px 이었던 것은 푸터와 띄우기 위해서였다. 푸터를 걷었으니
+     그만큼 줄여 한 화면에 더 담는다. */
+  padding: 24px 20px 28px;
 }
 .gw-topbar-brand {
   display: inline-flex;
@@ -6010,23 +6012,8 @@ body.groupware-root .gw-search-results a:hover { background: #f6f8fd; }
 
 /* ── 푸터 ───────────────────────────────────────────────────────────
    본문과 구분만 되면 된다. 두껍게 만들면 화면만 잡아먹는다. */
-.gw-footer {
-  border-top: 1px solid var(--gw-border);
-  margin-top: 8px;
-  padding: 16px clamp(18px, 2.4vw, 32px);
-  color: var(--gw-muted);
-  font-size: 12px;
-  line-height: 1.7;
-  text-align: center;
-}
-.gw-footer p { margin: 0; }
-.gw-footer strong { color: var(--gw-text); font-weight: 700; }
-.gw-footer a { color: var(--gw-muted); text-decoration: none; }
-.gw-footer a + a { margin-left: 14px; }
-.gw-footer a:hover { color: var(--gw-blue-700); text-decoration: underline; }
-
 @media (prefers-reduced-motion: reduce) {
-  .gw-launch-card, .gw-quickrow a, .gw-feed > header a svg { transition: none; }
+  .gw-launch-card, .gw-quickbtn, .gw-feed > header a svg { transition: none; }
   .gw-launch-card:hover { transform: none; }
 }
 @media (max-width: 560px) {
