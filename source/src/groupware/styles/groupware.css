@@ -5407,6 +5407,25 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 
 .gw-panel--feeds { margin: 14px 0; padding: 6px 20px 10px; }
 
+/* 넓은 화면에서는 공지사항과 최신 게시글을 좌우로 나란히 둔다. 세 줄씩이라
+   위아래로 쌓으면 첫 화면의 절반을 두 목록이 차지한다. 좁은 화면에서는
+   가로로 나누면 제목이 두 줄로 접히므로 그대로 쌓는다. */
+@media (min-width: 900px) {
+  .gw-panel--feeds {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 32px;
+    padding: 6px 20px 14px;
+  }
+  /* 좌우로 서면 둘 사이를 가르는 것은 위 테두리가 아니라 가운데 선이다. */
+  .gw-panel--feeds .gw-feed + .gw-feed {
+    border-top: 0;
+    border-left: 1px solid var(--gw-border);
+    padding-left: 32px;
+    margin-left: -16px;
+  }
+}
+
 /* ── 글 다섯 줄 ─────────────────────────────────────────────────────── */
 .gw-feed { padding: 14px 0; }
 .gw-feed + .gw-feed { border-top: 1px solid var(--gw-border); }
