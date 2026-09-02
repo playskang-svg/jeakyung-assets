@@ -16,7 +16,15 @@ const VARIANTS = [
 ];
 const SIZES = [['sm', '작게'], ['md', '보통'], ['lg', '크게']];
 
-const EMPTY = { id: null, label: '', url: '', variant: 'plain', size: 'md', open_in: 'frame', sort_order: 100, is_active: true };
+// 누가 볼 수 있는가. 권한이 없으면 서버가 주소를 아예 내려주지 않고, 화면에는
+// '조회 권한이 없습니다' 안내가 뜬다.
+const VISIBILITY = [
+  ['all', '모두'],
+  ['admin', '관리자'],
+  ['super_admin', '최고관리자만'],
+];
+
+const EMPTY = { id: null, label: '', url: '', variant: 'plain', size: 'md', open_in: 'frame', visibility: 'all', sort_order: 100, is_active: true };
 
 export default function QuickLinkAdminPanel() {
   const [links, setLinks] = useState([]);
@@ -88,6 +96,7 @@ export default function QuickLinkAdminPanel() {
                 <code>{link.url}</code>
                 <small>
                   {link.open_in === 'tab' ? '새 탭' : '화면 안'} · 순서 {link.sort_order}
+                  {link.visibility !== 'all' && ` · ${VISIBILITY.find(([code]) => code === link.visibility)?.[1] ?? link.visibility}`}
                   {link.is_active ? '' : ' · 숨김'}
                 </small>
               </span>
@@ -131,6 +140,12 @@ export default function QuickLinkAdminPanel() {
                   ? '그룹웨어 안 화면은 늘 그 자리에서 이동합니다.'
                   : '웹메일·결제처럼 액자에 담기는 것을 막아 둔 사이트는 새 탭으로 열어야 빈 화면이 뜨지 않습니다.'}
               </small>
+            </label>
+            <label className="gw-field"><span>볼 수 있는 사람</span>
+              <select value={form.visibility} onChange={(event) => patch({ visibility: event.target.value })}>
+                {VISIBILITY.map(([code, name]) => <option key={code} value={code}>{name}</option>)}
+              </select>
+              <small className="gw-field-hint">권한이 없으면 주소를 아예 내려주지 않고 &lsquo;조회 권한이 없습니다&rsquo; 안내가 뜹니다.</small>
             </label>
             <label className="gw-field"><span>순서</span>
               <input type="number" value={form.sort_order} onChange={(event) => patch({ sort_order: Number(event.target.value) })} />

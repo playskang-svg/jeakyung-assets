@@ -42,6 +42,21 @@ const FEED_ROWS = 3;
 // 임의의 사이트를 우리 화면 안에 띄울 수 있다. id 만 넘긴다.
 function QuickLinkButton({ link }) {
   const className = `gw-quickbtn is-${link.variant} is-${link.size}`;
+
+  // 볼 권한이 없으면 서버가 주소를 아예 내려주지 않는다(url === null). 버튼은
+  // 그대로 두되 눌렀을 때 안내 화면으로 보낸다 — 있는 줄도 몰랐던 것보다
+  // "권한이 없다"고 말해 주는 편이 낫다.
+  if (!link.url) {
+    return (
+      <Link className={`${className} is-locked`} to={`/view/link/${link.id}`} title="조회 권한이 필요합니다">
+        {link.label}
+        <span aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+        </span>
+      </Link>
+    );
+  }
+
   if (link.url.startsWith('/')) return <Link className={className} to={link.url}>{link.label}</Link>;
   if (link.open_in === 'tab') {
     return (
