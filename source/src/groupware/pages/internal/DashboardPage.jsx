@@ -21,7 +21,6 @@ const NOT_ON_HOME = new Set([
   'approval_status', 'today_schedule', 'week_schedule',
 ]);
 const NOTICE_SLUG = 'company-notice';
-const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 const shortDate = (value) => {
   const date = new Date(value);
@@ -63,22 +62,6 @@ function PostLines({ title, posts, to, emptyText, showBoard = false }) {
 // 초 단위로 흐르는 시계. 날짜와 요일은 한국어로 읽히게 직접 조립한다.
 // 프로필 바로 아래 한 줄로 눕는다. 늘 같은 자리에 있으면 되는 정보라
 // 세로로 자리를 많이 차지할 이유가 없다.
-function NowBar() {
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const timer = window.setInterval(() => setNow(new Date()), 1000);
-    return () => window.clearInterval(timer);
-  }, []);
-  const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-  return (
-    <div className="gw-nowbar">
-      <p className="gw-nowbar-date">{now.getFullYear()}년 {now.getMonth() + 1}월 {now.getDate()}일 {WEEKDAYS[now.getDay()]}요일</p>
-      <p className="gw-nowbar-time"><time dateTime={now.toISOString()}>{time}</time></p>
-      <Link className="gw-nowbar-button" to="/calendar">일정</Link>
-    </div>
-  );
-}
-
 export default function DashboardPage() {
   const auth = useAuth();
   const [widgets, setWidgets] = useState([]);
@@ -147,12 +130,24 @@ export default function DashboardPage() {
     <article className="gw-page" aria-labelledby="page-title">
       <header className="gw-page-header"><div><h1 id="page-title">대시보드</h1></div></header>
       <ProfileCard />
-      <NowBar />
 
       <div className="gw-panel gw-panel--feeds">
         <PostLines title="공지사항" posts={notices} to={`/boards/${NOTICE_SLUG}`} emptyText="등록된 공지가 없습니다." />
         <PostLines title="최신 게시글" posts={recent} to="/boards" emptyText="등록된 글이 없습니다." showBoard />
       </div>
+
+      {/* 메일·전자결재 같은 기능은 게시판이 아니다. 같은 판에 담으면 '게시판'
+          제목 아래 게시판이 아닌 것이 섞여 무엇이 무엇인지 알기 어렵다. */}
+      <section className="gw-panel gw-launch-panel" aria-labelledby="dashboard-goto-title">
+        <div className="gw-panel-heading">
+          <h2 id="dashboard-goto-title">이동하기</h2>
+        </div>
+        {/* 바깥 주소도 /view/<key> 로 간다. 새 탭으로 튕겨 나가지 않고
+            상단 메뉴를 그대로 둔 채 이 화면 안에서 열린다. */}
+        <div className="gw-quickrow">
+          {quickLinks().map((item) => <Link key={item.key} to={item.to}>{item.label}</Link>)}
+        </div>
+      </section>
 
       {/* 게시판으로 가는 길을 한 덩어리로 묶는다. 낱개로 흩어 두면 화면이
           버튼밭처럼 보이고 무엇이 한 묶음인지 알기 어렵다. */}
@@ -161,13 +156,6 @@ export default function DashboardPage() {
           <div className="gw-panel-heading">
             <h2 id="dashboard-boards-title">게시판</h2>
             <Link to="/boards">전체 보기</Link>
-          </div>
-          {/* 메일·전자결재 같은 기능은 게시판이 아니므로 격자에 섞지 않고
-              그 위에 한 줄로 세운다. 주소는 navigation.js 한곳에 있다. */}
-          <div className="gw-quickrow">
-            {/* 바깥 주소도 /view/<key> 로 간다. 새 탭으로 튕겨 나가지 않고
-                상단 메뉴를 그대로 둔 채 이 화면 안에서 열린다. */}
-            {quickLinks().map((item) => <Link key={item.key} to={item.to}>{item.label}</Link>)}
           </div>
           <div className="gw-launch-grid">
             {boards.map((board) => (
