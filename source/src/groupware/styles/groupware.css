@@ -896,9 +896,6 @@ body.groupware-root a.gw-secondary-button {
 
 .gw-user-menu > summary::-webkit-details-marker { display: none; }
 /* 이름과 소속을 세로로 쌓지 않고 한 줄에 나란히 둔다. */
-.gw-user-menu-copy { min-width: 0; display: flex; align-items: baseline; gap: 6px; line-height: 1.2; }
-.gw-user-menu-copy strong { color: var(--gw-navy-950); font-size: 14px; white-space: nowrap; }
-.gw-user-menu-copy small { min-width: 0; max-width: 200px; overflow: hidden; color: var(--gw-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 
 .gw-user-menu-panel {
   position: absolute;
@@ -915,14 +912,8 @@ body.groupware-root a.gw-secondary-button {
   box-shadow: 0 24px 60px rgba(17, 23, 43, 0.18);
 }
 
-.gw-user-menu-identity { display: flex; gap: 13px; align-items: center; }
-.gw-user-menu-identity > div { min-width: 0; display: grid; }
-.gw-user-menu-identity strong { color: var(--gw-navy-950); }
-.gw-user-menu-identity span { color: var(--gw-muted); font-size: 14px; }
-.gw-user-menu-identity b,
 .gw-active-role-badge { justify-self: start; margin-top: 5px; border-radius: 999px; padding: 4px 8px; color: var(--gw-blue-700); background: var(--gw-blue-100); font-size: 14px; }
 .gw-user-menu-panel h2 { margin: 0 0 8px; font-size: 14px; }
-.gw-user-menu-roles { margin: 0; color: var(--gw-muted); font-size: 14px; }
 .gw-user-menu-status { margin: 0; color: var(--gw-blue-700); font-size: 14px; }
 .gw-user-menu-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border-top: 1px solid var(--gw-border); padding-top: 13px; }
 .gw-user-menu-actions a,
@@ -3762,9 +3753,6 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
     padding: 0 10px;
   }
 
-  .gw-user-menu-copy { min-width: 0; max-width: 82px; }
-  .gw-user-menu-copy strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .gw-user-menu-copy small { display: none; }
   .gw-user-menu > summary { min-width: 46px; padding: 4px; }
   .gw-user-menu > summary > span:last-child { display: none; }
   .gw-user-menu-panel { position: fixed; top: 76px; right: 12px; }
@@ -3930,7 +3918,6 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
     display: none;
   }
 
-  .gw-user-menu-copy { max-width: 64px; }
 
   .gw-profile-card { padding: 18px; }
   .gw-profile-card-hero { grid-template-columns: 1fr; justify-items: start; }
@@ -5708,6 +5695,18 @@ body.groupware-root a.gw-quickbtn.is-amber { color: #fff; }
   padding-top: 12px;
 }
 .gw-quicklink-preview > span:first-child { color: var(--gw-muted); font-size: 12.5px; font-weight: 700; }
+
+/* 사용자 메뉴 패널: 접속 시간과 로그아웃만. */
+.gw-user-menu-signedin {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+  font-size: 12.5px;
+}
+.gw-user-menu-signedin span { color: var(--gw-muted); font-weight: 700; }
+.gw-user-menu-signedin time { color: var(--gw-text); font-variant-numeric: tabular-nums; }
 
 /* ── 경로 줄 ────────────────────────────────────────────────────────── */
 .gw-routebar {
