@@ -26,7 +26,7 @@ export default function PublicFooter({ page }) {
         <div className="footer-nav">
           <div>
             <p>Explore</p>
-            <a href={links.about}>재경닷컴 소개</a>
+            <a href={links.about}>재경로지스&물류 소개</a>
             <a href={links.services}>서비스</a>
             <a href={links.location}>찾아오시는 길</a>
           </div>

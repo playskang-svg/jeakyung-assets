@@ -3,7 +3,7 @@ export const CONSULTATION_URL = 'https://pf.kakao.com/_xgrFxhn/chat';
 
 export const navigationByPage = {
   home: [
-    { href: '#about', label: '재경닷컴 소개' },
+    { href: '#about', label: '재경로지스&물류 소개' },
     { href: 'news/', label: '소식/정보' },
     { href: '#services', label: '서비스' },
     { href: '#audience', label: '고객별 안내' },
@@ -12,14 +12,14 @@ export const navigationByPage = {
     { href: '#faq', label: 'FAQ' },
   ],
   privacy: [
-    { href: '../#about', label: '재경닷컴 소개' },
+    { href: '../#about', label: '재경로지스&물류 소개' },
     { href: '../news/', label: '소식/정보' },
     { href: '../#services', label: '서비스' },
     { href: '../#location', label: '찾아오시는 길' },
     { href: '../#faq', label: 'FAQ' },
   ],
   news: [
-    { href: '../#about', label: '재경닷컴 소개' },
+    { href: '../#about', label: '재경로지스&물류 소개' },
     { href: './', label: '소식/정보' },
     { href: '../#services', label: '서비스' },
     { href: '../#location', label: '찾아오시는 길' },

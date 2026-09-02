@@ -5,14 +5,14 @@ export default function PrivacyPolicyContent() {
         <div className="content-width">
           <span className="eyebrow eyebrow-light"><i /> Privacy Policy</span>
           <h1>개인정보처리방침</h1>
-          <p>유한회사 재경로지스는 개인정보 보호를 중요하게 생각하며, 현재 재경닷컴 웹사이트의 운영 방식과 문의 경로를 투명하게 안내합니다.</p>
+          <p>유한회사 재경로지스는 개인정보 보호를 중요하게 생각하며, 현재 재경로지스&물류 웹사이트의 운영 방식과 문의 경로를 투명하게 안내합니다.</p>
         </div>
       </section>
 
       <section className="policy-content">
         <div className="content-width policy-layout">
           <article className="policy-article">
-            <p className="policy-summary"><strong>현재 재경닷컴 웹사이트는 문의 양식, 회원가입 또는 결제 기능을 운영하지 않으며 웹사이트에서 이용자의 개인정보를 직접 수집·저장하지 않습니다.</strong> 서비스 상담은 외부 카카오톡 채널을 통해 이루어집니다.</p>
+            <p className="policy-summary"><strong>현재 재경로지스&물류 웹사이트는 문의 양식, 회원가입 또는 결제 기능을 운영하지 않으며 웹사이트에서 이용자의 개인정보를 직접 수집·저장하지 않습니다.</strong> 서비스 상담은 외부 카카오톡 채널을 통해 이루어집니다.</p>
 
             <section className="policy-section">
               <h2>1. 개인정보의 처리 목적 및 항목</h2>
@@ -35,7 +35,7 @@ export default function PrivacyPolicyContent() {
 
             <section className="policy-section">
               <h2>4. 쿠키 및 자동 수집 정보</h2>
-              <p>현재 재경닷컴은 맞춤형 광고나 방문자 분석을 위한 자체 쿠키를 사용하지 않습니다. 다만 호스팅·통신 과정에서 서비스 안정성과 보안을 위한 접속 기록 등이 관련 사업자의 시스템에 생성될 수 있으며, 이에 대해서는 해당 사업자의 정책이 적용됩니다.</p>
+              <p>현재 재경로지스&물류는 맞춤형 광고나 방문자 분석을 위한 자체 쿠키를 사용하지 않습니다. 다만 호스팅·통신 과정에서 서비스 안정성과 보안을 위한 접속 기록 등이 관련 사업자의 시스템에 생성될 수 있으며, 이에 대해서는 해당 사업자의 정책이 적용됩니다.</p>
             </section>
 
             <section className="policy-section">
