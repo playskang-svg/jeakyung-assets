@@ -15,7 +15,7 @@ async function rpc(name, params = {}) {
 
 export const getVisibleBoards = () => rpc('get_my_visible_boards').then((data) => data ?? []);
 export const getBoardOverview = (slug) => rpc('get_board_overview', { p_slug: slug });
-export const getBoardPosts = (slug, { search = '', category = null, page = 1 } = {}) => rpc('get_board_posts', { p_slug: slug, p_search: search || null, p_category: category, p_page: page });
+export const getBoardPosts = (slug, { search = '', category = null, page = 1, scope = 'all' } = {}) => rpc('get_board_posts', { p_slug: slug, p_search: search || null, p_category: category, p_page: page, p_scope: scope });
 export const getBoardPost = (postId) => rpc('get_board_post', { p_post_id: postId });
 export const createBoardPostDraft = (boardId) => rpc('create_board_post_draft', { p_board_id: boardId });
 export const saveBoardPost = (post) => rpc('save_board_post', {
