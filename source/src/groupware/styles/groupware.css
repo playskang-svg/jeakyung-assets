@@ -4313,59 +4313,123 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
 }
 
 /* Link Tree Pages */
-/* 제목과 버튼 줄은 스크롤해도 상단바 바로 아래 남고, 그 아래 내용만 바뀐다. */
-.gw-linktree-header {
+/* 업무 페이지의 고정 메뉴줄. 상단바 바로 밑에 붙어 스크롤해도 남는다.
+   메뉴는 그대로 서 있고 그 아래 두 층(버튼 줄·내용)만 탭에 따라 바뀐다. */
+.gw-linktree-menubar {
   position: sticky;
   top: 56px; /* .gw-topbar min-height와 맞춘다 */
   z-index: 15;
-  display: grid;
-  gap: 6px;
-  margin: 0 -4px;
-  padding: 6px 4px 8px;
-  background: var(--gw-background);
-  border-bottom: 1px solid var(--gw-border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 46px;
+  margin: 0 0 14px;
+  padding: 6px 0;
 }
 
-.gw-linktree-heading h1 {
+/* 배경을 본문 좌우 여백 바깥까지 늘린다. 이게 없으면 스크롤한 내용이
+   메뉴줄 양옆 틈으로 비쳐 지나간다. */
+.gw-linktree-menubar::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0 -20px; /* .gw-app-shell--flat .gw-content 좌우 여백 */
+  background: var(--gw-surface);
+  border-bottom: 1px solid var(--gw-border);
+  box-shadow: 0 8px 16px -14px rgba(16, 26, 54, 0.55);
+}
+
+.gw-linktree-menubar-title {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 9px;
+}
+
+.gw-linktree-menubar-title h1 {
   margin: 0;
   color: var(--gw-navy-950);
-  font-size: clamp(19px, 2vw, 24px);
-  letter-spacing: -0.03em;
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
-.gw-linktree-heading p {
-  margin: 2px 0 0;
-  color: var(--gw-muted);
-  font-size: 13px;
+/* 어느 탭에 들어가 있든 나갈 길 하나는 메뉴줄에 늘 붙어 있어야 한다. */
+.gw-linktree-home {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--gw-border);
+  border-radius: 9px;
+  background: var(--gw-surface);
+}
+
+body.groupware-root a.gw-linktree-home { color: var(--gw-muted); }
+
+body.groupware-root a.gw-linktree-home:hover {
+  border-color: #bfcdef;
+  background: #f6f8fd;
+  color: var(--gw-blue-700);
 }
 
 .gw-linktree-tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  flex: 1;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  border-left: 1px solid var(--gw-border);
+  padding-left: 14px;
+  /* 탭이 많아도 메뉴줄은 한 줄로 남는다. 줄바꿈하면 아래 내용이 그만큼 밀린다. */
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
-.gw-linktree-tabs button {
-  min-height: var(--gw-control-h-sm);
-  border: 1px solid var(--gw-border);
-  border-radius: var(--gw-radius);
-  padding: 4px 12px;
-  background: var(--gw-surface);
-  color: var(--gw-text);
-  font-size: 14px;
+.gw-linktree-tabs::-webkit-scrollbar { display: none; }
+
+.gw-linktree-tabs button,
+.gw-linktree-tabs a {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 12px;
+  background: transparent;
+  font-size: 13.5px;
   font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  text-decoration: none;
   cursor: pointer;
 }
 
-.gw-linktree-tabs button:hover {
-  border-color: #9eafe9;
-  color: var(--gw-blue-700);
+.gw-linktree-tabs button { color: var(--gw-muted); }
+body.groupware-root .gw-linktree-tabs a { color: var(--gw-muted); }
+
+.gw-linktree-tabs button:hover,
+body.groupware-root .gw-linktree-tabs a:hover {
+  background: #eef2fb;
+  color: var(--gw-navy-950);
 }
 
-.gw-linktree-tabs button.is-active {
-  border-color: var(--gw-navy-950);
+.gw-linktree-tabs button.is-active,
+.gw-linktree-tabs button.is-active:hover {
   background: var(--gw-navy-950);
   color: #fff;
+}
+
+.gw-linktree-tabs i { font-style: normal; font-size: 11px; opacity: 0.6; }
+
+.gw-linktree-lede {
+  margin: -4px 0 12px;
+  color: var(--gw-muted);
+  font-size: 13px;
 }
 
 .gw-linktree-content {
@@ -4431,14 +4495,21 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
 }
 
 @media (max-width: 640px) {
+  /* 좁은 화면에서는 제목줄과 탭줄을 위아래로 나눈다. 한 줄에 다 넣으면
+     탭이 손가락 하나 폭으로 줄어든다. */
+  .gw-linktree-menubar {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 0 7px;
+  }
+  .gw-linktree-menubar::before { inset: 0 -14px; } /* 좁은 화면 본문 여백 */
   .gw-linktree-tabs {
-    /* 좁은 화면에서는 줄바꿈 대신 가로 스크롤로 버튼 줄 높이를 한 줄로 고정한다. */
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 4px;
+    flex: none;
+    width: 100%;
+    border-left: 0;
+    padding-left: 0;
     -webkit-overflow-scrolling: touch;
   }
-  .gw-linktree-tabs button { flex: none; }
   .gw-linkpage-item-row { grid-template-columns: 1fr 1fr; }
   .gw-linkpage-item-row button { justify-self: start; }
 }

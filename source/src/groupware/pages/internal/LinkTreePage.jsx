@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 
 import { getLinkPage } from '../../services/linkPageService.js';
 import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
 import PageSection, { isInlineItem } from '../../components/PageSection.jsx';
 
-// 업무 페이지. 탭 → 버튼 → 내용 세 층으로 쌓인다.
+// 업무 페이지. 위에 고정된 메뉴줄, 그 아래 바뀌는 두 층으로 되어 있다.
 //
-//   [탭1][탭2][탭3]      탭을 고르면 아래 두 층이 함께 바뀐다
-//   [버튼][버튼]         그 탭에 매달린 버튼 박스(없으면 이 줄이 없다)
+//   [홈] 지입업무 │ [탭1][탭2][탭3]   상단바 밑에 붙어 스크롤해도 남는 메뉴줄
+//   ─────────────────────────────
+//   [버튼][버튼]        그 탭에 매달린 버튼 박스(없으면 이 줄이 없다)
 //   게시판·문서·외부화면  그 탭의 내용
 //
-// 항목은 게시판·외부 화면·HTML 문서·글·바로가기 버튼 중 하나이고, 다른
-// 페이지나 새 탭으로 나가는 주소는 탭 줄의 링크로 남는다.
+// 탭을 고르면 아래 두 층만 바뀌고 메뉴줄은 그대로 서 있다. 항목은 게시판·
+// 외부 화면·HTML 문서·글·바로가기 버튼 중 하나이고, 다른 페이지나 새 탭으로
+// 나가는 주소는 메뉴줄의 링크로 남는다.
 export default function LinkTreePage() {
   const { pageSlug } = useParams();
   const [params, setParams] = useSearchParams();
@@ -39,13 +41,16 @@ export default function LinkTreePage() {
 
   return (
     <article className="gw-page gw-linktree-page" aria-labelledby="linktree-title">
-      <header className="gw-linktree-header">
-        <div className="gw-linktree-heading">
+      {/* 고정 메뉴줄. 어느 탭에 들어가 있든 나머지 탭과 나갈 길이 함께 보인다. */}
+      <header className="gw-linktree-menubar">
+        <div className="gw-linktree-menubar-title">
+          <Link className="gw-linktree-home" to="/dashboard" title="대시보드" aria-label="대시보드로 이동">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11 12 4l8 7" /><path d="M6 10v9h12v-9" /></svg>
+          </Link>
           <h1 id="linktree-title">{data.page.title}</h1>
-          {data.page.description && <p>{data.page.description}</p>}
         </div>
         {items.length > 0 && (
-          <nav className="gw-linktree-tabs" aria-label={`${data.page.title} 항목`}>
+          <nav className="gw-linktree-tabs" aria-label={`${data.page.title} 메뉴`}>
             {items.map((item) => (isInlineItem(item) ? (
               <button
                 key={item.id}
@@ -65,6 +70,7 @@ export default function LinkTreePage() {
           </nav>
         )}
       </header>
+      {data.page.description && <p className="gw-linktree-lede">{data.page.description}</p>}
       {/* 고른 탭에 매달린 버튼 줄. 탭을 바꾸면 이 줄도 함께 바뀐다. */}
       {activeItem?.button_box && (
         <div className="gw-linktree-buttons">
