@@ -2370,17 +2370,6 @@ body.groupware-root a.gw-secondary-button {
   font-size: 14px;
 }
 
-.gw-board-shortcut-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: var(--gw-control-h-sm);
-  border-radius: var(--gw-radius);
-  padding: 0 12px;
-  font-size: 14px;
-  text-decoration: none;
-}
-
 .gw-board-category-tabs {
   display: flex;
   flex-wrap: wrap;
