@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { getMyDashboardWidgets, setDashboardPreference } from '../../services/dashboardService.js';
-import { getVisibleBoards } from '../../services/boardService.js';
+import { BOARD_CATALOG_CHANGED_EVENT, getVisibleBoards } from '../../services/boardService.js';
 import { getMyLinkPages } from '../../services/linkPageService.js';
 import { getButtonBox } from '../../services/buttonBoxService.js';
 import ProfileCard from '../../components/profile/ProfileCard.jsx';
@@ -34,6 +34,15 @@ export default function DashboardPage() {
   };
 
   useEffect(() => { load(); }, [auth.activeRole]);
+
+  // 관리자가 게시판을 만들거나 지우면 박스도 따라 바뀌어야 한다. 예전에는
+  // 사이드바가 이 신호를 듣고 있었는데, 사이드바를 없앤 지금은 여기가
+  // 이동 경로라서 여기서 듣는다.
+  useEffect(() => {
+    const reload = () => getVisibleBoards().then(setBoards).catch(() => {});
+    window.addEventListener(BOARD_CATALOG_CHANGED_EVENT, reload);
+    return () => window.removeEventListener(BOARD_CATALOG_CHANGED_EVENT, reload);
+  }, []);
 
   // 버튼 박스 위젯은 대시보드 RPC가 id만 돌려주므로(다른 위젯처럼 서버가 내용을
   // 미리 합쳐 주지 않는다), 화면에 나온 뒤 필요한 것만 따로 불러온다.
@@ -69,39 +78,31 @@ export default function DashboardPage() {
       <ProfileCard />
       {/* 게시판 바로가기는 내 프로필 바로 아래에 둔다. 접속 직후 가장 먼저 쓰는
           동선이면서, 누구의 화면인지 확인한 다음 이동하는 순서가 자연스럽다. */}
-      {!loading && boards.length > 0 && (
-        <section className="gw-dashboard-widget gw-dashboard-widget--full" aria-labelledby="dashboard-boards-title">
-          <div className="gw-dashboard-widget-heading">
-            <h2 id="dashboard-boards-title">게시판</h2>
-            <Link className="gw-inline-link" to="/boards">이동하기</Link>
-          </div>
-          <ul className="gw-dashboard-board-list">
-            {boards.map((board) => (
-              <li key={board.id}>
-                <Link to={`/boards/${board.slug}`}>
-                  <strong>{board.name}</strong>
-                  <span>{board.group_name || '기타'}</span>
-                </Link>
-              </li>
+      {/* 사이드바를 없앤 뒤로 여기가 유일한 이동 경로다. 그래서 목록이 아니라
+          박스로 둔다. 이름만 늘어놓는 것보다 설명 한 줄과 큼직한 버튼이 있어야
+          처음 들어온 사람도 어디로 가야 할지 안다. 번호는 순서를 눈에 익히기
+          위한 것으로, 관리자가 정한 정렬을 그대로 따른다. */}
+      {!loading && (boards.length > 0 || linkPages.length > 0) && (
+        <section className="gw-board-card-section" aria-labelledby="dashboard-boards-title">
+          <h2 id="dashboard-boards-title" className="gw-visually-hidden">게시판</h2>
+          <div className="gw-board-card-grid">
+            {boards.map((board, index) => (
+              <article className="gw-board-card" key={board.id}>
+                <p className="gw-board-card-no" aria-hidden="true">{index + 1}</p>
+                <h3>{board.name}</h3>
+                {board.description && <p className="gw-board-card-desc">{board.description}</p>}
+                <Link className="gw-board-card-go" to={`/boards/${board.slug}`}>바로가기<span className="gw-visually-hidden"> — {board.name}</span></Link>
+              </article>
             ))}
-          </ul>
-        </section>
-      )}
-      {!loading && linkPages.length > 0 && (
-        <section className="gw-dashboard-widget gw-dashboard-widget--full" aria-labelledby="dashboard-linkpages-title">
-          <div className="gw-dashboard-widget-heading">
-            <h2 id="dashboard-linkpages-title">업무 페이지</h2>
-          </div>
-          <ul className="gw-dashboard-board-list">
             {linkPages.map((page) => (
-              <li key={page.id}>
-                <Link to={`/pages/${page.slug}`}>
-                  <strong>{page.title}</strong>
-                  <span>{page.item_count}개 항목</span>
-                </Link>
-              </li>
+              <article className="gw-board-card" key={page.id}>
+                <p className="gw-board-card-no" aria-hidden="true">*</p>
+                <h3>{page.title}</h3>
+                <p className="gw-board-card-desc">{page.item_count}개 항목</p>
+                <Link className="gw-board-card-go" to={`/pages/${page.slug}`}>바로가기<span className="gw-visually-hidden"> — {page.title}</span></Link>
+              </article>
             ))}
-          </ul>
+          </div>
         </section>
       )}
       {error && <div className="gw-notice gw-notice--warning" role="alert">{error}</div>}

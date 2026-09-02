@@ -5151,3 +5151,116 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
   .gw-post-actions > div { flex: 1 1 0; }
   .gw-comment-box { grid-template-columns: minmax(0, 1fr) 88px; }
 }
+
+/* ── 사이드바 없는 껍데기 ───────────────────────────────────────────────
+   왼쪽 메뉴를 없앴으므로 작업 영역이 화면 전체를 쓴다. 예전 규칙은
+   gw-app-shell 에 그리드 칸을 잡아 두었는데, 그대로 두면 사라진 사이드바
+   자리만큼 빈 칸이 남는다. */
+.gw-app-shell--flat {
+  display: block;
+  min-height: 100vh;
+  background: var(--gw-surface-muted, #f5f6f8);
+}
+.gw-app-shell--flat .gw-workspace {
+  width: 100%;
+  margin: 0;
+  min-width: 0;
+}
+.gw-app-shell--flat .gw-content {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+}
+.gw-topbar-brand {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 8px;
+}
+.gw-topbar-brand:focus-visible {
+  outline: 2px solid var(--gw-accent, #2f6fed);
+  outline-offset: 3px;
+}
+
+/* 관리자 모드 버튼. 최고관리자에게만 나오므로 눈에 띄어도 방해가 되지 않는다. */
+.gw-admin-mode-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border: 1px solid var(--gw-border, #dcdfe5);
+  border-radius: 999px;
+  background: #2c3038;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.gw-admin-mode-button:hover { background: #171a1f; }
+.gw-admin-mode-button:focus-visible {
+  outline: 2px solid var(--gw-accent, #2f6fed);
+  outline-offset: 2px;
+}
+
+/* ── 대시보드 게시판 박스 ─────────────────────────────────────────────── */
+.gw-board-card-section { margin: 20px 0 8px; }
+.gw-board-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+.gw-board-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 30px 20px 26px;
+  border: 1px solid var(--gw-border, #e2e4e9);
+  border-radius: 4px;
+  background: #fff;
+  text-align: center;
+}
+.gw-board-card-no {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  color: #4f9ff0;
+}
+.gw-board-card h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #33373d;
+  word-break: keep-all;
+}
+.gw-board-card-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--gw-text-muted, #7b8089);
+  word-break: keep-all;
+}
+/* 설명이 없는 박스가 섞여도 버튼 줄이 어긋나지 않게 아래로 민다. */
+.gw-board-card-go {
+  margin-top: auto;
+  padding: 11px 34px;
+  border-radius: 999px;
+  background: #cd7c7c;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.gw-board-card-go:hover { background: #b96a6a; }
+.gw-board-card-go:focus-visible {
+  outline: 2px solid #7a3b3b;
+  outline-offset: 2px;
+}
+@media (max-width: 720px) {
+  .gw-board-card-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .gw-board-card { padding: 22px 12px 20px; }
+  .gw-board-card h3 { font-size: 16px; }
+  .gw-board-card-go { padding: 9px 22px; font-size: 13px; }
+}
