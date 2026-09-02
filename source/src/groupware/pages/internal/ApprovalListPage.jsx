@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { approvalService } from '../../services/approvalService';
 import { supabase } from '../../lib/supabase';
 
 const ApprovalListPage = ({ type }) => {
-  const navigate = useNavigate();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -137,15 +136,10 @@ const ApprovalListPage = ({ type }) => {
   return (
     <article className="gw-approval-page" aria-labelledby="approval-list-title">
       <header className="gw-approval-heading">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <button type="button" className="gw-back-icon-button" onClick={() => navigate('/approval')} aria-label="전자결재 홈으로">
-            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
-          </button>
-          <div>
-            <span className="gw-eyebrow">E-APPROVAL</span>
-            <h1 id="approval-list-title">{getTitle()}</h1>
-            <p>권한이 있는 결재 문서를 최신 순서로 확인합니다.</p>
-          </div>
+        <div>
+          <span className="gw-eyebrow">E-APPROVAL</span>
+          <h1 id="approval-list-title">{getTitle()}</h1>
+          <p>권한이 있는 결재 문서를 최신 순서로 확인합니다.</p>
         </div>
         <Link to="/approval/new" className="gw-primary-button">새 기안 작성</Link>
       </header>

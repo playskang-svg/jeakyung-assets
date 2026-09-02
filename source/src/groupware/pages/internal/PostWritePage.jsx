@@ -147,7 +147,7 @@ export default function PostWritePage() {
   }
 
   return <article className="gw-page" aria-labelledby="write-title">
-    <header className="gw-page-header"><div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}><button type="button" className="gw-back-icon-button" onClick={() => navigate(`/boards/${boardSlug}`)} aria-label="게시판으로"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg></button><div><span className="gw-eyebrow">WRITE</span><h1 id="write-title">{overview.board.name} {postId ? '글 수정' : '글쓰기'}</h1><p>본문 이미지는 비공개 저장소에 업로드되며 게시판 권한을 서버에서 다시 검증합니다.</p></div></div><div className="gw-admin-actions"><button type="button" className="gw-secondary-button" onClick={() => navigate(`/boards/${boardSlug}`)}>목록 보기</button></div></header>
+    <header className="gw-page-header"><div><span className="gw-eyebrow">WRITE</span><h1 id="write-title">{overview.board.name} {postId ? '글 수정' : '글쓰기'}</h1><p>본문 이미지는 비공개 저장소에 업로드되며 게시판 권한을 서버에서 다시 검증합니다.</p></div><div className="gw-admin-actions"><button type="button" className="gw-secondary-button" onClick={() => navigate(`/boards/${boardSlug}`)}>목록 보기</button></div></header>
     {error && <div className="gw-notice gw-notice--warning" role="alert">{error}</div>}
     <form className="gw-editor-form" onSubmit={(event) => { event.preventDefault(); submit(event.currentTarget, 'published'); }}>
       <label className="gw-field"><span>제목</span><input name="title" required maxLength="240" defaultValue={post?.title === '(제목 없음)' ? '' : post?.title ?? ''} /></label>

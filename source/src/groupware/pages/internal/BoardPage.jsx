@@ -75,8 +75,7 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
 
   return <article className={embedded ? 'gw-page gw-page--embedded' : 'gw-page'} aria-labelledby="board-title">
     <header className="gw-page-header gw-board-header">
-      {!embedded && <button type="button" className="gw-back-icon-button" onClick={() => navigate('/boards')} aria-label="게시판 목록으로"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg></button>}
-      <h1 id="board-title">{overview.board.name}</h1>
+            <h1 id="board-title">{overview.board.name}</h1>
       <div className="gw-board-header-actions">
         {overview.board.settings.shortcut_enabled && overview.board.settings.shortcut_url && <a className="gw-secondary-button gw-board-shortcut-button" href={overview.board.settings.shortcut_url} target="_blank" rel="noopener noreferrer" aria-label={`${overview.board.settings.shortcut_label || '바로가기'}, 새 창`}>{overview.board.settings.shortcut_label || '바로가기'}<span aria-hidden="true">↗</span></a>}
         {!embedded && <Link className="gw-secondary-button" to="/boards">목록 이동</Link>}
