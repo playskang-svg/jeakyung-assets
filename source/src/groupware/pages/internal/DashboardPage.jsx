@@ -8,6 +8,7 @@ import { getButtonBox } from '../../services/buttonBoxService.js';
 import ProfileCard from '../../components/profile/ProfileCard.jsx';
 import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { quickLinks } from '../../config/navigation.js';
 
 const PREPARING = new Set(['approval_status', 'today_schedule', 'week_schedule']);
 // 홈 화면 위쪽이 직접 그리는 것들. 위젯으로 또 그리면 같은 목록이 한 화면에
@@ -136,19 +137,9 @@ export default function DashboardPage() {
       <ProfileCard />
       <NowBar />
 
-      {/* 글 목록과 오른쪽 도구를 한 줄로 둔다. 좁은 화면에서는 아래로 쌓인다. */}
-      <div className="gw-home-split">
-        <div className="gw-panel gw-panel--feeds">
-          <PostLines title="공지사항" posts={notices} to={`/boards/${NOTICE_SLUG}`} emptyText="등록된 공지가 없습니다." />
-          <PostLines title="최신 게시글" posts={recent} to="/boards" emptyText="등록된 글이 없습니다." showBoard />
-        </div>
-        <aside className="gw-home-aside" aria-label="바로 쓰는 도구">
-          <a className="gw-mail-button" href="https://mail.jeakyung.com" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m3.5 7 8.5 6 8.5-6" /></svg>
-            사내메일
-            <span aria-hidden="true">↗</span>
-          </a>
-        </aside>
+      <div className="gw-panel gw-panel--feeds">
+        <PostLines title="공지사항" posts={notices} to={`/boards/${NOTICE_SLUG}`} emptyText="등록된 공지가 없습니다." />
+        <PostLines title="최신 게시글" posts={recent} to="/boards" emptyText="등록된 글이 없습니다." showBoard />
       </div>
 
       {/* 게시판으로 가는 길을 한 덩어리로 묶는다. 낱개로 흩어 두면 화면이
@@ -158,6 +149,13 @@ export default function DashboardPage() {
           <div className="gw-panel-heading">
             <h2 id="dashboard-boards-title">게시판</h2>
             <Link to="/boards">전체 보기</Link>
+          </div>
+          {/* 메일·전자결재 같은 기능은 게시판이 아니므로 격자에 섞지 않고
+              그 위에 한 줄로 세운다. 주소는 navigation.js 한곳에 있다. */}
+          <div className="gw-quickrow">
+            {quickLinks().map((item) => (item.external
+              ? <a key={item.key} href={item.href} target="_blank" rel="noopener noreferrer">{item.label}<span aria-hidden="true">↗</span></a>
+              : <Link key={item.key} to={item.path}>{item.label}</Link>))}
           </div>
           <div className="gw-launch-grid">
             {boards.map((board) => (
@@ -172,12 +170,6 @@ export default function DashboardPage() {
                 <span>{page.item_count}개 항목</span>
               </Link>
             ))}
-          </div>
-          {/* 전자결재·조직도·파일은 게시판이 아니라 기능이라 한 줄 아래로 뺀다. */}
-          <div className="gw-launch-modules">
-            <Link to="/approval">전자결재</Link>
-            <Link to="/organization">조직도</Link>
-            <Link to="/files">파일</Link>
           </div>
         </section>
       )}
