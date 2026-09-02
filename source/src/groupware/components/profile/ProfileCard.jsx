@@ -22,6 +22,7 @@ export default function ProfileCard() {
   const profile = auth.profile ?? {};
   const displayName = profile.display_name || profile.preferred_name || profile.full_name || profile.name || '사용자';
   const activeRoleName = auth.assignedRoles.find((role) => role.code === auth.activeRole)?.name || auth.activeRole || '미등록';
+  const contacts = [profile.employee_number, profile.mobile_phone, profile.company_email].filter(Boolean);
   // 상세 항목은 기본적으로 접어 두고 필요할 때만 펼친다.
   const [expanded, setExpanded] = useState(false);
   return (
@@ -29,7 +30,13 @@ export default function ProfileCard() {
       <div className="gw-profile-card-hero">
         <ProfileAvatar profile={profile} size="large" />
         <div>
-          <h2 id="my-profile-card-title">{displayName}</h2>
+          {/* 이름 옆에 사번·휴대전화·회사 이메일. 등록되지 않은 것은 빼고
+              있는 것만 세운다 — 셋 다 '미등록'이면 읽을 게 없는 줄이 남는다.
+              전체 항목은 아래 '펼치기'가 미등록까지 보여 준다. */}
+          <div className="gw-profile-card-name">
+            <h2 id="my-profile-card-title">{displayName}</h2>
+            {contacts.length > 0 && <span className="gw-profile-card-contact">{contacts.join(', ')}</span>}
+          </div>
           <p>{value(profile.department_name)} · {value(profile.position_name)} · {value(profile.job_title_name)}<span className="gw-active-role-badge">{activeRoleName}</span></p>
         </div>
         <div className="gw-profile-card-actions">
