@@ -20,8 +20,8 @@ export default function Brand({ href, placement }) {
       <BrandMark />
       {isHeader ? (
         <span className="brand-word" aria-hidden="true">
-          <span className="brand-core">재경</span>
-          <span className="brand-suffix">닷컴</span>
+          <span className="brand-core">재경로지스</span>
+          <span className="brand-suffix">｜물류</span>
         </span>
       ) : (
         <span>재경로지스｜물류</span>
