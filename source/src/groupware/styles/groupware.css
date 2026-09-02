@@ -1365,11 +1365,26 @@ body.groupware-root a.gw-secondary-button {
 .gw-usage-cleanup-list { border-top: 1px solid var(--gw-border); padding-top: 12px; }
 .gw-usage-cleanup-list h3 { margin: 0; font-size: 15px; }
 .gw-usage-cleanup-list ul { display: grid; gap: 4px; margin: 8px 0 0; padding: 0; list-style: none; }
-.gw-usage-cleanup-list li { display: grid; grid-template-columns: minmax(0,1fr) auto auto; align-items: center; gap: 12px; border-radius: var(--gw-radius); padding: 7px 10px; background: var(--gw-background); font-size: 14px; }
-.gw-usage-cleanup-list li span { min-width: 0; display: grid; }
+/* 체크칸 · 이름 · 크기 · 등록일 · 삭제 */
+.gw-usage-cleanup-list li { display: grid; grid-template-columns: 18px minmax(0,1fr) auto auto auto; align-items: center; gap: 12px; border-radius: var(--gw-radius); padding: 7px 10px; background: var(--gw-background); font-size: 14px; }
+.gw-usage-cleanup-list li > span:not(.gw-usage-cleanup-nopick) { min-width: 0; display: grid; }
 .gw-usage-cleanup-list li strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gw-usage-cleanup-list li small,
 .gw-usage-cleanup-list li time { color: var(--gw-muted); font-size: 14px; }
+/* 첨부 기록이 없는 파일은 하나씩 고를 수 없다. 체크칸 자리만 비워 둔다. */
+.gw-usage-cleanup-nopick { display: block; }
+
+.gw-usage-cleanup-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.gw-usage-cleanup-pick { display: flex; align-items: center; gap: 12px; }
+.gw-usage-cleanup-pick label { display: inline-flex; align-items: center; gap: 6px; color: var(--gw-muted); font-size: 13px; }
+
+@media (max-width: 640px) {
+  /* 좁은 화면에서는 크기·등록일을 이름 아래로 내린다. 다섯 칸을 한 줄에 넣으면
+     이름이 두 글자만 남는다. */
+  .gw-usage-cleanup-list li { grid-template-columns: 18px minmax(0,1fr) auto; row-gap: 2px; }
+  .gw-usage-cleanup-list li b,
+  .gw-usage-cleanup-list li time { grid-column: 2; font-size: 12.5px; }
+}
 
 .gw-review-list {
   display: grid;
