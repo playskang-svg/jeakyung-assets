@@ -73,7 +73,7 @@
       ]
     },
     {
-      "source": "/(groupware|news|privacy|hl-safety-eval)",
+      "source": "/(groupware|news|privacy|hl-safety-eval|legacy)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -82,7 +82,7 @@
       ]
     },
     {
-      "source": "/(groupware|news|privacy|hl-safety-eval)/:path*",
+      "source": "/(groupware|news|privacy|hl-safety-eval|legacy)/:path*",
       "headers": [
         {
           "key": "Cache-Control",
@@ -101,6 +101,15 @@
     },
     {
       "source": "/hl-safety-eval/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/legacy/(.*)",
       "headers": [
         {
           "key": "X-Robots-Tag",
