@@ -9,7 +9,7 @@ import {
   CodeIcon, HeadingIcon, HighlightIcon, ImageIcon, ImageUrlIcon, ItalicIcon, LinkIcon,
   OrderedListIcon, QuoteIcon, RuleIcon, StrikeIcon, TextColorIcon, UnderlineIcon,
 } from './EditorIcons.jsx';
-import { BackgroundColor, Color, TextStyle } from '@tiptap/extension-text-style';
+import { BackgroundColor, Color, FontFamily, TextStyle } from '@tiptap/extension-text-style';
 import Highlight from '@tiptap/extension-highlight';
 import TextAlign from '@tiptap/extension-text-align';
 import { Plugin } from '@tiptap/pm/state';
@@ -66,6 +66,41 @@ const HIGHLIGHT_COLORS = [
 ];
 
 /* 색상 선택은 버튼을 계속 늘리는 대신 하나의 드롭다운으로 묶는다. */
+// 고를 수 있는 글꼴. 웹폰트를 새로 받아오지 않고 기기에 이미 깔린 것만 쓴다.
+// 없는 기기에서는 뒤쪽 대체 글꼴로 내려가므로 글이 깨지지 않는다.
+const FONT_CHOICES = [
+  { label: '기본', value: '' },
+  { label: '맑은 고딕', value: "'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif" },
+  { label: '돋움', value: "Dotum, Gulim, sans-serif" },
+  { label: '바탕', value: "Batang, 'Apple Myungjo', serif" },
+  { label: '나눔고딕', value: "'NanumGothic', 'Nanum Gothic', sans-serif" },
+  { label: '고정폭', value: "'D2Coding', Consolas, Menlo, monospace" },
+];
+
+// 지금 커서가 놓인 글자의 글꼴. 고른 적이 없으면 '기본'.
+function FontMenu({ editor }) {
+  const current = editor.getAttributes('textStyle').fontFamily ?? '';
+  return (
+    <label className="gw-editor-font">
+      <span className="gw-visually-hidden">글꼴</span>
+      <select
+        value={FONT_CHOICES.some((font) => font.value === current) ? current : ''}
+        onChange={(event) => {
+          const value = event.target.value;
+          const chain = editor.chain().focus();
+          (value ? chain.setFontFamily(value) : chain.unsetFontFamily()).run();
+        }}
+      >
+        {FONT_CHOICES.map((font) => (
+          <option key={font.label} value={font.value} style={font.value ? { fontFamily: font.value } : undefined}>
+            {font.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 function ColorMenu({ label, icon, colors, onPick, onClear }) {
   const [open, setOpen] = useState(false);
   return (
@@ -164,6 +199,7 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
       TextStyle,
       Color,
       BackgroundColor,
+      FontFamily,
       Highlight.configure({ multicolor: true }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       InlineAttachmentImage.configure({
@@ -221,6 +257,8 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
 
   return <div className="gw-rich-editor">
     <div className="gw-editor-toolbar" role="toolbar" aria-label="본문 서식">
+      <FontMenu editor={editor} />
+      <span className="gw-editor-divider" aria-hidden="true" />
       <ToolbarButton label="굵게" active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()}><BoldIcon /></ToolbarButton>
       <ToolbarButton label="기울임" active={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()}><ItalicIcon /></ToolbarButton>
       <ToolbarButton label="밑줄" active={editor.isActive('underline')} onClick={() => editor.chain().focus().toggleUnderline().run()}><UnderlineIcon /></ToolbarButton>

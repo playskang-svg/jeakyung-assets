@@ -19,9 +19,9 @@ function Thumbnail({ item }) {
 export default function ButtonBoxGrid({ box, items }) {
   const [openItem, setOpenItem] = useState(null);
 
-  if (!items || items.length === 0) {
-    return <p className="gw-empty-state">등록된 버튼이 없습니다. 관리자 화면에서 추가해 주세요.</p>;
-  }
+  // 아직 채우지 않은 버튼 줄은 아무것도 그리지 않는다. 빈 안내 상자가
+  // 탭마다 자리를 차지하면 볼 것이 없는데 화면만 길어진다.
+  if (!items || items.length === 0) return null;
 
   const style = box?.style || 'cards';
 

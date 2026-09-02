@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import { useAuth } from '../../context/AuthContext.jsx';
 import { approvalService } from '../../services/approvalService.js';
@@ -10,7 +10,6 @@ const newField = (index) => ({ id: crypto.randomUUID(), key: `field_${index + 1}
 const newLine = (index) => ({ id: crypto.randomUUID(), step_order: index + 1, step_kind: 'approval', line_mode: 'sequential', required_count: 1, is_blocking: true, assignee_user_ids: [] });
 
 export default function ApprovalAdminPage() {
-  const navigate = useNavigate();
   const auth = useAuth();
   const [catalog, setCatalog] = useState({ categories: [], templates: [], users: [] });
   const [tab, setTab] = useState('templates');
@@ -54,7 +53,7 @@ export default function ApprovalAdminPage() {
   };
 
   return <article className="gw-approval-page" aria-labelledby="approval-admin-title">
-    <header className="gw-approval-heading"><div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}><button type="button" className="gw-back-icon-button" onClick={() => navigate('/approval')} aria-label="전자결재 홈으로"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg></button><div><span className="gw-eyebrow">APPROVAL ADMIN</span><h1 id="approval-admin-title">전자결재 관리</h1><p>분류와 양식 필드, 기본 결재선을 설정하고 새 버전을 발행합니다.</p></div></div></header>
+    <header className="gw-approval-heading"><div><span className="gw-eyebrow">APPROVAL ADMIN</span><h1 id="approval-admin-title">전자결재 관리</h1><p>분류와 양식 필드, 기본 결재선을 설정하고 새 버전을 발행합니다.</p></div></header>
     <div className="gw-approval-admin-tabs" role="tablist"><button type="button" className={tab === 'templates' ? 'is-active' : ''} onClick={() => setTab('templates')}>양식 관리</button><button type="button" className={tab === 'categories' ? 'is-active' : ''} onClick={() => setTab('categories')}>분류 관리</button></div>
 
     {tab === 'categories' ? <div className="gw-approval-admin-layout"><section className="gw-approval-card"><h2>분류 목록</h2><div className="gw-compact-list">{catalog.categories.map((item) => <button type="button" key={item.id} onClick={() => setCategory({ ...item, archived: Boolean(item.archived_at) })}><strong>{item.name}</strong><span>{item.code}{item.archived_at ? ' · 보관' : ''}</span></button>)}</div></section><form className="gw-approval-card" onSubmit={saveCategory}><h2>{category.id ? '분류 수정' : '새 분류'}</h2><div className="gw-admin-form-grid"><label className="gw-field"><span>분류명</span><input required value={category.name} onChange={(event) => setCategory({ ...category, name: event.target.value })} /></label><label className="gw-field"><span>분류 코드</span><input required pattern="[a-z0-9][a-z0-9_-]{1,59}" value={category.code} onChange={(event) => setCategory({ ...category, code: event.target.value.toLowerCase() })} /></label><label className="gw-field gw-field--full"><span>설명</span><textarea value={category.description ?? ''} onChange={(event) => setCategory({ ...category, description: event.target.value })} /></label></div><div className="gw-check-grid"><label><input type="checkbox" checked={category.is_active} onChange={(event) => setCategory({ ...category, is_active: event.target.checked })} /> 활성</label>{category.id && <label><input type="checkbox" checked={category.archived} onChange={(event) => setCategory({ ...category, archived: event.target.checked })} /> 보관</label>}</div><div className="gw-admin-actions"><button className="gw-primary-button" disabled={saving}>분류 저장</button>{category.id && <button className="gw-secondary-button" type="button" onClick={() => setCategory(EMPTY_CATEGORY)}>취소</button>}</div></form></div>

@@ -19,3 +19,9 @@ export async function savePopupDocument(client, documentValue) {
   return data;
 }
 
+
+export async function deletePopupDocument(client, id) {
+  if (!client) throw new Error('Supabase 연결 설정이 필요합니다.');
+  const { error } = await client.rpc('delete_popup_document', { p_id: id });
+  if (error) throw error;
+}

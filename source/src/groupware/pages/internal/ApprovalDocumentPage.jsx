@@ -88,18 +88,13 @@ export default function ApprovalDocumentPage() {
 
   return <article className="gw-approval-page" aria-labelledby="approval-document-title">
     <header className="gw-approval-heading">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <button type="button" className="gw-back-icon-button" onClick={() => navigate(-1)} aria-label="뒤로 가기">
-          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
-        </button>
-        <div>
-          <div className="gw-approval-kicker">
-            <span>{doc.template?.name ?? '결재 문서'}</span>
-            <span>{doc.document_number || '문서번호 미발급'}</span>
-          </div>
-          <h1 id="approval-document-title">{doc.title}</h1>
-          <p>{doc.revision?.drafter_snapshot?.name ?? '기안자'} · {new Date(doc.submitted_at ?? doc.created_at).toLocaleString('ko-KR')}</p>
+      <div>
+        <div className="gw-approval-kicker">
+          <span>{doc.template?.name ?? '결재 문서'}</span>
+          <span>{doc.document_number || '문서번호 미발급'}</span>
         </div>
+        <h1 id="approval-document-title">{doc.title}</h1>
+        <p>{doc.revision?.drafter_snapshot?.name ?? '기안자'} · {new Date(doc.submitted_at ?? doc.created_at).toLocaleString('ko-KR')}</p>
       </div>
       <div className="gw-admin-actions gw-no-print">
         <button className="gw-secondary-button" type="button" onClick={() => navigate('/approval')}>목록 보기</button>

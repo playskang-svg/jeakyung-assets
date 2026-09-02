@@ -5,15 +5,16 @@
 // 여기에는 게시판별 항목을 두지 않는다.
 export const GROUPWARE_NAVIGATION = [
   { key: 'dashboard', label: '대시보드', path: '/dashboard' },
-  { key: 'mail', label: '사내메일', href: 'https://mail.jeakyung.com', external: true, quick: 10 },
+  { key: 'mail', label: '사내메일', href: 'https://mail.jeakyung.com', quick: 10 },
   { key: 'approval', label: '전자결재', path: '/approval', quick: 20 },
   { key: 'organization', label: '조직도', path: '/organization', quick: 30 },
   { key: 'calendar', label: '일정', path: '/calendar' },
   { key: 'files', label: '파일', path: '/files', quick: 40 },
   { key: 'boards', label: '게시판', path: '/boards' },
-  { key: 'safety-eval', label: '적격수급평가', href: 'https://jeakyung.com/hl-safety-eval/', external: true, quick: 50 },
-  { key: 'ceo', label: '대표님', href: 'https://jeakyung.quv.kr/17', external: true, quick: 60 },
-  { key: 'payment-link', label: '결제 링크 발송', href: 'https://seller.payapp.kr/r/using_reg?payreqtype=krw', external: true, quick: 70 },
+  { key: 'consignment', label: '지입업무', href: 'https://jeakyung.quv.kr/41', quick: 45 },
+  { key: 'safety-eval', label: '적격수급평가', href: 'https://jeakyung.com/hl-safety-eval/', quick: 50 },
+  { key: 'ceo', label: '대표님', href: 'https://jeakyung.quv.kr/17', quick: 60 },
+  { key: 'payment-link', label: '결제 링크 발송', href: 'https://seller.payapp.kr/r/using_reg?payreqtype=krw', quick: 70 },
   { key: 'admin', label: '관리자', path: '/admin', requiredPermission: 'admin.access' },
 ];
 
@@ -23,6 +24,10 @@ export function getRouteTitle(pathname) {
   if (pathname.startsWith('/approval/')) return '전자결재';
   if (pathname.startsWith('/admin/')) return '관리자';
   if (pathname === '/profile' || pathname === '/mypage') return '내 프로필';
+  if (pathname.startsWith('/view/')) {
+    const key = pathname.slice('/view/'.length);
+    return GROUPWARE_NAVIGATION.find((item) => item.key === key)?.label ?? '바로가기';
+  }
   return GROUPWARE_NAVIGATION.find((item) => pathname === item.path)?.label ?? '그룹웨어';
 }
 
@@ -43,6 +48,7 @@ const TRAIL_RULES = [
   [/^\/organization$/, ['조직도', null]],
   [/^\/calendar$/, ['일정', null]],
   [/^\/files$/, ['파일', null]],
+  [/^\/view\/[^/]+$/, ['바로가기', null]],
   [/^\/profile$/, ['내 프로필', null]],
 ];
 
@@ -54,7 +60,9 @@ export function getRouteTrail(pathname) {
   return [home, ...steps];
 }
 
-// 빠른 실행 줄. quick 숫자 순으로 세운다.
+// 빠른 실행 줄. quick 숫자 순으로 세운다. 바깥 주소를 가리키는 항목도 새 탭이
+// 아니라 /view/<key> 로 보내 그룹웨어 화면 안에서 열리게 한다.
 export const quickLinks = () => GROUPWARE_NAVIGATION
   .filter((item) => typeof item.quick === 'number')
-  .sort((a, b) => a.quick - b.quick);
+  .sort((a, b) => a.quick - b.quick)
+  .map((item) => ({ ...item, to: item.path ?? `/view/${item.key}` }));
