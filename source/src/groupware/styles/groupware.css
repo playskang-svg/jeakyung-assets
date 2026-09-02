@@ -5845,23 +5845,44 @@ body.groupware-root a.gw-topclock-button { color: var(--gw-text); }
 body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
 .gw-intranet-home-button:hover { border-color: #9eafe9; background: var(--gw-blue-100); color: var(--gw-blue-700); }
 
-/* 좁은 화면: 검색은 돋보기만 남기고, 눌러야 펼쳐진다. 시계·날짜는 접고
-   일정 버튼만 남긴다. 상단바에 다 들어가지 않으면 문서 전체가 옆으로 밀리므로,
-   다른 데서도 갈 수 있는 것부터 접는다 — 인트라넷 홈은 왼쪽 로고가 같은 곳으로
-   간다. 이것 하나를 접으면 나머지는 390px 에 들어간다.
+/* 상단바가 한 줄에 들어가지 않으면 문서 전체가 옆으로 밀린다. 창이 좁아질수록
+   덜 급한 것부터 접는다.
 
-   이 블록은 반드시 위의 기본 규칙 뒤에 와야 한다. 파일 앞쪽 640px 블록에 두면
-   나중에 나오는 기본 규칙에 밀려 아무 일도 일어나지 않는다. */
-@media (max-width: 640px) {
+   1023px 이하 — 태블릿. 여기가 오래 비어 있었다: 640px 규칙은 걸리지 않고
+   1024px 는 자리가 넉넉해, 그 사이에서만 도구 줄이 824px 로 부풀어 700px 창을
+   316px 넘겼다. 글자를 접고 검색을 돋보기로 줄이면 들어간다.
+
+   640px 이하 — 휴대폰. 인트라넷 홈까지 접는다. 왼쪽 로고가 같은 곳으로 간다.
+
+   두 블록 모두 반드시 위의 기본 규칙 뒤에 와야 한다. 파일 앞쪽 640px 블록에
+   두면 나중에 나오는 기본 규칙에 밀려 아무 일도 일어나지 않는다. */
+@media (max-width: 1023px) {
+  /* 아이콘만 남긴다. 읽는 이름은 눌러서 들어간 화면이 알려 준다. */
+  .gw-tool-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+  .gw-site-home-button,
+  .gw-admin-mode-button,
+  .gw-topclock-button {
+    justify-content: center;
+    min-width: 34px;
+    padding: 0 9px;
+  }
   .gw-topsearch { padding: 0 4px; }
   .gw-topsearch input { width: 0; padding: 0; }
   .gw-topsearch.is-open { padding: 0 6px 0 10px; }
   .gw-topsearch.is-open input { width: 128px; padding: 0 4px; }
   .gw-topclock-date,
   .gw-topclock-time { display: none; }
+  .gw-topbar-tools { gap: 4px; }
+}
+
+@media (max-width: 640px) {
   .gw-intranet-home-button { display: none; }
-  /* 일정도 글자를 접고 달력 아이콘만 남긴다. */
-  .gw-topclock-button { justify-content: center; min-width: 32px; padding: 0 8px; }
   .gw-topbar-tools { gap: 3px; }
 }
 
