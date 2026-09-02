@@ -55,7 +55,7 @@ export default function LoginPage() {
       <div className="gw-auth-card-heading">
         <span className="gw-eyebrow">EMPLOYEE ACCESS</span>
         <h1 id="login-title">그룹웨어 로그인</h1>
-        <p>승인된 재경로지스&물류 임직원 계정으로 이용하는 내부 시스템입니다.</p>
+        <p>승인된 재경로지스｜물류 임직원 계정으로 이용하는 내부 시스템입니다.</p>
       </div>
 
       {wasProtected && (

@@ -15,7 +15,7 @@ export default function Brand({ href, placement }) {
     <a
       className={`brand ${isHeader ? 'header-brand' : 'footer-brand'}`}
       href={href}
-      aria-label="재경로지스&물류 홈"
+      aria-label="재경로지스｜물류 홈"
     >
       <BrandMark />
       {isHeader ? (
@@ -24,7 +24,7 @@ export default function Brand({ href, placement }) {
           <span className="brand-suffix">닷컴</span>
         </span>
       ) : (
-        <span>재경로지스&물류</span>
+        <span>재경로지스｜물류</span>
       )}
     </a>
   );

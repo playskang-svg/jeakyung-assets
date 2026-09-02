@@ -11,7 +11,7 @@ create table if not exists public.quick_links (
   label text not null check (btrim(label) <> '' and length(label) <= 40),
   -- 바깥 주소(https://…) 또는 그룹웨어 안의 경로(/approval)
   url text not null check (btrim(url) <> '' and length(url) <= 500),
-  variant text not null default 'plain' check (variant in ('plain','primary','navy','mint','amber')),
+  variant text not null default 'plain' check (variant in ('plain','primary','navy','mint','amber','rose','violet','green')),
   size text not null default 'md' check (size in ('sm','md','lg')),
   -- frame: 화면 안 액자에서 연다 / tab: 새 탭. 액자를 거부하는 사이트가 있다.
   open_in text not null default 'frame' check (open_in in ('frame','tab')),

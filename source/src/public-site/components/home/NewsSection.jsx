@@ -119,7 +119,7 @@ export default function NewsSection() {
         <div className="section-heading news-heading">
           <span className="eyebrow"><i /> Insight &amp; Trends</span>
           <h2 id="news-title">소식/정보</h2>
-          <p>물류 시장의 흐름과 재경로지스&물류의 소식을 전해드립니다. 카드를 누르면 전체 내용을 볼 수 있습니다.</p>
+          <p>물류 시장의 흐름과 재경로지스｜물류의 소식을 전해드립니다. 카드를 누르면 전체 내용을 볼 수 있습니다.</p>
           <a className="news-all-link" href="news/">전체 보기 <span aria-hidden="true">→</span></a>
         </div>
 

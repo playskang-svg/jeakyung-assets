@@ -21,7 +21,7 @@ const FIELDS = [
 ];
 
 const COMPANY = {
-  name: '재경로지스&물류',
+  name: '재경로지스｜물류',
   tagline: '3PL 물류 · 신선식품 풀필먼트',
   site: 'jeakyung.com',
 };

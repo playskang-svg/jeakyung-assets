@@ -192,7 +192,7 @@ export default function SiteArticleAdminPanel() {
             <input maxLength={40} value={form.category} onChange={(event) => patch({ category: event.target.value })} placeholder="예: 물류 동향" />
           </label>
           <label className="gw-field"><span>작성자 (선택)</span>
-            <input maxLength={60} value={form.author} onChange={(event) => patch({ author: event.target.value })} placeholder="예: 재경로지스&물류 편집팀" />
+            <input maxLength={60} value={form.author} onChange={(event) => patch({ author: event.target.value })} placeholder="예: 재경로지스｜물류 편집팀" />
           </label>
           <label className="gw-field"><span>게시 일시</span>
             <input required type="datetime-local" value={form.published_at} onChange={(event) => patch({ published_at: event.target.value })} />
