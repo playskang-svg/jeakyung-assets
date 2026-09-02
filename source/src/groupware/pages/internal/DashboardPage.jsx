@@ -65,7 +65,7 @@ export default function DashboardPage() {
 
   return (
     <article className="gw-page" aria-labelledby="page-title">
-      <header className="gw-page-header"><div><h1 id="page-title">대시보드</h1><p>관리자가 배포한 업무 위젯을 내 표시 설정으로 확인합니다.</p></div></header>
+      <header className="gw-page-header"><div><h1 id="page-title">대시보드</h1></div></header>
       <ProfileCard />
       {/* 게시판 바로가기는 내 프로필 바로 아래에 둔다. 접속 직후 가장 먼저 쓰는
           동선이면서, 누구의 화면인지 확인한 다음 이동하는 순서가 자연스럽다. */}
