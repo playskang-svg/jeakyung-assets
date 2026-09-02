@@ -10,6 +10,9 @@ import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 
 const PREPARING = new Set(['approval_status', 'today_schedule', 'week_schedule']);
+// 홈 화면 위쪽이 직접 그리는 것들. 위젯으로 또 그리면 같은 목록이 한 화면에
+// 두 번 나온다. 위젯 자체를 지우지는 않는다. 관리자 설정에는 그대로 남는다.
+const COVERED_BY_HOME = new Set(['notices', 'recent_posts', 'mail_link']);
 const NOTICE_SLUG = 'company-notice';
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -182,7 +185,7 @@ export default function DashboardPage() {
       {error && <div className="gw-notice gw-notice--warning" role="alert">{error}</div>}
       {loading ? <p className="gw-empty-state" role="status">위젯을 불러오고 있습니다.</p> : (
         <div className="gw-dashboard-grid">
-          {widgets.filter((widget) => !widget.is_hidden).map((widget) => {
+          {widgets.filter((widget) => !widget.is_hidden && !COVERED_BY_HOME.has(widget.widget_type)).map((widget) => {
             const isCollapsed = collapsed.has(widget.id);
             return (
               <section className={`gw-dashboard-widget gw-dashboard-widget--${widget.size}`} key={widget.id}>
@@ -214,7 +217,7 @@ export default function DashboardPage() {
           })}
         </div>
       )}
-      {!loading && widgets.some((widget) => widget.is_hidden) && <section className="gw-hidden-widgets" aria-labelledby="hidden-widgets-title"><h2 id="hidden-widgets-title">숨긴 위젯</h2>{widgets.filter((widget) => widget.is_hidden).map((widget) => <button type="button" key={widget.id} onClick={() => restore(widget)}>{widget.title} 복원</button>)}</section>}
+      {!loading && widgets.some((widget) => widget.is_hidden && !COVERED_BY_HOME.has(widget.widget_type)) && <section className="gw-hidden-widgets" aria-labelledby="hidden-widgets-title"><h2 id="hidden-widgets-title">숨긴 위젯</h2>{widgets.filter((widget) => widget.is_hidden && !COVERED_BY_HOME.has(widget.widget_type)).map((widget) => <button type="button" key={widget.id} onClick={() => restore(widget)}>{widget.title} 복원</button>)}</section>}
     </article>
   );
 }
