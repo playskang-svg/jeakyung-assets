@@ -10,10 +10,16 @@ import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { quickLinks } from '../../config/navigation.js';
 
-const PREPARING = new Set(['approval_status', 'today_schedule', 'week_schedule']);
-// 홈 화면 위쪽이 직접 그리는 것들. 위젯으로 또 그리면 같은 목록이 한 화면에
-// 두 번 나온다. 위젯 자체를 지우지는 않는다. 관리자 설정에는 그대로 남는다.
-const COVERED_BY_HOME = new Set(['notices', 'recent_posts', 'mail_link']);
+// 홈 화면에 내보내지 않는 위젯.
+//   앞의 셋 — 홈 화면 위쪽이 직접 그린다. 위젯으로 또 그리면 같은 목록이 한
+//              화면에 두 번 나온다.
+//   뒤의 셋 — 아직 만들지 않은 기능이라 제목만 나오고 안이 비어 있었다.
+// 위젯 자체를 지우지는 않는다. 관리자 설정에는 그대로 남아 있어, 홈 구성을
+// 바꾸거나 기능을 만들면 이 목록에서 빼기만 하면 된다.
+const NOT_ON_HOME = new Set([
+  'notices', 'recent_posts', 'mail_link',
+  'approval_status', 'today_schedule', 'week_schedule',
+]);
 const NOTICE_SLUG = 'company-notice';
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -131,6 +137,9 @@ export default function DashboardPage() {
     return next;
   });
 
+  const shownWidgets = widgets.filter((widget) => !widget.is_hidden && !NOT_ON_HOME.has(widget.widget_type));
+  const restorableWidgets = widgets.filter((widget) => widget.is_hidden && !NOT_ON_HOME.has(widget.widget_type));
+
   return (
     <article className="gw-page" aria-labelledby="page-title">
       <header className="gw-page-header"><div><h1 id="page-title">대시보드</h1></div></header>
@@ -175,9 +184,9 @@ export default function DashboardPage() {
       )}
 
       {error && <div className="gw-notice gw-notice--warning" role="alert">{error}</div>}
-      {loading ? <p className="gw-empty-state" role="status">위젯을 불러오고 있습니다.</p> : (
+      {shownWidgets.length > 0 && (
         <div className="gw-dashboard-grid">
-          {widgets.filter((widget) => !widget.is_hidden && !COVERED_BY_HOME.has(widget.widget_type)).map((widget) => {
+          {shownWidgets.map((widget) => {
             const isCollapsed = collapsed.has(widget.id);
             return (
               <section className={`gw-dashboard-widget gw-dashboard-widget--${widget.size}`} key={widget.id}>
@@ -186,7 +195,6 @@ export default function DashboardPage() {
                   {widget.route && (widget.route.startsWith('http')
                     ? <a className="gw-inline-link" href={widget.route} target="_blank" rel="noopener noreferrer">이동하기 <span aria-hidden="true">↗</span></a>
                     : <Link className="gw-inline-link" to={widget.route}>이동하기</Link>)}
-                  {PREPARING.has(widget.widget_type) && <span className="gw-preparing-label">준비 중</span>}
                   <button type="button" className="gw-widget-collapse" aria-expanded={!isCollapsed} onClick={() => toggleCollapse(widget.id)}>
                     {isCollapsed ? '펼치기' : '접기'}
                   </button>
@@ -209,7 +217,7 @@ export default function DashboardPage() {
           })}
         </div>
       )}
-      {!loading && widgets.some((widget) => widget.is_hidden && !COVERED_BY_HOME.has(widget.widget_type)) && <section className="gw-hidden-widgets" aria-labelledby="hidden-widgets-title"><h2 id="hidden-widgets-title">숨긴 위젯</h2>{widgets.filter((widget) => widget.is_hidden && !COVERED_BY_HOME.has(widget.widget_type)).map((widget) => <button type="button" key={widget.id} onClick={() => restore(widget)}>{widget.title} 복원</button>)}</section>}
+      {!loading && restorableWidgets.length > 0 && <section className="gw-hidden-widgets" aria-labelledby="hidden-widgets-title"><h2 id="hidden-widgets-title">숨긴 위젯</h2>{restorableWidgets.map((widget) => <button type="button" key={widget.id} onClick={() => restore(widget)}>{widget.title} 복원</button>)}</section>}
     </article>
   );
 }

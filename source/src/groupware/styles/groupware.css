@@ -1745,16 +1745,6 @@ body.groupware-root a.gw-secondary-button {
   font-weight: 800;
 }
 
-.gw-preparing-label {
-  display: inline-flex;
-  border-radius: 999px;
-  padding: 5px 9px;
-  color: var(--gw-warning);
-  background: #fff5d9;
-  font-size: 14px;
-  font-weight: 850;
-}
-
 .gw-inline-link {
   display: inline-block;
   color: var(--gw-blue-700);
