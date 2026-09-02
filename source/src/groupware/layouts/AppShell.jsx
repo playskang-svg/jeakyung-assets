@@ -99,7 +99,6 @@ export default function AppShell() {
           {signOutError && <div className="gw-notice gw-notice--warning" role="alert">{signOutError}</div>}
           <Outlet />
         </main>
-        <GroupwareFooter />
       </div>
     </div>
   );
@@ -214,13 +213,3 @@ function RouteBar() {
   );
 }
 
-function GroupwareFooter() {
-  return (
-    <footer className="gw-footer">
-      <p><strong>재경로지스&물류</strong> 그룹웨어</p>
-      <p>유한회사 재경로지스 · 유한회사 재경물류</p>
-      <p><a href="https://jeakyung.com/" target="_blank" rel="noopener noreferrer">회사 홈페이지</a>
-        <a href="https://jeakyung.com/privacy/" target="_blank" rel="noopener noreferrer">개인정보처리방침</a></p>
-    </footer>
-  );
-}
