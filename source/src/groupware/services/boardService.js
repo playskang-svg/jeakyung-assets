@@ -51,6 +51,34 @@ export const getBoardReactions = (postId) => rpc('get_board_reactions', { p_post
 export const toggleBoardReaction = (postId, reactionType = 'like') => rpc('toggle_board_reaction', { p_post_id: postId, p_reaction_type: reactionType });
 export const deleteBoardAttachment = (attachmentId) => rpc('delete_board_attachment', { p_attachment_id: attachmentId });
 
+// DB·저장소가 돌려주는 코드는 그대로 보여 주면 무슨 뜻인지 알 수 없다.
+// ("new row violates row-level security policy" 같은 것) 사람이 읽고 다음에
+// 무엇을 해야 할지 알 수 있는 말로 바꾼다.
+const UPLOAD_ERROR_MESSAGES = {
+  attachment_upload_denied: '이 글에 파일을 올릴 권한이 없습니다.',
+  attachments_disabled: '이 게시판은 첨부파일을 받지 않습니다.',
+  attachment_size_exceeded: '파일 하나의 크기 제한을 넘었습니다.',
+  attachment_total_size_exceeded: '이 글의 첨부파일 용량 합계 제한을 넘었습니다. 다른 첨부를 지운 뒤 다시 올려 주세요.',
+  attachment_type_blocked: '보안상 허용되지 않는 파일 형식입니다.',
+  storage_object_not_owned: '업로드가 끝나기 전에 등록을 시도했습니다. 잠시 뒤 다시 시도해 주세요.',
+  storage_metadata_mismatch: '업로드된 파일 정보가 맞지 않습니다. 다시 올려 주세요.',
+  invalid_storage_path: '파일 경로가 올바르지 않습니다. 새로고침 후 다시 시도해 주세요.',
+  attachment_delete_denied: '이 첨부파일을 삭제할 권한이 없습니다.',
+};
+
+function describeUploadError(error) {
+  const raw = error?.message ?? '';
+  for (const [code, message] of Object.entries(UPLOAD_ERROR_MESSAGES)) {
+    if (raw.includes(code)) return new Error(message);
+  }
+  // 저장소 정책에 막히면 위 코드가 아니라 RLS 문구가 온다. 이 경우 대부분
+  // 용량 합계나 게시판 설정에 걸린 것이므로 그쪽을 짚어 준다.
+  if (/row-level security|violates|403/i.test(raw)) {
+    return new Error('파일을 올릴 수 없습니다. 첨부 용량 합계 제한에 걸렸거나 게시판 설정이 막고 있습니다.');
+  }
+  return error;
+}
+
 export async function uploadBoardAttachment({ boardId, postId, file, userId, maxSizeMb = 20 }) {
   const safeLimitMb = Math.min(Math.max(Number(maxSizeMb) || 20, 1), 20);
   if (file.size > safeLimitMb * 1024 * 1024) throw new Error(`첨부파일은 ${safeLimitMb}MB 이하여야 합니다.`);
@@ -59,7 +87,7 @@ export async function uploadBoardAttachment({ boardId, postId, file, userId, max
   const storagePath = `${boardId}/${userId}/general/${postId}/${crypto.randomUUID()}-${safeName}`;
   const client = requireSupabase();
   const { error: uploadError } = await client.storage.from(BUCKET).upload(storagePath, file, { contentType: file.type || 'application/octet-stream', upsert: false });
-  if (uploadError) throw uploadError;
+  if (uploadError) throw describeUploadError(uploadError);
   try {
     const attachmentId = await rpc('register_board_attachment', {
       p_board_id: boardId,
@@ -78,7 +106,7 @@ export async function uploadBoardAttachment({ boardId, postId, file, userId, max
     };
   } catch (error) {
     await client.storage.from(BUCKET).remove([storagePath]);
-    throw error;
+    throw describeUploadError(error);
   }
 }
 
