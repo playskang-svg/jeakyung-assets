@@ -77,7 +77,6 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
     <header className="gw-page-header gw-board-header">
             <h1 id="board-title">{overview.board.name}</h1>
       <div className="gw-board-header-actions">
-        {overview.board.settings.shortcut_enabled && overview.board.settings.shortcut_url && <a className="gw-secondary-button gw-board-shortcut-button" href={overview.board.settings.shortcut_url} target="_blank" rel="noopener noreferrer" aria-label={`${overview.board.settings.shortcut_label || '바로가기'}, 새 창`}>{overview.board.settings.shortcut_label || '바로가기'}<span aria-hidden="true">↗</span></a>}
         {!embedded && <Link className="gw-secondary-button" to="/boards">목록 이동</Link>}
       </div>
     </header>
