@@ -19,18 +19,6 @@ export const GROUPWARE_NAVIGATION = [
 ];
 
 
-export function getRouteTitle(pathname) {
-  if (pathname.startsWith('/boards/')) return '게시판';
-  if (pathname.startsWith('/approval/')) return '전자결재';
-  if (pathname.startsWith('/admin/')) return '관리자';
-  if (pathname === '/profile' || pathname === '/mypage') return '내 프로필';
-  if (pathname.startsWith('/view/')) {
-    const key = pathname.slice('/view/'.length);
-    return GROUPWARE_NAVIGATION.find((item) => item.key === key)?.label ?? '바로가기';
-  }
-  return GROUPWARE_NAVIGATION.find((item) => pathname === item.path)?.label ?? '그룹웨어';
-}
-
 // 주소를 "홈 > 게시판 > 글쓰기" 같은 단계로 바꾼다. 경로 줄과 뒤로가기가
 // 이 결과를 쓴다. 게시판 이름처럼 서버에서 와야 아는 값은 넣지 않는다.
 // 화면마다 다시 불러오는 비용보다, 한 단계 덜 자세한 편이 낫다.
