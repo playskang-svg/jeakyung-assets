@@ -17,12 +17,15 @@ export const BOARD_TYPES = {
   gallery: {
     label: '갤러리',
     shortLabel: '갤러리',
-    description: '본문 이미지를 대표 이미지로 보여주는 카드형 게시판',
+    // 사진은 본문에 넣고, 맨 위 사진이 목록 썸네일이 된다. 파일 첨부는 쓰지
+    // 않는다 — 사진을 첨부로도 올리고 본문에도 올리면 어느 쪽이 진짜인지
+    // 알 수 없고, 목록에 걸 그림도 갈린다.
+    description: '사진을 본문에 넣어 카드로 보여주는 게시판 (파일 첨부 없음)',
     icon: 'gallery_thumbnail',
     settings: {
       allow_comments: true,
       allow_replies: true,
-      allow_attachments: true,
+      allow_attachments: false,
       allow_images: true,
       allow_anonymous: false,
       allow_reactions: true,

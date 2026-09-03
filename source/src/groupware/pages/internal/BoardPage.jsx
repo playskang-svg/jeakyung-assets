@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { getBoardOverview, getBoardPosts, resolvePostThumbnail } from '../../services/boardService.js';
+import { formatBoardDateTime } from '../../utils/datetime.js';
 
 // 글머리 표시. 글쓰기 화면에서 체크한 것을 목록에서 제목 앞에 그림으로 알린다.
 // 어느 게시판이든 같은 그림을 쓴다. 글자로 적으면 제목이 밀리고 게시판마다
@@ -161,7 +162,7 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
                   </span>}
                 </td>
                 <td className="gw-post-table-author">{formatAuthor(post, overview.board.settings)}</td>
-                <td className="gw-post-table-date">{new Date(post.created_at).toLocaleDateString('ko-KR')}</td>
+                <td className="gw-post-table-date">{formatBoardDateTime(post.created_at)}</td>
               </tr>
             ))}
             {posts.items.length === 0 && <tr><td colSpan={5} className="gw-post-table-empty">등록된 게시글이 없습니다.</td></tr>}
@@ -177,7 +178,7 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
             {post.attachment_count > 0 && <span title={`첨부 ${post.attachment_count}개`}>📎 {post.attachment_count}</span>}
             <span className="gw-post-list-category">{categoryNameOf(post)}</span>
             <span className="gw-post-list-author">{formatAuthor(post, overview.board.settings)}</span>
-            <time>{new Date(post.created_at).toLocaleDateString('ko-KR')}</time>
+            <time>{formatBoardDateTime(post.created_at)}</time>
           </div></article>)}</div>
         {posts.items.length === 0 && <p className="gw-empty-state">등록된 게시글이 없습니다.</p>}
       </>
