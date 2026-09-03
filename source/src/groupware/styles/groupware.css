@@ -5513,6 +5513,29 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
   margin-bottom: 6px;
 }
 .gw-feed h2 { margin: 0; font-size: 15px; font-weight: 750; letter-spacing: -.01em; }
+
+/* 박스 제목 앞머리 표시. 대시보드에 상자가 여럿 늘어서면 제목이 본문과
+   같은 검정이라 어디서 한 덩어리가 끝나는지 눈에 안 들어온다. 제목 색을
+   짙게 내리고 앞에 짧은 색 막대를 세워 상자의 시작을 알린다.
+   공지사항·최신게시글·페이지·게시판·위젯 모두 같은 모양을 쓴다. */
+.gw-feed h2,
+.gw-panel-heading h2,
+.gw-dashboard-widget h2 {
+  color: var(--gw-navy-950);
+}
+
+.gw-feed h2::before,
+.gw-panel-heading h2::before,
+.gw-dashboard-widget h2::before {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  margin-right: 8px;
+  vertical-align: -2px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--gw-blue-600), var(--gw-blue-700));
+}
 .gw-feed > header a {
   display: inline-flex;
   align-items: center;
