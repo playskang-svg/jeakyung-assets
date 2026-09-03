@@ -9,6 +9,7 @@ const SIZE_OPTIONS = [
   ['small', '작게'],
   ['medium', '중간'],
   ['large', '크게'],
+  ['full', '꽉 채우기'],
   ['custom', '직접 조절'],
 ];
 

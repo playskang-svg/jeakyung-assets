@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { searchBoardPosts } from '../../services/boardService.js';
+import { formatBoardDateTime } from '../../utils/datetime.js';
 
-const formatDate = (value) => new Date(value).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' });
+const formatDate = (value) => formatBoardDateTime(value);
 
 // 게시판 전체 검색 결과. 어느 게시판의 글인지가 결과를 고르는 근거이므로
 // 제목과 같은 줄에 게시판 이름을 둔다.

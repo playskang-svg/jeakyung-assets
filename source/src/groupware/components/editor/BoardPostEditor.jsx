@@ -137,6 +137,9 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
   const [uploads, setUploads] = useState([]);
   const [htmlMode, setHtmlMode] = useState(false);
   const [htmlDraft, setHtmlDraft] = useState('');
+  // 갤러리 게시판은 사진이 주인공이라 기본을 꽉 채우기로 둔다. 다른 게시판은
+  // 글 사이에 끼는 그림이므로 중간 크기가 맞다. 넣은 뒤 각자 바꿀 수 있다.
+  const defaultImageSize = board.board_type === 'gallery' ? 'full' : 'medium';
   const limits = useMemo(() => ({
     maxBytes: Math.min(Math.max(Number(board.settings.max_inline_image_size_mb) || 10, 1), 10) * 1024 * 1024,
     maxImages: Math.min(Math.max(Number(board.settings.max_inline_images) || 20, 1), 20),
@@ -181,7 +184,7 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
         const attachment = await uploadOne(job.file);
         editor.chain().focus().insertContentAt(insertionPosition, {
           type: 'inlineImage',
-          attrs: { attachmentId: attachment.id, alt: '', caption: '', alignment: 'center', size: 'medium', width: null },
+          attrs: { attachmentId: attachment.id, alt: '', caption: '', alignment: 'center', size: defaultImageSize, width: null },
         }).run();
         insertionPosition = Math.min(insertionPosition + 1, editor.state.doc.content.size);
         setUploads((current) => current.map((item) => item.id === job.id ? { ...item, state: 'success', message: '본문에 삽입됨' } : item));
@@ -189,7 +192,7 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
         setUploads((current) => current.map((item) => item.id === job.id ? { ...item, state: 'error', message: error instanceof Error ? error.message : '업로드 실패' } : item));
       }
     }
-  }, [limits, uploadOne]);
+  }, [defaultImageSize, limits, uploadOne]);
 
   const editor = useEditor({
     extensions: [
@@ -249,7 +252,7 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
     const src = input.trim();
     if (!/^https:\/\//i.test(src)) { window.alert('https:// 로 시작하는 주소만 넣을 수 있습니다.'); return; }
     if (src.length > 2000) { window.alert('주소가 너무 깁니다.'); return; }
-    editor.chain().focus().insertContent({ type: 'externalImage', attrs: { src } }).run();
+    editor.chain().focus().insertContent({ type: 'externalImage', attrs: { src, size: defaultImageSize } }).run();
   };
 
   // 유튜브 영상 넣기. 주소에서 영상 번호 열한 글자만 뽑아 문서에 남긴다.

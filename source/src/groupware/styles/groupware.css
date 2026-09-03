@@ -2813,6 +2813,8 @@ body.groupware-root a.gw-secondary-button {
 .gw-inline-image--small { width: min(100%, 320px); }
 .gw-inline-image--medium { width: min(100%, 640px); }
 .gw-inline-image--large { width: min(100%, 960px); }
+/* 꽉 채우기. 위의 것들과 달리 상한을 두지 않아 본문 폭을 그대로 쓴다. */
+.gw-inline-image--full { width: 100%; }
 .gw-inline-image--custom { width: min(100%, var(--gw-image-width)); }
 .gw-inline-image--left { margin-left: 0; margin-right: auto; }
 .gw-inline-image--center { margin-left: auto; margin-right: auto; }

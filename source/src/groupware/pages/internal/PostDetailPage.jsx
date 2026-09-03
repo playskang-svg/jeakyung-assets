@@ -5,6 +5,7 @@ import BoardDocumentRenderer from '../../components/editor/BoardDocumentRenderer
 import { useAuth } from '../../context/AuthContext.jsx';
 import { deleteBoardAttachment, deleteBoardComment, deleteBoardPost, downloadAttachment, getBoardOverview, getBoardPost, saveBoardComment, uploadBoardAttachment } from '../../services/boardService.js';
 import { legacyTextToDocument } from '../../utils/boardDocument.js';
+import { formatBoardDateTime } from '../../utils/datetime.js';
 
 // 팝업 안에서도 쓰기 위해 라우트 파라미터 대신 props 로도 받을 수 있게 한다.
 // onBack 이 있으면 목록으로 돌아가는 동작을 그 함수에 맡긴다(팝업 안 전환).
@@ -101,7 +102,7 @@ export default function PostDetailPage({ boardSlug: boardSlugProp, postId: postI
       <div className="gw-post-head-meta">
         <span><small>작성자</small> <strong>{authorMeta}</strong></span>
         <span>
-          {new Date(data.post.created_at).toLocaleDateString('ko-KR')}
+          {formatBoardDateTime(data.post.created_at)}
           {overview.board.settings.show_views !== false && <em>조회 {data.post.view_count}</em>}
         </span>
       </div>
@@ -116,7 +117,7 @@ export default function PostDetailPage({ boardSlug: boardSlugProp, postId: postI
     {overview.board.settings.allow_comments && <section className="gw-comments">
       <h2>댓글 {data.comments.length > 0 && <span className="gw-comment-count">{data.comments.length}</span>}</h2>
       {data.comments.map((comment) => <article key={comment.id} className={comment.parent_comment_id ? 'is-reply' : ''}>
-        <header><strong>{comment.author_name}</strong><time>{new Date(comment.created_at).toLocaleString('ko-KR')}</time></header>
+        <header><strong>{comment.author_name}</strong><time>{formatBoardDateTime(comment.created_at)}</time></header>
         <p>{comment.content}</p>
         <div>
           {overview.permissions.comment && overview.board.settings.allow_replies && <button type="button" onClick={() => { setEditingComment(null); setReplyTo(comment.id); }}>답글</button>}
