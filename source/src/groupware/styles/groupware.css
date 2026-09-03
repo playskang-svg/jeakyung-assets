@@ -2764,6 +2764,18 @@ body.groupware-root a.gw-secondary-button {
   font-size: 14px;
 }
 
+/* 권장 문구. 위 안내와 한 덩어리로 보이도록 경계선을 없애고 조금 줄인다. */
+.gw-editor-hint--tip {
+  border-top: 0;
+  padding-top: 0;
+  font-size: 13px;
+}
+
+.gw-editor-hint--tip b {
+  color: var(--gw-text);
+  font-weight: 650;
+}
+
 .gw-upload-status {
   display: grid;
   gap: 6px;
@@ -5136,6 +5148,29 @@ body.groupware-root .gw-external-view-head a:hover { color: var(--gw-blue-700); 
 .gw-post-table-title a:hover { text-decoration: underline; }
 
 .gw-post-table-mark { margin-left: 7px; color: var(--gw-muted); vertical-align: -3px; }
+
+/* 글머리 표시 — 공지글·중요글·상단 고정을 제목 앞에 그림으로 알린다.
+   목록을 훑을 때 눈에 걸려야 하므로 색을 주되, 제목보다 커지지는 않게 둔다.
+   b 안의 이름은 화면 낭독기용이라 눈에는 보이지 않는다. */
+.gw-post-flag {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 5px;
+    vertical-align: -3px;
+}
+
+.gw-post-flag b {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.gw-post-flag--notice { color: var(--gw-accent, #2450f5); }
+.gw-post-flag--important { color: #d92d20; }
+.gw-post-flag--pinned { color: #b54708; }
 
 /* 댓글 수는 주황으로 둔다. 목록에서 대화가 오간 글을 먼저 찾게 된다. */
 .gw-post-table-comments {

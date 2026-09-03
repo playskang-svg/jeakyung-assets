@@ -3,6 +3,36 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { getAttachmentViewUrl, getBoardOverview, getBoardPosts } from '../../services/boardService.js';
 
+// 글머리 표시. 글쓰기 화면에서 체크한 것을 목록에서 제목 앞에 그림으로 알린다.
+// 어느 게시판이든 같은 그림을 쓴다. 글자로 적으면 제목이 밀리고 게시판마다
+// 말이 달라져, 훑어볼 때 눈에 걸리는 쪽을 골랐다.
+//
+//   공지글      표지판
+//   중요글      빨간 느낌표
+//   상단 고정   압정
+//
+// 그림만 두면 화면 낭독기에는 아무것도 안 들리므로 이름을 따로 싣는다.
+function PostFlags({ post }) {
+  const flags = [
+    post.is_notice && { key: 'notice', label: '공지글', icon: (
+      <><path d="M12 4.2V6" /><rect x="3.4" y="6" width="17.2" height="8.6" rx="1.6" /><path d="M12 14.6v5.2M9.4 19.8h5.2" /></>
+    ) },
+    post.is_important && { key: 'important', label: '중요글', icon: (
+      <><circle cx="12" cy="12" r="8.4" /><path d="M12 7.6v5.2" /><path d="M12 16.2v.1" /></>
+    ) },
+    post.is_pinned && { key: 'pinned', label: '상단 고정', icon: (
+      <><path d="M9 3.6h6l-.9 5.2 3.1 2.6H6.8l3.1-2.6z" /><path d="M12 11.4v9" /></>
+    ) },
+  ].filter(Boolean);
+  if (flags.length === 0) return null;
+  return flags.map((flag) => (
+    <span key={flag.key} className={`gw-post-flag gw-post-flag--${flag.key}`} title={flag.label}>
+      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{flag.icon}</svg>
+      <b>{flag.label}</b>
+    </span>
+  ));
+}
+
 // embedded: 링크 페이지 안에서 하위 화면으로 렌더될 때. 라우트 파라미터 대신
 // props로 게시판을 받고, 뒤로가기·목록 이동처럼 전체 화면 전제의 동선은 숨긴다.
 // onOpenPost: 글을 눌렀을 때 다른 화면으로 이동하는 대신 이 함수를 부른다.
@@ -115,6 +145,7 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
                 <td className="gw-post-table-no">{post.is_pinned ? <span className="gw-post-table-badge">공지</span> : numberOf(index)}</td>
                 <td className="gw-post-table-category">{categoryNameOf(post)}</td>
                 <td className="gw-post-table-title">
+                  <PostFlags post={post} />
                   <PostLink postId={post.id}>{post.title}</PostLink>
                   {post.attachment_count > 0 && <span className="gw-post-table-mark" title={`첨부 ${post.attachment_count}개`} aria-label={`첨부 ${post.attachment_count}개`}>
                     <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="8.5" cy="10" r="1.5" /><path d="m4 17 4.5-4.2a1.7 1.7 0 0 1 2.3 0L16 17" /></svg>
@@ -135,7 +166,7 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
     ) : (
       <>
         <div className={`gw-post-list gw-post-list--${overview.board.board_type}`}>{posts.items.map((post) => <article key={post.id} className={post.is_pinned ? 'is-pinned' : ''}>{overview.board.board_type === 'gallery' && <PostLink className="gw-gallery-thumbnail" postId={post.id} aria-label={`${post.title} 상세 보기`}>{thumbnails[post.id] ? <img src={thumbnails[post.id]} alt="" /> : <span>대표 이미지 없음</span>}</PostLink>}{isDiscussion && <div className="gw-discussion-count"><strong>{post.comment_count}</strong><span>댓글</span></div>}
-          <div className="gw-post-list-main"><h2><PostLink postId={post.id}>{post.title}</PostLink></h2>{isDiscussion && post.excerpt && <p className="gw-discussion-excerpt">{post.excerpt}</p>}</div>
+          <div className="gw-post-list-main"><h2><PostFlags post={post} /><PostLink postId={post.id}>{post.title}</PostLink></h2>{isDiscussion && post.excerpt && <p className="gw-discussion-excerpt">{post.excerpt}</p>}</div>
           <div className="gw-post-list-meta">
             {post.comment_count > 0 && <span title={`댓글 ${post.comment_count}개`}>💬 {post.comment_count}</span>}
             {post.attachment_count > 0 && <span title={`첨부 ${post.attachment_count}개`}>📎 {post.attachment_count}</span>}

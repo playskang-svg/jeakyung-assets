@@ -299,6 +299,8 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
       </div>
     ) : <EditorContent editor={editor} />}
     <p className="gw-editor-hint">이미지를 끌어 놓거나 클립보드에서 붙여넣을 수 있습니다. JPEG·PNG·WebP·GIF, 장당 최대 {limits.maxBytes / 1024 / 1024}MB, 최대 {limits.maxImages}장.</p>
+    {/* 올릴수록 저장 공간을 먹는다. 이미 웹에 있는 그림이면 주소로 넣는 편이 낫다. */}
+    <p className="gw-editor-hint gw-editor-hint--tip">이미 웹에 올라와 있는 그림은 위 <b>주소로 이미지 넣기</b>를 쓰시면 저장 공간을 아낄 수 있습니다.</p>
     {uploads.length > 0 && <ul className="gw-upload-status" aria-label="이미지 업로드 상태" aria-live="polite">{uploads.map((item) => <li key={item.id} className={`is-${item.state}`}><span>{item.name}</span><strong>{item.message}</strong>{item.state === 'error' && item.file && <button type="button" onClick={() => retry(item)}>재시도</button>}</li>)}</ul>}
   </div>;
 }
