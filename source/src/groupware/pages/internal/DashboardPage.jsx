@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { getMyDashboardWidgets, setDashboardPreference } from '../../services/dashboardService.js';
@@ -95,47 +95,63 @@ function GalleryCard({ item }) {
     : <span className="gw-gallery-figure" title={item.label}>{inner}</span>;
 }
 
-// 사내앨범을 왼쪽으로 흘려 보내는 띠.
+// 사내앨범을 가로로 넘겨 보는 띠.
 //
-// 목록을 두 벌 이어 붙이고 절반만큼 왼쪽으로 민 뒤 처음으로 되돌린다. 되돌아온
-// 자리의 그림이 방금 지나간 그림과 같으므로 끊긴 자리가 눈에 띄지 않는다.
-//
-// 도는 시간은 장수에 비례해 잡는다. 고정값으로 두면 사진이 늘어날수록 빨라져
-// 어지럽다. 타일 한 장에 3초면 초당 60px 안팎 — 멈춰 보이지도, 흘려 보기
-// 어렵지도 않은 속도다.
-//
-// 마우스를 올리거나 키보드 초점이 들어오면 멈춘다. 흐르는 것을 누르게 두면
-// 엉뚱한 글이 열린다.
+// 저절로 흐르게 해 봤지만 손으로 넘기는 편이 낫다. 흐르는 것은 누르려는
+// 순간에도 움직여서 엉뚱한 글이 열리고, 보고 싶은 자리로 되돌아갈 수도 없다.
+// 양옆 삼각형으로 넘기고, 손가락으로 쓸어도 된다.
 function GalleryStrip({ items, isSample }) {
-  const note = isSample && (
-    <p className="gw-gallery-note">아직 올라온 사진이 없어 예시 그림을 두었습니다. 사내앨범에 사진이나 유튜브 영상을 올리면 이 자리가 바뀝니다.</p>
-  );
+  const trackRef = useRef(null);
+  // 양 끝에 닿으면 그쪽 단추를 죽인다. 눌러도 안 움직이는 단추가 살아 있으면
+  // 고장 난 것으로 보인다.
+  const [edge, setEdge] = useState({ start: true, end: true });
 
-  // 두어 장뿐이면 흘려 봤자 빈 자리만 지나간다. 그때는 그냥 세워 둔다.
-  if (items.length <= 2) {
-    return (
-      <div className="gw-gallery-strip">
-        <ul className="gw-gallery-track gw-gallery-track--static">
-          {items.map((item) => <li key={item.key}><GalleryCard item={item} /></li>)}
-        </ul>
-        {note}
-      </div>
-    );
-  }
+  const measure = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    setEdge({
+      start: el.scrollLeft <= 2,
+      end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 2,
+    });
+  }, []);
+
+  // 타일이 늘거나 창 크기가 바뀌면 다시 잰다.
+  useEffect(() => {
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [items, measure]);
+
+  // 한 번에 보이는 만큼씩 넘긴다. 한 장씩이면 답답하고, 화면 폭마다 보이는
+  // 장수가 달라 고정값을 쓸 수 없다. 60px 은 넘긴 뒤에도 직전 것이 살짝
+  // 남아 이어진다는 느낌을 주려고 뺀 값이다.
+  const nudge = (direction) => {
+    const el = trackRef.current;
+    if (!el) return;
+    el.scrollBy({ left: direction * Math.max(el.clientWidth - 60, 160), behavior: 'smooth' });
+  };
 
   return (
-    <div className="gw-gallery-strip gw-gallery-strip--flowing">
-      <div className="gw-gallery-viewport">
-        <ul className="gw-gallery-track" style={{ '--gw-gallery-seconds': `${Math.max(items.length * 3, 12)}s` }}>
-          {items.map((item) => <li key={item.key}><GalleryCard item={item} /></li>)}
-          {/* 이어 붙인 두 번째 벌. 되돌아가는 순간을 감추기 위한 것이라
-              화면 낭독기에는 잡히지 않는다. */}
-          {items.map((item) => (
-            <li key={`echo-${item.key}`} aria-hidden="true"><GalleryCard item={item} /></li>
-          ))}
-        </ul>
-      </div>
-      {note}
+    <div className="gw-gallery-strip">
+      <button
+        type="button" className="gw-gallery-nav gw-gallery-nav--prev"
+        aria-label="이전 사진 보기" disabled={edge.start} onClick={() => nudge(-1)}
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M16 4.5v15L6 12z" fill="currentColor" /></svg>
+      </button>
+
+      <ul className="gw-gallery-track" ref={trackRef} onScroll={measure}>
+        {items.map((item) => <li key={item.key}><GalleryCard item={item} /></li>)}
+      </ul>
+
+      <button
+        type="button" className="gw-gallery-nav gw-gallery-nav--next"
+        aria-label="다음 사진 보기" disabled={edge.end} onClick={() => nudge(1)}
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 4.5v15l10-7.5z" fill="currentColor" /></svg>
+      </button>
+
+      {isSample && <p className="gw-gallery-note">아직 올라온 사진이 없어 예시 그림을 두었습니다. 사내앨범에 사진이나 유튜브 영상을 올리면 이 자리가 바뀝니다.</p>}
     </div>
   );
 }
