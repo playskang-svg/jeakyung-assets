@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { getMyDashboardWidgets, setDashboardPreference } from '../../services/dashboardService.js';
-import { BOARD_CATALOG_CHANGED_EVENT, getBoardPosts, getRecentBoardPosts, getVisibleBoards } from '../../services/boardService.js';
+import { BOARD_CATALOG_CHANGED_EVENT, getAttachmentViewUrl, getBoardPosts, getRecentBoardPosts, getVisibleBoards } from '../../services/boardService.js';
 import { getMyLinkPages } from '../../services/linkPageService.js';
 import { getButtonBox } from '../../services/buttonBoxService.js';
 import ProfileCard from '../../components/profile/ProfileCard.jsx';
@@ -21,6 +21,119 @@ const NOT_ON_HOME = new Set([
   'approval_status', 'today_schedule', 'week_schedule',
 ]);
 const NOTICE_SLUG = 'company-notice';
+const ALBUM_SLUG = 'photo-album';
+const GALLERY_TILES = 8;
+
+// 앨범이 아직 비어 있을 때 자리에 세워 둘 그림. 사진을 한 장도 올리지 않은
+// 채로 빈 상자만 두면 이 기능이 있는 줄도 모르고 지나친다.
+//
+// 파일이 아니라 그려서 만든다. 올려 둔 사진이 아니므로 저장 공간을 쓰지
+// 않고, 화면 크기가 어떻든 흐려지지 않는다. 앨범에 사진이 한 장이라도
+// 올라오면 이 자리는 그 사진들로 바뀐다.
+const SAMPLE_TILES = [
+  { key: 'box', label: '입고 검수', from: '#2450f5', to: '#5b8bff', art: (
+    <><rect x="18" y="26" width="44" height="32" rx="3" /><path d="M18 36h44M40 26v32" /></>
+  ) },
+  { key: 'truck', label: '배송 차량', from: '#0f766e', to: '#2dd4bf', art: (
+    <><rect x="10" y="30" width="34" height="22" rx="3" /><path d="M44 38h11l7 8v6H44z" /><circle cx="24" cy="56" r="4" /><circle cx="54" cy="56" r="4" /></>
+  ) },
+  { key: 'warehouse', label: '물류센터', from: '#b45309', to: '#fbbf24', art: (
+    <><path d="M12 34 40 20l28 14v26H12z" /><rect x="30" y="42" width="20" height="18" /></>
+  ) },
+  { key: 'pallet', label: '팔레트 적재', from: '#6b21a8', to: '#c084fc', art: (
+    <><rect x="16" y="24" width="20" height="18" rx="2" /><rect x="44" y="24" width="20" height="18" rx="2" /><path d="M12 50h56M20 50v8M60 50v8" /></>
+  ) },
+  { key: 'route', label: '배차 경로', from: '#be123c', to: '#fb7185', art: (
+    <><path d="M16 56c10-2 12-16 24-18s14 8 24 4" /><circle cx="16" cy="56" r="4" /><circle cx="64" cy="42" r="4" /></>
+  ) },
+  { key: 'scan', label: '송장 스캔', from: '#155e75', to: '#38bdf8', art: (
+    <><path d="M16 26h-4v-4M64 26h4v-4M16 54h-4v4M64 54h4v4" /><path d="M24 32v16M32 32v16M40 32v16M50 32v16M58 32v16" /></>
+  ) },
+  { key: 'team', label: '현장 점검', from: '#1e3a8a', to: '#60a5fa', art: (
+    <><circle cx="30" cy="32" r="7" /><circle cx="52" cy="34" r="6" /><path d="M16 56c2-9 8-13 14-13s12 4 14 13M46 56c1-7 5-10 10-10s9 3 10 10" /></>
+  ) },
+  { key: 'award', label: '사내 행사', from: '#a16207', to: '#facc15', art: (
+    <><circle cx="40" cy="32" r="12" /><path d="m32 42-4 18 12-6 12 6-4-18" /></>
+  ) },
+];
+
+function SampleTile({ tile }) {
+  const id = `gw-sample-${tile.key}`;
+  return (
+    <svg viewBox="0 0 80 80" role="img" aria-label={`${tile.label} 샘플 그림`} preserveAspectRatio="xMidYMid slice">
+      <defs><linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stopColor={tile.from} /><stop offset="1" stopColor={tile.to} />
+      </linearGradient></defs>
+      <rect width="80" height="80" fill={`url(#${id})`} />
+      <g fill="none" stroke="#fff" strokeOpacity=".85" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">{tile.art}</g>
+    </svg>
+  );
+}
+
+// 사내앨범을 가로로 훑는 상자. 세로로 쌓으면 홈 화면이 한없이 길어지므로
+// 한 줄에 두고 좌우로 민다. 손가락으로 쓸어도 되고 양옆 단추로도 넘어간다.
+function GalleryStrip({ items, isSample }) {
+  const trackRef = useRef(null);
+  const [edge, setEdge] = useState({ start: true, end: false });
+
+  const measure = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    setEdge({
+      start: el.scrollLeft <= 2,
+      end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 2,
+    });
+  };
+
+  useEffect(() => { measure(); }, [items]);
+
+  // 한 번에 보이는 만큼씩 민다. 카드 한 장씩 넘기면 답답하고, 화면 폭에
+  // 따라 보이는 장수가 다르므로 고정값을 쓰지 않는다.
+  const nudge = (direction) => {
+    const el = trackRef.current;
+    if (!el) return;
+    el.scrollBy({ left: direction * Math.max(el.clientWidth - 60, 160), behavior: 'smooth' });
+  };
+
+  return (
+    <div className="gw-gallery-strip">
+      <button
+        type="button" className="gw-gallery-nav gw-gallery-nav--prev"
+        aria-label="이전 사진 보기" disabled={edge.start} onClick={() => nudge(-1)}
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 5 8 12 15 19" /></svg>
+      </button>
+
+      <ul className="gw-gallery-track" ref={trackRef} onScroll={measure}>
+        {items.map((item) => (
+          <li key={item.key}>
+            {item.to
+              ? <Link to={item.to} title={item.label}>
+                  <span className="gw-gallery-shot">{item.thumbnail ? <img src={item.thumbnail} alt="" loading="lazy" /> : <SampleTile tile={item.tile} />}</span>
+                  <strong>{item.label}</strong>
+                  {item.caption && <span className="gw-gallery-caption">{item.caption}</span>}
+                </Link>
+              : <span className="gw-gallery-figure" title={item.label}>
+                  <span className="gw-gallery-shot">{item.thumbnail ? <img src={item.thumbnail} alt="" loading="lazy" /> : <SampleTile tile={item.tile} />}</span>
+                  <strong>{item.label}</strong>
+                  {item.caption && <span className="gw-gallery-caption">{item.caption}</span>}
+                </span>}
+          </li>
+        ))}
+      </ul>
+
+      <button
+        type="button" className="gw-gallery-nav gw-gallery-nav--next"
+        aria-label="다음 사진 보기" disabled={edge.end} onClick={() => nudge(1)}
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 5 16 12 9 19" /></svg>
+      </button>
+
+      {isSample && <p className="gw-gallery-note">아직 올라온 사진이 없어 예시 그림을 두었습니다. 사내앨범에 사진을 올리면 이 자리가 바뀝니다.</p>}
+    </div>
+  );
+}
+
 
 const shortDate = (value) => {
   const date = new Date(value);
@@ -108,6 +221,7 @@ export default function DashboardPage() {
   const [notices, setNotices] = useState([]);
   const [recent, setRecent] = useState([]);
   const [buttonBoxes, setButtonBoxes] = useState({});
+  const [album, setAlbum] = useState([]);
   const [collapsed, setCollapsed] = useState(() => new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -115,10 +229,10 @@ export default function DashboardPage() {
   const load = async () => {
     // 위젯 외에는 없어도 화면이 서야 하므로 각각 따로 받는다. 공지 게시판이
     // 없거나 권한이 없으면 그 줄만 비고 나머지는 그대로 나온다.
-    const [widgetResult, boardResult, linkPageResult, noticeResult, recentResult, quickResult] = await Promise.allSettled([
+    const [widgetResult, boardResult, linkPageResult, noticeResult, recentResult, quickResult, albumResult] = await Promise.allSettled([
       getMyDashboardWidgets(), getVisibleBoards(), getMyLinkPages(),
       getBoardPosts(NOTICE_SLUG, { page: 1 }), getRecentBoardPosts(FEED_ROWS),
-      getQuickLinks(),
+      getQuickLinks(), getBoardPosts(ALBUM_SLUG, { page: 1 }),
     ]);
     if (widgetResult.status === 'fulfilled') setWidgets(widgetResult.value);
     else setError('대시보드 구성을 불러오지 못했습니다.');
@@ -129,6 +243,19 @@ export default function DashboardPage() {
     }
     if (recentResult.status === 'fulfilled') setRecent(recentResult.value);
     if (quickResult.status === 'fulfilled') setQuickLinkRows(quickResult.value);
+    // 앨범은 대표 이미지 주소를 한 장씩 따로 받아야 해서 뒤에서 채운다.
+    // 권한이 없거나 게시판이 없으면 빈 배열로 두고 샘플 그림이 대신 선다.
+    if (albumResult.status === 'fulfilled') {
+      const picks = (albumResult.value.items ?? []).filter((item) => item.cover_attachment_id).slice(0, GALLERY_TILES);
+      const shots = await Promise.allSettled(picks.map(async (item) => ({
+        key: item.id,
+        label: item.title,
+        caption: shortDate(item.created_at),
+        to: `/boards/${ALBUM_SLUG}/posts/${item.id}`,
+        thumbnail: await getAttachmentViewUrl(item.cover_attachment_id),
+      })));
+      setAlbum(shots.filter((shot) => shot.status === 'fulfilled').map((shot) => shot.value));
+    }
     setLoading(false);
   };
 
@@ -249,6 +376,19 @@ export default function DashboardPage() {
           })}
         </div>
       )}
+      {/* 사내앨범. 홈 맨 아래에 가로로 한 줄 둔다. 사진은 훑어보는 것이라
+          세로로 쌓아 자리를 먹기보다 옆으로 미는 편이 맞다. */}
+      <section className="gw-panel gw-gallery-panel" aria-labelledby="dashboard-gallery-title">
+        <div className="gw-panel-heading">
+          <h2 id="dashboard-gallery-title">사내앨범</h2>
+          <Link to={`/boards/${ALBUM_SLUG}`}>전체 보기</Link>
+        </div>
+        <GalleryStrip
+          items={album.length > 0 ? album : SAMPLE_TILES.map((tile) => ({ key: tile.key, label: tile.label, tile }))}
+          isSample={album.length === 0}
+        />
+      </section>
+
       {!loading && restorableWidgets.length > 0 && <section className="gw-hidden-widgets" aria-labelledby="hidden-widgets-title"><h2 id="hidden-widgets-title">숨긴 위젯</h2>{restorableWidgets.map((widget) => <button type="button" key={widget.id} onClick={() => restore(widget)}>{widget.title} 복원</button>)}</section>}
     </article>
   );
