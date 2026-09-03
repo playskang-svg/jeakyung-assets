@@ -28,8 +28,9 @@ function MemberReviewCard({ member, directory, onCompleted }) {
 
   const handleApprove = async () => {
     if (busyAction) return;
-    if (!departmentId || !positionId || !jobTitleId || !roleCode || !hireDate || !employeeNumber.trim()) {
-      setMessage('최종 부서·직급·직책·입사일·사번·역할을 모두 입력해 주세요.');
+    // 직급은 비워 둘 수 있다. 나머지는 서버(approve_membership)도 요구한다.
+    if (!departmentId || !jobTitleId || !roleCode || !hireDate || !employeeNumber.trim()) {
+      setMessage('최종 부서·직책·입사일·사번·역할을 입력해 주세요. 직급은 비워 두어도 됩니다.');
       return;
     }
     setBusyAction('approve');
@@ -100,9 +101,9 @@ function MemberReviewCard({ member, directory, onCompleted }) {
           <input id={`${prefix}-employee-number`} value={employeeNumber} onChange={(event) => setEmployeeNumber(event.target.value)} maxLength="60" />
         </div>
         <div className="gw-field">
-          <label htmlFor={`${prefix}-position`}>최종 직급</label>
+          <label htmlFor={`${prefix}-position`}>최종 직급 <span>(선택)</span></label>
           <select id={`${prefix}-position`} value={positionId} onChange={(event) => setPositionId(event.target.value)}>
-            <option value="">선택</option>
+            <option value="">직급 없음</option>
             {directory.positions.filter((item) => item.is_active).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
           </select>
         </div>

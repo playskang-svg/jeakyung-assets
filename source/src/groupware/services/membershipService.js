@@ -34,7 +34,8 @@ export async function approveMembership({ userId, departmentId, positionId, jobT
   const { data, error } = await client.rpc('approve_membership', {
     p_user_id: userId,
     p_department_id: departmentId,
-    p_position_id: positionId,
+    // 직급은 선택이다. 빈 문자열을 그대로 보내면 uuid 로 못 읽는다.
+    p_position_id: positionId || null,
     p_job_title_id: jobTitleId,
     p_role_code: roleCode,
     p_hire_date: hireDate || null,
