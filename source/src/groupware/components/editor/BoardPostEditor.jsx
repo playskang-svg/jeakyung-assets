@@ -4,10 +4,11 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
 import ExternalImage from './ExternalImage.js';
+import YouTubeEmbed, { parseYouTubeId } from './YouTubeEmbed.js';
 import {
   AlignCenterIcon, AlignLeftIcon, AlignRightIcon, BoldIcon, BulletListIcon, ClearFormatIcon,
   CodeIcon, HeadingIcon, HighlightIcon, ImageIcon, ImageUrlIcon, ItalicIcon, LinkIcon,
-  OrderedListIcon, QuoteIcon, RuleIcon, StrikeIcon, TextColorIcon, UnderlineIcon,
+  OrderedListIcon, QuoteIcon, RuleIcon, StrikeIcon, TextColorIcon, UnderlineIcon, YouTubeIcon,
 } from './EditorIcons.jsx';
 import { BackgroundColor, Color, FontFamily, TextStyle } from '@tiptap/extension-text-style';
 import Highlight from '@tiptap/extension-highlight';
@@ -207,6 +208,7 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
         replaceImage: async (file, attachmentId) => uploadOne(file, attachmentId),
       }),
       ExternalImage,
+      YouTubeEmbed,
       ImageTransfer.configure({ receiveFiles }),
     ],
     content: initialDocument,
@@ -250,6 +252,16 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
     editor.chain().focus().insertContent({ type: 'externalImage', attrs: { src } }).run();
   };
 
+  // 유튜브 영상 넣기. 주소에서 영상 번호 열한 글자만 뽑아 문서에 남긴다.
+  // 주소를 통째로 두지 않으므로 재생 주소는 우리가 만들어 붙인다.
+  const insertYouTube = () => {
+    const input = window.prompt('유튜브 주소를 붙여넣으세요.', 'https://www.youtube.com/watch?v=');
+    if (input === null) return;
+    const videoId = parseYouTubeId(input);
+    if (!videoId) { window.alert('유튜브 주소를 알아보지 못했습니다. 주소창의 주소를 그대로 붙여넣어 주세요.'); return; }
+    editor.chain().focus().insertContent({ type: 'youtubeEmbed', attrs: { videoId, caption: '' } }).run();
+  };
+
   const applyHtml = () => {
     editor.commands.setContent(htmlDraft, { emitUpdate: true });
     setHtmlMode(false);
@@ -278,6 +290,7 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
       <span className="gw-editor-divider" aria-hidden="true" />
       <ToolbarButton label="링크 추가·해제" active={editor.isActive('link')} onClick={toggleLink}><LinkIcon /></ToolbarButton>
       <ToolbarButton label="주소로 이미지 넣기" onClick={insertImageUrl}><ImageUrlIcon /></ToolbarButton>
+      <ToolbarButton label="유튜브 영상 넣기" onClick={insertYouTube}><YouTubeIcon /></ToolbarButton>
       {board.settings.allow_images && <ToolbarButton label="사진 추가" onClick={() => fileInputRef.current?.click()}><ImageIcon /></ToolbarButton>}
       <ToolbarButton label="구분선" onClick={() => editor.chain().focus().setHorizontalRule().run()}><RuleIcon /></ToolbarButton>
       <span className="gw-editor-divider" aria-hidden="true" />

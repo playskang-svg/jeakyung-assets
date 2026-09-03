@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { getAttachmentViewUrl, getInlineAttachmentUrls } from '../../services/boardService.js';
 import { EMPTY_BOARD_DOCUMENT } from '../../utils/boardDocument.js';
+import { YOUTUBE_ID, youTubeEmbedUrl } from './YouTubeEmbed.js';
 
 const HEX_COLOR = /^#[0-9a-f]{3,8}$/i;
 const SAFE_HREF = /^https?:\/\//i;
@@ -64,6 +65,25 @@ function RenderNodes({ nodes = [], urls, openImage }) {
         <a href={src} target="_blank" rel="noopener noreferrer" aria-label={`${alt || '본문 이미지'} 원본 열기, 새 창`}>
           <img src={src} alt={alt} loading="lazy" referrerPolicy="no-referrer" />
         </a>
+        {caption && <figcaption>{caption}</figcaption>}
+      </figure>;
+    }
+    if (node.type === 'youtubeEmbed') {
+      // 문서에는 영상 번호만 있다. 재생 주소는 여기서 만들어 붙이므로,
+      // 남의 주소가 이 자리에 실릴 길이 없다. 형태가 어긋나면 그냥 지운다.
+      const { videoId = '', caption = '' } = node.attrs ?? {};
+      if (!YOUTUBE_ID.test(videoId)) return null;
+      return <figure key={key} className="gw-youtube">
+        <div className="gw-youtube-frame">
+          <iframe
+            src={youTubeEmbedUrl(videoId)}
+            title={caption || '유튜브 영상'}
+            loading="lazy"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        </div>
         {caption && <figcaption>{caption}</figcaption>}
       </figure>;
     }
