@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../../context/AuthContext.jsx';
+import CompanyMark from '../../components/CompanyMark.jsx';
 
 // 명함 관리 — 첫 판.
 //
@@ -61,7 +62,7 @@ export default function BusinessCardPage() {
         <section className="gw-card-preview-wrap" aria-label="명함 미리보기">
           <div className="gw-card-preview">
             <div className="gw-card-preview-top">
-              <span className="gw-card-mark" aria-hidden="true">J</span>
+              <CompanyMark className="gw-card-mark" />
               <div>
                 <strong>{COMPANY.name}</strong>
                 <span>{COMPANY.tagline}</span>
