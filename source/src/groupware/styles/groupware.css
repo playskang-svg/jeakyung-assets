@@ -5658,19 +5658,10 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
   letter-spacing: -.01em;
   word-break: keep-all;
 }
-/* 사내앨범 띠.
-   목록을 두 벌 이어 붙이고 절반만큼 왼쪽으로 민 뒤 처음으로 되돌린다.
-   되돌아온 자리의 그림이 방금 지나간 것과 같아 이음매가 보이지 않는다.
-   도는 시간은 장수에 따라 JSX 가 --gw-gallery-seconds 로 넣어 준다. */
+/* 사내앨범 띠. 양옆 삼각형으로 넘기고, 손가락으로 쓸어도 된다. */
 .gw-gallery-panel { padding: 18px 20px 20px; margin-bottom: 16px; }
 
 .gw-gallery-strip { position: relative; }
-
-/* 양옆을 흐리게 지워 띠가 상자 밖에서 이어지는 것처럼 보이게 한다. */
-.gw-gallery-viewport {
-  overflow: hidden;
-  mask-image: linear-gradient(90deg, transparent 0, #000 34px, #000 calc(100% - 34px), transparent 100%);
-}
 
 .gw-gallery-track {
   display: flex;
@@ -5678,32 +5669,20 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
   margin: 0;
   padding: 2px 0 4px;
   list-style: none;
-  width: max-content;
-  animation: gw-gallery-flow var(--gw-gallery-seconds, 24s) linear infinite;
-}
-
-/* 두 벌 중 한 벌만큼 밀고 되돌아온다. gap 때문에 정확히 -50% 는 아니지만,
-   같은 그림이 같은 자리에 오므로 눈에는 이음매가 없다. */
-@keyframes gw-gallery-flow {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(calc(-50% - 6px), 0, 0); }
-}
-
-/* 멈추지 않으면 흐르는 것을 누르게 되어 엉뚱한 글이 열린다. */
-.gw-gallery-strip--flowing:hover .gw-gallery-track,
-.gw-gallery-strip--flowing:focus-within .gw-gallery-track {
-  animation-play-state: paused;
-}
-
-/* 장수가 적어 흘릴 것이 없을 때. 이때는 손으로 민다. */
-.gw-gallery-track--static {
-  width: auto;
-  animation: none;
   overflow-x: auto;
+  scroll-snap-type: x proximity;
   scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
-.gw-gallery-track > li { flex: 0 0 clamp(132px, 30vw, 178px); }
+.gw-gallery-track::-webkit-scrollbar { height: 6px; }
+.gw-gallery-track::-webkit-scrollbar-thumb { border-radius: 3px; background: var(--gw-border); }
+
+.gw-gallery-track > li {
+  flex: 0 0 clamp(132px, 30vw, 178px);
+  scroll-snap-align: start;
+}
 
 .gw-gallery-track a,
 .gw-gallery-figure {
@@ -5771,6 +5750,47 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 }
 
 .gw-gallery-caption { color: var(--gw-muted); font-size: 11.5px; }
+
+/* 넘기는 삼각형. 상자 가장자리에 걸쳐 두어 사진을 가리지 않는다.
+   세로 자리는 사진 높이의 한가운데다. 띠 전체(100%)를 기준으로 잡으면
+   제목·날짜·안내문구 높이까지 셈에 들어 40px 넘게 내려앉는다.
+   타일은 4:3 이므로 카드 폭의 0.75 가 사진 높이, 그 절반에서 단추
+   반지름을 뺀 자리가 중심이다. */
+.gw-gallery-nav {
+  position: absolute;
+  top: calc(clamp(132px, 30vw, 178px) * 0.375 - 15px);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--gw-border);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 4px 14px rgba(7, 16, 55, .16);
+  color: var(--gw-navy-950);
+  cursor: pointer;
+  transition: background .18s ease, transform .18s cubic-bezier(.2, .7, .3, 1), opacity .18s ease;
+}
+
+.gw-gallery-nav--prev { left: -14px; }
+.gw-gallery-nav--next { right: -14px; }
+
+.gw-gallery-nav:hover {
+  background: #fff;
+  transform: scale(1.08);
+  color: var(--gw-blue-600);
+}
+
+/* 끝에 닿으면 눌러도 움직이지 않는다. 흐릿하게 두어 그것을 알린다. */
+.gw-gallery-nav:disabled {
+  opacity: .3;
+  cursor: default;
+  box-shadow: none;
+}
+
+.gw-gallery-nav:disabled:hover { background: rgba(255, 255, 255, .96); transform: none; color: var(--gw-navy-950); }
 
 .gw-gallery-note {
   margin: 10px 0 0;
@@ -5848,18 +5868,12 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 
 .gw-youtube-tools button:hover { background: var(--gw-surface-2, #f2f4f9); }
 
-/* 움직임을 줄이라고 설정한 사람에게는 흐르지 않게 하고 손으로 밀게 둔다. */
 @media (prefers-reduced-motion: reduce) {
-  .gw-gallery-track {
-    width: auto;
-    animation: none;
-    overflow-x: auto;
-  }
-  .gw-gallery-viewport { mask-image: none; }
   .gw-gallery-shot img,
   .gw-gallery-shot svg,
   .gw-gallery-play,
-  .gw-gallery-play svg { transition: none; }
+  .gw-gallery-play svg,
+  .gw-gallery-nav { transition: none; }
 }
 
 .gw-launch-card span {
