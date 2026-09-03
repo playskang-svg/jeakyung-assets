@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../../context/AuthContext.jsx';
+import AttendancePunch from './AttendancePunch.jsx';
 import ProfileAvatar from './ProfileAvatar.jsx';
 
 function value(input) { return input || '미등록'; }
@@ -39,6 +40,9 @@ export default function ProfileCard() {
           </div>
           <p>{value(profile.department_name)} · {value(profile.position_name)} · {value(profile.job_title_name)}<span className="gw-active-role-badge">{activeRoleName}</span></p>
         </div>
+        {/* 이름 줄과 단추 사이의 빈자리. 매일 한 번씩 누르는 것이라 홈에서
+            바로 닿아야 하고, 다른 화면으로 들어갔다 나오게 하면 안 쓴다. */}
+        <AttendancePunch />
         <div className="gw-profile-card-actions">
           <button
             type="button"

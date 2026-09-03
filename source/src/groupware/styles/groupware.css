@@ -1616,7 +1616,7 @@ body.groupware-root a.gw-secondary-button {
 
 .gw-profile-card-hero {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 13px;
 }
@@ -1661,6 +1661,72 @@ body.groupware-root a.gw-secondary-button {
 }
 
 .gw-profile-card-hero .gw-secondary-button { display: grid; place-items: center; text-decoration: none; }
+
+/* ── 출퇴근 ────────────────────────────────────────────────────────── */
+/* 이름 줄과 단추 사이의 빈자리. 매일 한 번 누르는 것이라 홈에서 바로
+   닿아야 한다. 찍은 뒤에는 단추가 시각으로 바뀌어 그 자리에 남는다. */
+.gw-punch {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+
+.gw-punch-slots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--gw-border);
+  border-radius: 999px;
+  padding: 4px 6px;
+  background: var(--gw-surface);
+}
+
+.gw-punch-divider { width: 1px; height: 16px; background: var(--gw-border); }
+
+.gw-punch-slot { display: flex; align-items: baseline; gap: 6px; margin: 0; }
+
+/* 다 찍은 칸. 시각을 크게 두고 이름표는 작게 — 보러 오는 것은 시각이다. */
+.gw-punch-slot.is-done { padding: 0 8px; }
+.gw-punch-slot.is-done span { color: var(--gw-muted); font-size: 11.5px; font-weight: 700; }
+.gw-punch-slot.is-done time {
+  color: var(--gw-navy-950);
+  font-size: 14px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.gw-punch-button {
+  min-height: 26px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 13px;
+  background: var(--gw-blue-600);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.gw-punch-button:hover { background: var(--gw-navy-950); }
+.gw-punch-button:focus-visible { outline: 2px solid var(--gw-blue-600); outline-offset: 2px; }
+
+/* 출근을 아직 안 찍었을 때의 퇴근 단추. 눌러도 서버가 막지만, 누를 수 없다는
+   것이 먼저 보여야 한다. */
+.gw-punch-button:disabled {
+  background: var(--gw-background);
+  color: var(--gw-muted);
+  cursor: default;
+}
+
+.gw-punch-more {
+  color: var(--gw-muted);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.gw-punch-more:hover { color: var(--gw-blue-600); text-decoration: underline; }
+.gw-punch-error { grid-column: 1 / -1; margin: 0; color: #b42318; font-size: 11.5px; text-align: center; }
 /* 값 하나짜리 항목이라 카드 안에 또 카드를 두지 않고, 옅은 구분선만으로
    나눈다. (이중 카드가 세로 공간을 크게 낭비하던 부분) */
 .gw-profile-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 0; border-top: 1px solid var(--gw-border); background: var(--gw-border); }
@@ -3862,8 +3928,15 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
   .gw-popup-admin-list,
   .gw-popup-target-grid { grid-template-columns: 1fr; }
 
-  .gw-profile-card-hero { grid-template-columns: auto minmax(0,1fr); align-items: start; }
-  .gw-profile-card-hero .gw-secondary-button { grid-column: 1 / -1; width: 100%; }
+  /* 좁아지면 출퇴근 칸과 단추 묶음을 아래 줄로 내린다. 이때 묶음 자체가
+     1열에 남으면 그 폭만큼 첫 열이 넓어져 아바타 옆에 빈자리가 생긴다 —
+     묶음에 grid-column 을 줘야 하고, 안쪽 단추에 주면 아무 일도 하지 않는다
+     (단추는 격자 칸이 아니라 flex 항목이다). */
+  .gw-profile-card-hero { grid-template-columns: auto minmax(0,1fr); align-items: center; }
+  .gw-profile-card-actions { grid-column: 1 / -1; }
+  .gw-profile-card-actions .gw-secondary-button { flex: 1; width: auto; }
+  .gw-punch { grid-column: 1 / -1; justify-items: stretch; text-align: center; }
+  .gw-punch-slots { justify-content: center; }
   .gw-profile-facts,
   .gw-profile-editor-layout,
   .gw-employee-search,
@@ -6418,3 +6491,51 @@ body.groupware-root .gw-search-results a:hover { background: #f6f8fd; }
   font-size: 12.5px;
 }
 .gw-linkpage-item-box select { min-width: 180px; }
+
+/* ── 내 출퇴근 기록 ────────────────────────────────────────────────── */
+.gw-attendance-months { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+
+.gw-attendance-month {
+  min-height: 30px;
+  border: 1px solid var(--gw-border);
+  border-radius: 999px;
+  padding: 0 14px;
+  background: var(--gw-surface);
+  color: var(--gw-muted);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gw-attendance-month:hover { border-color: #9eafe9; color: var(--gw-navy-950); }
+.gw-attendance-month.is-active { border-color: var(--gw-blue-600); background: var(--gw-blue-600); color: #fff; }
+
+.gw-attendance-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 18px 0 0;
+  overflow: hidden;
+  border: 1px solid var(--gw-border);
+  border-radius: 14px;
+  background: var(--gw-border);
+}
+
+.gw-attendance-summary > div { padding: 12px 14px; background: var(--gw-surface); }
+.gw-attendance-summary dt { color: var(--gw-muted); font-size: 12px; font-weight: 700; }
+.gw-attendance-summary dd { margin: 3px 0 0; color: var(--gw-navy-950); font-size: 16px; font-weight: 800; }
+
+.gw-attendance-table-wrap { margin-top: 18px; overflow-x: auto; }
+
+.gw-attendance-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.gw-attendance-table th,
+.gw-attendance-table td { padding: 11px 12px; border-bottom: 1px solid var(--gw-border); text-align: left; }
+.gw-attendance-table thead th { color: var(--gw-muted); font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.gw-attendance-table tbody th { color: var(--gw-navy-950); font-weight: 700; white-space: nowrap; }
+/* 시각과 근무 시간은 자릿수를 맞춰 세로로 읽히게 한다. */
+.gw-attendance-table td { color: var(--gw-navy-950); font-weight: 700; font-variant-numeric: tabular-nums; }
+.gw-attendance-blank { color: var(--gw-muted); font-weight: 400; }
+
+@media (max-width: 640px) {
+  .gw-attendance-summary { grid-template-columns: 1fr; }
+}
