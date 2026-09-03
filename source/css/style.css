@@ -1346,40 +1346,6 @@ p {
     transform: translateX(5px);
 }
 
-.service-card > .consulting-cta {
-    color: var(--navy-800);
-    font-size: 17px;
-    font-weight: 850;
-}
-
-.service-card > .consulting-cta .cta-arrow {
-    display: grid;
-    place-items: center;
-    flex: 0 0 auto;
-    width: 42px;
-    height: 42px;
-    color: var(--white);
-    background: var(--blue-600);
-    border-radius: 50%;
-    font-size: 21px;
-    box-shadow: 0 8px 20px rgba(26, 70, 255, 0.25);
-    transition: background 0.25s, box-shadow 0.25s, transform 0.25s var(--ease-out);
-}
-
-.service-card > .consulting-cta:hover .cta-arrow,
-.service-card > .consulting-cta:focus-visible .cta-arrow {
-    background: var(--navy-800);
-    box-shadow: 0 10px 26px rgba(11, 21, 96, 0.28);
-    transform: translateX(0);
-    animation: consulting-arrow-nudge 0.65s var(--ease-out);
-}
-
-@keyframes consulting-arrow-nudge {
-    0% { transform: translateX(0); }
-    45% { transform: translateX(7px); }
-    100% { transform: translateX(0); }
-}
-
 /* Audience */
 .audience-layout {
     display: grid;
@@ -1804,14 +1770,6 @@ p {
     color: #91a8ff;
     font-size: 11px;
     font-weight: 800;
-}
-
-.selected-service {
-    min-height: 24px;
-    margin: 20px 0 0;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 700;
 }
 
 /* Footer */
@@ -2554,15 +2512,6 @@ p {
         font-size: 16px;
     }
 
-    .service-card > .consulting-cta {
-        font-size: 16px;
-    }
-
-    .service-card > .consulting-cta .cta-arrow {
-        width: 44px;
-        height: 44px;
-    }
-
     .service-card:hover {
         transform: none;
     }
@@ -2789,12 +2738,6 @@ p {
 
     .reveal {
         opacity: 1;
-        transform: none;
-    }
-
-    .service-card > .consulting-cta:hover .cta-arrow,
-    .service-card > .consulting-cta:focus-visible .cta-arrow {
-        animation: none;
         transform: none;
     }
 
@@ -3965,6 +3908,79 @@ p {
 .service-columns-track a:focus-visible .service-columns-shot { outline: 2px solid var(--blue-600, #2450f5); outline-offset: 2px; }
 .service-columns-blank { display: block; width: 100%; height: 100%; background: linear-gradient(135deg, #dfe5f5, #eef1f7); }
 
+/* 좌우 단추로 넘기는 띠. 카드 안이 좁아 단추를 띠 위에 겹쳐 놓되, 평소에는
+   흐리게 두어 사진을 가리지 않는다. 손이 닿으면 또렷해지고, 더 갈 곳이 없으면
+   스스로 꺼진다 — 눌러도 아무 일이 없는 단추만큼 헷갈리는 것이 없다. */
+.service-columns--paged .service-columns-strip {
+    position: relative;
+    /* 가장자리를 흐리게 지우면 그 위에 놓인 단추까지 함께 지워진다.
+       넘길 곳이 있다는 신호를 단추가 대신하므로 여기서는 쓰지 않는다. */
+    mask-image: none;
+}
+
+.service-columns--paged .service-columns-track {
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding-left: 2px;
+    scroll-behavior: smooth;
+}
+
+/* 단추로 넘기는 띠는 칸을 조금 작게 잡는다. 03~05 카드는 폭이 좁아 큰 칸을
+   쓰면 한 장 반밖에 보이지 않고, 그러면 넘길 것이 있다는 것도 잘 안 보인다. */
+.service-columns--paged .service-columns-track > li {
+    flex: 0 0 clamp(118px, 26vw, 152px);
+    scroll-snap-align: start;
+}
+
+.service-columns-step {
+    position: absolute;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    transform: translateY(-50%);
+    border: 1px solid rgba(17, 23, 43, 0.08);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.78);
+    color: var(--navy-800, #0b1560);
+    opacity: 0.5;
+    box-shadow: 0 6px 16px rgba(11, 21, 96, 0.14);
+    cursor: pointer;
+    transition: opacity 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s var(--ease-out);
+}
+
+@supports (backdrop-filter: blur(6px)) {
+    .service-columns-step { backdrop-filter: blur(6px); }
+}
+
+.service-columns-step--prev { left: 6px; }
+.service-columns-step--next { right: 6px; }
+
+.service-columns-strip:hover .service-columns-step { opacity: 0.78; }
+
+.service-columns-step:hover,
+.service-columns-step:focus-visible {
+    opacity: 1;
+    background: #fff;
+    box-shadow: 0 10px 22px rgba(11, 21, 96, 0.2);
+}
+
+.service-columns-step:focus-visible { outline: 2px solid var(--blue-600, #2450f5); outline-offset: 2px; }
+.service-columns-step--prev:hover { transform: translate(-2px, -50%); }
+.service-columns-step--next:hover { transform: translate(2px, -50%); }
+
+/* 끝에 닿으면 자리는 지키되 눌리지 않는다. 없애 버리면 남은 단추가 가운데로
+   움직여 눈이 따라가야 한다. */
+.service-columns-step:disabled {
+    opacity: 0.16;
+    box-shadow: none;
+    cursor: default;
+    pointer-events: none;
+}
+
 /* 동그란 띠. 모서리만 다르고 흐르는 방식은 네모난 띠와 같다. 원은 네모보다
    작아 보이므로 사이가 벌어지지 않게 간격을 조금 좁힌다. */
 .service-columns--round .service-columns-shot { border-radius: 50%; }
@@ -3998,4 +4014,8 @@ p {
     }
     .service-columns-strip { mask-image: none; }
     .service-columns-shot img { transition: none; }
+    .service-columns--paged .service-columns-track { scroll-behavior: auto; }
+    .service-columns-step { transition: none; }
+    .service-columns-step--prev:hover,
+    .service-columns-step--next:hover { transform: translateY(-50%); }
 }

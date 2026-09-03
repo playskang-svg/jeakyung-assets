@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { serviceName, withObjectParticle } from '../data/services.js';
 import PopupDocumentContent from '../../shared/popup/PopupDocumentContent.jsx';
 import '../../shared/popup/popup.css';
 
@@ -28,6 +29,9 @@ const articleParam = () => new URLSearchParams(window.location.search).get('arti
 const serviceParam = () => new URLSearchParams(window.location.search).get('service');
 
 export default function NewsPage() {
+  // 어느 서비스의 목록인지는 주소로 정해지고 화면이 사는 동안 바뀌지 않는다.
+  const [service] = useState(() => serviceParam());
+  const heading = serviceName(service);
   const [articles, setArticles] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -47,7 +51,6 @@ export default function NewsPage() {
         const { getPublicServiceArticles, getPublicSiteArticles } = articleApi;
         if (!alive) return;
         if (!publicSupabase) { setFailed(true); return; }
-        const service = serviceParam();
         setArticles(service
           ? await getPublicServiceArticles(publicSupabase, service, ARTICLE_LIMIT)
           : await getPublicSiteArticles(publicSupabase, ARTICLE_LIMIT));
@@ -58,7 +61,7 @@ export default function NewsPage() {
       }
     })();
     return () => { alive = false; };
-  }, []);
+  }, [service]);
 
   // 본문은 열릴 때마다 따로 받아온다.
   useEffect(() => {
@@ -118,9 +121,13 @@ export default function NewsPage() {
     <>
       <section className="policy-hero news-page-hero">
         <div className="content-width">
-          <span className="eyebrow eyebrow-light"><i /> Insight &amp; Trends</span>
-          <h1>소식/정보</h1>
-          <p>물류 시장의 흐름과 재경로지스｜물류의 소식을 전해드립니다.</p>
+          <span className="eyebrow eyebrow-light"><i /> {heading ? 'Service Column' : 'Insight & Trends'}</span>
+          <h1>{heading || '소식/정보'}</h1>
+          <p>
+            {heading
+              ? `${withObjectParticle(heading)} 검토할 때 자주 나오는 질문과 저희가 일하는 방식을 정리했습니다.`
+              : '물류 시장의 흐름과 재경로지스｜물류의 소식을 전해드립니다.'}
+          </p>
         </div>
       </section>
 
@@ -166,22 +173,21 @@ export default function NewsPage() {
             </article>
           ) : (
             <>
-              {DOCUMENT_LINKS.length > 0 && (
-                <nav className="news-documents" aria-label="회사 자료">
-                  {DOCUMENT_LINKS.map((item) => (
-                    <a
-                      key={item.href}
-                      className="news-document-link"
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {item.label} <i aria-hidden="true">↗</i>
-                    </a>
-                  ))}
-                </nav>
-              )}
-              {categories.length > 0 && (
+              <nav className="news-documents" aria-label="회사 자료">
+                {heading && <a className="news-document-link" href="./">소식/정보 전체 보기</a>}
+                {DOCUMENT_LINKS.map((item) => (
+                  <a
+                    key={item.href}
+                    className="news-document-link"
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item.label} <i aria-hidden="true">↗</i>
+                  </a>
+                ))}
+              </nav>
+              {!heading && categories.length > 0 && (
                 <nav className="news-categories" aria-label="분류 선택">
                   {[[ALL, '전체'], ...categories.map((name) => [name, name])].map(([value, label]) => (
                     <button
@@ -204,8 +210,9 @@ export default function NewsPage() {
                   <li className="news-empty-row">
                     <p className="news-empty">
                       {failed ? '소식을 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.'
-                        : articles.length === 0 ? '준비 중입니다. 곧 새로운 소식으로 찾아뵙겠습니다.'
-                          : '이 분류에 등록된 글이 없습니다.'}
+                        : articles.length > 0 ? '이 분류에 등록된 글이 없습니다.'
+                          : heading ? `${heading} 관련 글을 준비하고 있습니다. 궁금한 점은 카카오톡 채널로 문의해 주세요.`
+                            : '준비 중입니다. 곧 새로운 소식으로 찾아뵙겠습니다.'}
                     </p>
                   </li>
                 )}
