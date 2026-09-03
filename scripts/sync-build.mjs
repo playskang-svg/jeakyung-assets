@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'source/dist');
-const HAND_WRITTEN = ['index.html', 'news/index.html', 'privacy/index.html'];
+const HAND_WRITTEN = ['index.html', 'news/index.html', 'services/index.html', 'privacy/index.html'];
 
 // 자산 이름은 <이름>-<해시8>.<확장자> 꼴이다. 해시에도 '-' 가 들어갈 수 있으므로
 // 끝에서 8글자만 떼어낸다. 여기서 실수하면 참조가 조용히 깨진다.

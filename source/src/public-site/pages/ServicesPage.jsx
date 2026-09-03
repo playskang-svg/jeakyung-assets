@@ -1,19 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { serviceName, withObjectParticle } from '../data/services.js';
 import PopupDocumentContent from '../../shared/popup/PopupDocumentContent.jsx';
 import '../../shared/popup/popup.css';
 
-// 소식/정보 전용 페이지. 분류 탭으로 목록을 거르고, 글을 누르면 같은
-// 화면에서 본문이 열린다. 뒤로가기 / 목록 보기 / 닫기와 브라우저 뒤로가기가
-// 모두 목록으로 돌아온다.
+// 서비스별 칼럼 전용 페이지. 홈 화면 서비스 카드의 "자세히 보기"와 카드 안
+// 흐르는 띠 그림이 모두 이 주소(?service=3pl 등)로 보낸다.
 //
-// 서비스 카드의 칼럼(3PL 물류대행 … 물류컨설팅)은 여기 섞이지 않는다.
-// services/ 페이지가 따로 있다 — 서비스 쪽 글이라 소식/정보 목록에 끼면
-// 어느 서비스 이야기인지 흐려진다.
-const ALL = '__all__';
-
-// 목록 위에 한 줄로 놓는 자료 링크. 소식 글이 아니라 바깥 문서로 나가므로
-// 썸네일 없이 제목만 두고 새 탭으로 연다.
+// 소식/정보(news/) 와 같은 방식으로 움직인다 — 목록에서 글을 누르면 같은
+// 화면에서 본문이 열리고, 뒤로가기 / 목록 보기 / 닫기와 브라우저 뒤로가기가
+// 모두 목록으로 돌아온다. 다만 여기는 분류 탭이 없다. 서비스 하나짜리
+// 목록이라 나눌 분류가 없기 때문이다.
 const DOCUMENT_LINKS = [
   { label: '회사소개서(2025)', href: 'https://jeakyung.quv.kr/21' },
   { label: '컨설팅소개서(2025)', href: 'https://jeakyung.quv.kr/48' },
@@ -27,12 +24,15 @@ const formatDate = (value) => {
 };
 
 const articleParam = () => new URLSearchParams(window.location.search).get('article');
+const serviceParam = () => new URLSearchParams(window.location.search).get('service');
 
-export default function NewsPage() {
+export default function ServicesPage() {
+  // 어느 서비스의 목록인지는 주소로 정해지고 화면이 사는 동안 바뀌지 않는다.
+  const [service] = useState(() => serviceParam());
+  const heading = serviceName(service);
   const [articles, setArticles] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [category, setCategory] = useState(ALL);
   const [openId, setOpenId] = useState(() => articleParam());
   const [detail, setDetail] = useState(null);
   const [detailState, setDetailState] = useState('idle');
@@ -40,14 +40,17 @@ export default function NewsPage() {
   useEffect(() => {
     let alive = true;
     (async () => {
+      // 주소에 모르는 서비스가 실리거나 아예 빠져 있으면 받을 것이 없다.
+      // 홈 화면 카드로 돌아가라는 안내만 보여 준다.
+      if (!heading) { setLoaded(true); return; }
       try {
-        const [{ publicSupabase }, { getPublicSiteArticles }] = await Promise.all([
+        const [{ publicSupabase }, { getPublicServiceArticles }] = await Promise.all([
           import('../../shared/supabaseAnon.js'),
           import('../../shared/siteArticles/siteArticleService.js'),
         ]);
         if (!alive) return;
         if (!publicSupabase) { setFailed(true); return; }
-        setArticles(await getPublicSiteArticles(publicSupabase, ARTICLE_LIMIT));
+        setArticles(await getPublicServiceArticles(publicSupabase, service, ARTICLE_LIMIT));
       } catch {
         if (alive) setFailed(true);
       } finally {
@@ -55,7 +58,7 @@ export default function NewsPage() {
       }
     })();
     return () => { alive = false; };
-  }, []);
+  }, [service, heading]);
 
   // 본문은 열릴 때마다 따로 받아온다.
   useEffect(() => {
@@ -89,7 +92,7 @@ export default function NewsPage() {
   const closeArticle = useCallback(() => {
     if (window.history.state && window.history.state.articleId) window.history.back();
     else {
-      window.history.replaceState({}, '', window.location.pathname);
+      window.history.replaceState({}, '', window.location.search);
       setOpenId(null);
     }
   }, []);
@@ -102,22 +105,26 @@ export default function NewsPage() {
   }, [openId, closeArticle]);
 
   const openArticle = (id) => {
-    window.history.pushState({ articleId: id }, '', `?article=${encodeURIComponent(id)}`);
+    const query = new URLSearchParams(window.location.search);
+    query.set('article', id);
+    window.history.pushState({ articleId: id }, '', `?${query.toString()}`);
     setOpenId(id);
     window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
-  const categories = [...new Set(articles.map((item) => item.category).filter(Boolean))];
-  const visible = category === ALL ? articles : articles.filter((item) => (item.category || '') === category);
   const current = articles.find((item) => item.id === openId) || null;
 
   return (
     <>
       <section className="policy-hero news-page-hero">
         <div className="content-width">
-          <span className="eyebrow eyebrow-light"><i /> Insight &amp; Trends</span>
-          <h1>소식/정보</h1>
-          <p>물류 시장의 흐름과 재경로지스｜물류의 소식을 전해드립니다.</p>
+          <span className="eyebrow eyebrow-light"><i /> Service Column</span>
+          <h1>{heading || '서비스'}</h1>
+          <p>
+            {heading
+              ? `${withObjectParticle(heading)} 검토할 때 자주 나오는 질문과 저희가 일하는 방식을 정리했습니다.`
+              : '찾으시는 서비스를 홈 화면에서 다시 골라 주세요.'}
+          </p>
         </div>
       </section>
 
@@ -163,51 +170,35 @@ export default function NewsPage() {
             </article>
           ) : (
             <>
-              {DOCUMENT_LINKS.length > 0 && (
-                <nav className="news-documents" aria-label="회사 자료">
-                  {DOCUMENT_LINKS.map((item) => (
-                    <a
-                      key={item.href}
-                      className="news-document-link"
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {item.label} <i aria-hidden="true">↗</i>
-                    </a>
-                  ))}
-                </nav>
-              )}
-              {categories.length > 0 && (
-                <nav className="news-categories" aria-label="분류 선택">
-                  {[[ALL, '전체'], ...categories.map((name) => [name, name])].map(([value, label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      className={`news-category${category === value ? ' is-active' : ''}`}
-                      aria-pressed={category === value}
-                      onClick={() => setCategory(value)}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </nav>
-              )}
+              <nav className="news-documents" aria-label="다른 목록">
+                <a className="news-document-link" href="../#services">서비스 전체 보기</a>
+                {DOCUMENT_LINKS.map((item) => (
+                  <a
+                    key={item.href}
+                    className="news-document-link"
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item.label} <i aria-hidden="true">↗</i>
+                  </a>
+                ))}
+              </nav>
 
               <ul className="news-grid">
-                {!loaded && [0, 1, 2].map((key) => <li key={key}><span className="news-card news-card--skeleton" /></li>)}
+                {heading && !loaded && [0, 1, 2].map((key) => <li key={key}><span className="news-card news-card--skeleton" /></li>)}
 
-                {loaded && visible.length === 0 && (
+                {(loaded || !heading) && articles.length === 0 && (
                   <li className="news-empty-row">
                     <p className="news-empty">
-                      {failed ? '소식을 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.'
-                        : articles.length === 0 ? '준비 중입니다. 곧 새로운 소식으로 찾아뵙겠습니다.'
-                          : '이 분류에 등록된 글이 없습니다.'}
+                      {failed ? '글을 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.'
+                        : !heading ? '이 서비스를 찾을 수 없습니다. 홈 화면에서 다시 골라 주세요.'
+                          : `${heading} 관련 글을 준비하고 있습니다. 궁금한 점은 카카오톡 채널로 문의해 주세요.`}
                     </p>
                   </li>
                 )}
 
-                {loaded && visible.map((article) => (
+                {loaded && articles.map((article) => (
                   <li key={article.id}>
                     <button type="button" className="news-card" onClick={() => openArticle(article.id)}>
                       <span className="news-card-thumb">

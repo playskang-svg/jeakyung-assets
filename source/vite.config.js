@@ -91,6 +91,7 @@ export default defineConfig(({ command, mode }) => {
           home: fileURLToPath(new URL('index.html', import.meta.url)),
           privacy: fileURLToPath(new URL('privacy/index.html', import.meta.url)),
           news: fileURLToPath(new URL('news/index.html', import.meta.url)),
+          services: fileURLToPath(new URL('services/index.html', import.meta.url)),
           groupware: fileURLToPath(new URL('groupware/index.html', import.meta.url)),
         },
       },

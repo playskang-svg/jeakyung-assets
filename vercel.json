@@ -73,7 +73,7 @@
       ]
     },
     {
-      "source": "/(groupware|news|privacy|hl-safety-eval|legacy)",
+      "source": "/(groupware|news|services|privacy|hl-safety-eval|legacy)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -82,7 +82,7 @@
       ]
     },
     {
-      "source": "/(groupware|news|privacy|hl-safety-eval|legacy)/:path*",
+      "source": "/(groupware|news|services|privacy|hl-safety-eval|legacy)/:path*",
       "headers": [
         {
           "key": "Cache-Control",
