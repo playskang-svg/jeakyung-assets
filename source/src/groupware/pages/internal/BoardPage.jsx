@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
-import { getAttachmentViewUrl, getBoardOverview, getBoardPosts } from '../../services/boardService.js';
+import { getBoardOverview, getBoardPosts, resolvePostThumbnail } from '../../services/boardService.js';
 
 // 글머리 표시. 글쓰기 화면에서 체크한 것을 목록에서 제목 앞에 그림으로 알린다.
 // 어느 게시판이든 같은 그림을 쓴다. 글자로 적으면 제목이 밀리고 게시판마다
@@ -49,9 +49,14 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
       if (!active) return;
       setOverview(info); setPosts(list); setError(''); setThumbnails({});
       if (info.board.board_type !== 'gallery') return;
-      const covers = list.items.filter((item) => item.cover_attachment_id);
-      const results = await Promise.allSettled(covers.map(async (item) => [item.id, await getAttachmentViewUrl(item.cover_attachment_id)]));
-      if (active) setThumbnails(Object.fromEntries(results.filter((item) => item.status === 'fulfilled').map((item) => item.value)));
+      // 대표 이미지를 고르지 않았어도 본문에 그림이 있으면 그것을 건다.
+      // 주소로 넣은 그림도 여기서 잡힌다.
+      const results = await Promise.allSettled(list.items.map(async (item) => [item.id, await resolvePostThumbnail(item)]));
+      if (active) {
+        setThumbnails(Object.fromEntries(results
+          .filter((item) => item.status === 'fulfilled' && item.value[1])
+          .map((item) => item.value)));
+      }
     }).catch(() => { if (active) setError('게시판 접근 권한이 없거나 게시판을 불러오지 못했습니다.'); });
     return () => { active = false; };
   }, [boardSlug, search, category, page, scope]);

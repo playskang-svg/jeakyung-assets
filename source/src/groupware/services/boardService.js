@@ -24,6 +24,21 @@ export const getBoardPosts = (slug, { search = '', category = null, page = 1, sc
 // 홈 화면 앨범 띠 전용. 목록에 필요한 것만 받는다 — 대표 이미지와, 본문에
 // 붙은 첫 유튜브 영상 번호. 권한이 없으면 예외 대신 빈 배열이 온다.
 export const getAlbumHighlights = (slug, limit = 12) => rpc('get_album_highlights', { p_slug: slug, p_limit: limit });
+
+// 목록에 걸 그림 한 장을 고른다. 앞의 것이 없으면 다음 것을 쓴다.
+//   1) 글쓴이가 고른 대표 이미지
+//   2) 본문에 처음 나오는 올린 그림
+//   3) 본문에 처음 나오는 주소로 넣은 그림 — 그 주소가 곧 썸네일이다
+// 앞의 둘은 우리 저장소에 있어 서명된 주소를 따로 받아야 하고, 셋째는 이미
+// 주소이므로 그대로 쓴다. 아무것도 없으면 빈 문자열을 준다.
+export async function resolvePostThumbnail(post, loadUrl = getAttachmentViewUrl) {
+  const attachmentId = post?.cover_attachment_id || post?.inline_attachment_id;
+  if (attachmentId) {
+    try { return await loadUrl(attachmentId); } catch { /* 지워졌거나 볼 권한이 없다 — 다음 것으로 */ }
+  }
+  const external = post?.external_image_src ?? '';
+  return /^https:\/\//i.test(external) ? external : '';
+}
 export const getBoardPost = (postId) => rpc('get_board_post', { p_post_id: postId });
 export const createBoardPostDraft = (boardId) => rpc('create_board_post_draft', { p_board_id: boardId });
 export const saveBoardPost = (post) => rpc('save_board_post', {
