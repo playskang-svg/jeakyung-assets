@@ -23,6 +23,9 @@ const formatDate = (value) => {
 };
 
 const articleParam = () => new URLSearchParams(window.location.search).get('article');
+// ?service=3pl 로 들어오면 소식/정보 대신 그 서비스의 칼럼 목록을 연다.
+// 서비스 카드의 썸네일이 이 주소로 보낸다.
+const serviceParam = () => new URLSearchParams(window.location.search).get('service');
 
 export default function NewsPage() {
   const [articles, setArticles] = useState([]);
@@ -37,13 +40,17 @@ export default function NewsPage() {
     let alive = true;
     (async () => {
       try {
-        const [{ publicSupabase }, { getPublicSiteArticles }] = await Promise.all([
+        const [{ publicSupabase }, articleApi] = await Promise.all([
           import('../../shared/supabaseAnon.js'),
           import('../../shared/siteArticles/siteArticleService.js'),
         ]);
+        const { getPublicServiceArticles, getPublicSiteArticles } = articleApi;
         if (!alive) return;
         if (!publicSupabase) { setFailed(true); return; }
-        setArticles(await getPublicSiteArticles(publicSupabase, ARTICLE_LIMIT));
+        const service = serviceParam();
+        setArticles(service
+          ? await getPublicServiceArticles(publicSupabase, service, ARTICLE_LIMIT)
+          : await getPublicSiteArticles(publicSupabase, ARTICLE_LIMIT));
       } catch {
         if (alive) setFailed(true);
       } finally {

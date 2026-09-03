@@ -3890,23 +3890,48 @@ p {
   .loc-head h2 { font-size: clamp(28px, 8vw, 36px); }
 }
 
-/* 서비스 카드 안의 칼럼 띠. 상담 링크 위 구분선 바로 앞에 놓인다.
-   카드가 이미 글로 차 있으므로 여기서는 그림만 말하게 두고, 제목은 두 줄로
-   자른다. 정사각형이라 어떤 사진이 와도 줄이 맞는다. */
+/* 서비스 카드 안의 칼럼 띠.
+   카드 안이 좁아 좌우 단추를 두면 사진을 가린다. 왼쪽으로 흘려 두면 가만히
+   있어도 다음 것이 지나간다. 마우스를 올리면 멈춘다 — 흐르는 것을 누르게
+   두면 엉뚱한 글이 열린다. */
 .service-columns {
     margin-top: auto;
     padding-top: 18px;
 }
 
+.service-columns-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
 .service-columns-label {
-    margin: 0 0 10px;
+    margin: 0;
     color: var(--ink-500, #6b7396);
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.02em;
 }
 
-.service-columns-strip { position: relative; }
+.service-columns-more {
+    flex: none;
+    color: var(--blue-600, #2450f5);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.service-columns-more:hover { text-decoration: underline; }
+.service-columns-more span { display: inline-block; transition: transform .2s cubic-bezier(.2, .7, .3, 1); }
+.service-columns-more:hover span { transform: translateX(3px); }
+
+/* 양옆을 흐리게 지워 띠가 카드 밖에서 이어지는 것처럼 보이게 한다. */
+.service-columns-strip {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+}
 
 .service-columns-track {
     display: flex;
@@ -3915,28 +3940,35 @@ p {
     padding: 0;
     list-style: none;
     overflow-x: auto;
-    scroll-snap-type: x proximity;
     scrollbar-width: none;
 }
 
 .service-columns-track::-webkit-scrollbar { display: none; }
 
-.service-columns-track > li {
-    flex: 0 0 clamp(88px, 22vw, 108px);
-    scroll-snap-align: start;
+/* 글이 세 편 이상일 때만 흐른다. 둘뿐이면 빈 자리만 지나간다. */
+.service-columns-strip.is-flowing .service-columns-track {
+    width: max-content;
+    overflow: visible;
+    animation: service-columns-flow var(--service-columns-seconds, 24s) linear infinite;
 }
 
-.service-columns-track button {
+@keyframes service-columns-flow {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(calc(-50% - 5px), 0, 0); }
+}
+
+.service-columns-strip.is-flowing:hover .service-columns-track,
+.service-columns-strip.is-flowing:focus-within .service-columns-track {
+    animation-play-state: paused;
+}
+
+.service-columns-track > li { flex: 0 0 clamp(88px, 22vw, 108px); }
+
+.service-columns-track a {
     display: grid;
     gap: 7px;
-    width: 100%;
-    padding: 0;
-    border: 0;
-    background: none;
-    text-align: left;
-    cursor: pointer;
+    text-decoration: none;
     color: inherit;
-    font: inherit;
 }
 
 .service-columns-shot {
@@ -3957,8 +3989,8 @@ p {
     transition: transform .3s cubic-bezier(.2, .7, .3, 1);
 }
 
-.service-columns-track button:hover .service-columns-shot img { transform: scale(1.06); }
-.service-columns-track button:focus-visible .service-columns-shot { outline: 2px solid var(--blue-600, #2450f5); outline-offset: 2px; }
+.service-columns-track a:hover .service-columns-shot img { transform: scale(1.06); }
+.service-columns-track a:focus-visible .service-columns-shot { outline: 2px solid var(--blue-600, #2450f5); outline-offset: 2px; }
 .service-columns-blank { display: block; width: 100%; height: 100%; background: linear-gradient(135deg, #dfe5f5, #eef1f7); }
 
 .service-columns-track strong {
@@ -3973,31 +4005,7 @@ p {
     -webkit-box-orient: vertical;
 }
 
-/* 넘길 것이 있을 때만 그린다. 카드 안이 좁으니 단추도 작게 둔다. */
-.service-columns-nav {
-    position: absolute;
-    top: calc(clamp(88px, 22vw, 108px) / 2 - 13px);
-    z-index: 2;
-    display: grid;
-    place-items: center;
-    width: 26px;
-    height: 26px;
-    padding: 0;
-    border: 1px solid var(--line, #e3e7f0);
-    border-radius: 50%;
-    background: rgba(255, 255, 255, .96);
-    box-shadow: 0 3px 10px rgba(7, 16, 55, .14);
-    color: var(--ink-950, #11172b);
-    cursor: pointer;
-    transition: background .18s ease, opacity .18s ease;
-}
-
-.service-columns-nav--prev { left: -8px; }
-.service-columns-nav--next { right: -8px; }
-.service-columns-nav:hover { background: #fff; color: var(--blue-600, #2450f5); }
-.service-columns-nav:disabled { opacity: .28; cursor: default; box-shadow: none; }
-
-/* 팝업 본문에 실리는 유튜브. 16:9 를 지키고 폭에 맞춰 줄어든다. */
+/* 소식 페이지 본문에 실리는 유튜브. 16:9 를 지키고 폭에 맞춰 줄어든다. */
 .site-article-video {
     position: relative;
     aspect-ratio: 16 / 9;
@@ -4015,7 +4023,14 @@ p {
     border: 0;
 }
 
+/* 움직임을 줄이라고 설정한 사람에게는 흐르지 않게 하고 손으로 밀게 둔다. */
 @media (prefers-reduced-motion: reduce) {
+    .service-columns-strip.is-flowing .service-columns-track {
+        width: auto;
+        animation: none;
+        overflow-x: auto;
+    }
+    .service-columns-strip { mask-image: none; }
     .service-columns-shot img,
-    .service-columns-nav { transition: none; }
+    .service-columns-more span { transition: none; }
 }
