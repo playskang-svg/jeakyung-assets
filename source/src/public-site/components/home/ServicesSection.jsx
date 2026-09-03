@@ -1,3 +1,5 @@
+import ServiceColumns from './ServiceColumns.jsx';
+
 const consultationUrl = 'https://pf.kakao.com/_xgrFxhn/chat';
 
 export default function ServicesSection({ onSelectService }) {
@@ -22,6 +24,7 @@ export default function ServicesSection({ onSelectService }) {
             <h3>3PL 물류대행</h3>
             <p>입고, 보관, 주문 처리와 출고까지 기업 운영에 필요한 물류 업무를 연결해 살펴봅니다.</p>
           </div>
+          <ServiceColumns serviceKey="3pl" serviceName="3PL 물류대행" />
           <a href={consultationUrl} data-service="3PL 물류대행" target="_blank" rel="noopener noreferrer" aria-label="3PL 물류대행 카카오톡 상담, 새 창" onClick={() => onSelectService('3PL 물류대행')}>빠른 상담하기 <span aria-hidden="true">→</span></a>
         </article>
 
