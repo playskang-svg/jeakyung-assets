@@ -1,0 +1,1 @@
+var e={"3pl":`3PL 물류대행`,fresh:`신선식품 풀필먼트`,transport:`기업운송`,storage:`보관물류`,consulting:`물류컨설팅`},t=t=>e[t]??``,n=e=>`news/?service=${encodeURIComponent(e)}`;function r(e){let t=(e??``).trim().slice(-1).charCodeAt(0);return`${e}${t>=44032&&t<=55203&&(t-44032)%28!=0?`을`:`를`}`}export{r as i,n,t as r,e as t};

@@ -1,8 +1,23 @@
+import { SERVICE_NAMES, serviceListHref } from '../../data/services.js';
 import ServiceColumns from './ServiceColumns.jsx';
 
-const consultationUrl = 'https://pf.kakao.com/_xgrFxhn/chat';
+// 카드 아래 링크. 예전에는 카카오톡 상담으로 곧장 보냈지만, 상담 버튼은
+// 아래 문의 영역에 따로 있고 카드에서는 그 서비스의 글부터 읽는 편이
+// 자연스러워 목록 페이지로 보낸다.
+function ServiceMore({ serviceKey }) {
+  return (
+    <a
+      className="service-more"
+      href={serviceListHref(serviceKey)}
+      data-service={SERVICE_NAMES[serviceKey]}
+      aria-label={`${SERVICE_NAMES[serviceKey]} 자세히 보기`}
+    >
+      자세히 보기 <span aria-hidden="true">→</span>
+    </a>
+  );
+}
 
-export default function ServicesSection({ onSelectService }) {
+export default function ServicesSection() {
   return (
     <div className="content-width">
       <div className="section-heading services-heading reveal">
@@ -24,8 +39,8 @@ export default function ServicesSection({ onSelectService }) {
             <h3>3PL 물류대행</h3>
             <p>입고, 보관, 주문 처리와 출고까지 기업 운영에 필요한 물류 업무를 연결해 살펴봅니다.</p>
           </div>
-          <ServiceColumns serviceKey="3pl" serviceName="3PL 물류대행" />
-          <a href={consultationUrl} data-service="3PL 물류대행" target="_blank" rel="noopener noreferrer" aria-label="3PL 물류대행 카카오톡 상담, 새 창" onClick={() => onSelectService('3PL 물류대행')}>빠른 상담하기 <span aria-hidden="true">→</span></a>
+          <ServiceColumns serviceKey="3pl" serviceName={SERVICE_NAMES['3pl']} />
+          <ServiceMore serviceKey="3pl" />
         </article>
 
         <article className="service-card service-featured reveal">
@@ -38,8 +53,8 @@ export default function ServicesSection({ onSelectService }) {
             <h3>신선식품 풀필먼트</h3>
             <p>신선식품의 입고부터 보관, 주문 처리와 출고까지 필요한 풀필먼트 범위를 확인합니다.</p>
           </div>
-          <ServiceColumns serviceKey="fresh" serviceName="신선식품 풀필먼트" shape="round" />
-          <a href={consultationUrl} data-service="신선식품 풀필먼트" target="_blank" rel="noopener noreferrer" aria-label="신선식품 풀필먼트 카카오톡 상담, 새 창" onClick={() => onSelectService('신선식품 풀필먼트')}>빠른 상담하기 <span aria-hidden="true">→</span></a>
+          <ServiceColumns serviceKey="fresh" serviceName={SERVICE_NAMES.fresh} shape="round" />
+          <ServiceMore serviceKey="fresh" />
         </article>
 
         <article className="service-card reveal">
@@ -52,7 +67,8 @@ export default function ServicesSection({ onSelectService }) {
             <h3>기업운송</h3>
             <p>기업 화물의 특성과 운영 조건에 맞춰 필요한 운송 서비스 범위를 살펴봅니다.</p>
           </div>
-          <a href={consultationUrl} data-service="기업운송" target="_blank" rel="noopener noreferrer" aria-label="기업운송 카카오톡 상담, 새 창" onClick={() => onSelectService('기업운송')}>빠른 상담하기 <span aria-hidden="true">→</span></a>
+          <ServiceColumns serviceKey="transport" serviceName={SERVICE_NAMES.transport} mode="paged" />
+          <ServiceMore serviceKey="transport" />
         </article>
 
         <article className="service-card reveal">
@@ -65,7 +81,8 @@ export default function ServicesSection({ onSelectService }) {
             <h3>보관물류</h3>
             <p>상품과 운영 환경에 필요한 보관 조건과 입출고 연계 범위를 확인합니다.</p>
           </div>
-          <a href={consultationUrl} data-service="보관물류" target="_blank" rel="noopener noreferrer" aria-label="보관물류 카카오톡 상담, 새 창" onClick={() => onSelectService('보관물류')}>빠른 상담하기 <span aria-hidden="true">→</span></a>
+          <ServiceColumns serviceKey="storage" serviceName={SERVICE_NAMES.storage} mode="paged" />
+          <ServiceMore serviceKey="storage" />
         </article>
 
         <article className="service-card reveal">
@@ -78,7 +95,8 @@ export default function ServicesSection({ onSelectService }) {
             <h3>물류컨설팅</h3>
             <p>현재 물류 운영을 진단하고 개선 방향과 필요한 서비스 범위를 함께 검토합니다.</p>
           </div>
-          <a className="consulting-cta" href={consultationUrl} data-service="물류컨설팅" target="_blank" rel="noopener noreferrer" aria-label="물류컨설팅 카카오톡 상담, 새 창" onClick={() => onSelectService('물류컨설팅')}>빠른 상담하기 <span className="cta-arrow" aria-hidden="true">→</span></a>
+          <ServiceColumns serviceKey="consulting" serviceName={SERVICE_NAMES.consulting} mode="paged" />
+          <ServiceMore serviceKey="consulting" />
         </article>
       </div>
     </div>

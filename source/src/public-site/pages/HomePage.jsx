@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import AudienceSection from '../components/home/AudienceSection.jsx';
 import CeoGreeting from '../components/home/CeoGreeting.jsx';
 import CompanyOverview from '../components/home/CompanyOverview.jsx';
@@ -17,7 +15,6 @@ import StatementSection from '../components/home/StatementSection.jsx';
 import useRevealOnScroll from '../hooks/useRevealOnScroll.js';
 
 export default function HomePage() {
-  const [selectedService, setSelectedService] = useState('');
 
   useRevealOnScroll();
 
@@ -52,7 +49,7 @@ export default function HomePage() {
       <NewsSection />
 
       <section className="services section" id="services" aria-labelledby="services-title">
-        <ServicesSection onSelectService={setSelectedService} />
+        <ServicesSection />
       </section>
 
       <section className="audience section" id="audience" aria-labelledby="audience-title">
@@ -76,7 +73,7 @@ export default function HomePage() {
       </section>
 
       <section className="contact-section" id="contact" aria-labelledby="contact-title">
-        <ContactSection selectedService={selectedService} />
+        <ContactSection />
       </section>
     </>
   );
