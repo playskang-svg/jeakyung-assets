@@ -87,7 +87,12 @@ function GalleryCard({ item }) {
         )}
       </span>
       <strong>{item.label}{item.isVideo && <span className="gw-visually-hidden"> (영상)</span>}</strong>
-      {item.caption && <span className="gw-gallery-caption">{item.caption}</span>}
+      {(item.caption || item.author) && (
+        <span className="gw-gallery-caption">
+          {item.caption && <time>{item.caption}</time>}
+          {item.author && <span className="gw-gallery-author">{item.author}</span>}
+        </span>
+      )}
     </>
   );
   return item.to
@@ -277,6 +282,7 @@ export default function DashboardPage() {
         key: item.id,
         label: item.title,
         caption: shortDate(item.created_at),
+        author: item.author_name || '',
         to: `/boards/${ALBUM_SLUG}/posts/${item.id}`,
         isVideo: Boolean(item.youtube_id),
         thumbnail: (await resolvePostThumbnail(item)) || youTubeThumbnail(item.youtube_id),

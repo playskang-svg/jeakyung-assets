@@ -7,7 +7,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 // 더 얹으면 읽을 것만 늘고 그림이 눈에 들어오지 않는다. 이름은 마우스를
 // 올렸을 때와 화면 낭독기에만 남긴다.
 //
-// 누르면 소식 페이지로 넘어간다. 카드 안에서 본문을 펼치면 카드가 늘어나
+// 누르면 서비스 페이지로 넘어간다. 카드 안에서 본문을 펼치면 카드가 늘어나
 // 옆 카드와 줄이 어긋나므로, 읽는 자리는 머리글 아래 제 페이지로 보낸다.
 // 주소에 글 번호가 실려 있어 링크를 그대로 나눠 줄 수도 있다. 그 페이지에
 // 같은 서비스의 글이 모두 모여 있으므로 따로 목록 링크를 둘 이유가 없다.
@@ -93,7 +93,7 @@ export default function ServiceColumns({ serviceKey, serviceName, shape = 'squar
   const tile = (article, echo = false) => (
     <li key={echo ? `echo-${article.id}` : article.id} aria-hidden={echo || undefined}>
       <a
-        href={`news/?service=${encodeURIComponent(serviceKey)}&article=${article.id}`}
+        href={`services/?service=${encodeURIComponent(serviceKey)}&article=${article.id}`}
         title={article.title}
         aria-label={article.title}
         tabIndex={echo ? -1 : undefined}

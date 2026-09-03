@@ -13,8 +13,10 @@ export const SERVICE_NAMES = {
 
 export const serviceName = (key) => SERVICE_NAMES[key] ?? '';
 
-// 카드의 "자세히 보기"와 띠의 그림이 함께 여는 자리.
-export const serviceListHref = (key) => `news/?service=${encodeURIComponent(key)}`;
+// 카드의 "자세히 보기"와 띠의 그림이 함께 여는 자리. 소식/정보(news/)가
+// 아니라 서비스 전용 페이지로 보낸다 — 서비스 이야기가 소식 목록에 섞이면
+// 어느 서비스 글인지 흐려진다.
+export const serviceListHref = (key) => `services/?service=${encodeURIComponent(key)}`;
 
 // "3PL 물류대행을", "신선식품 풀필먼트를" — 받침에 따라 조사를 고른다.
 // 을(를) 처럼 두 벌을 함께 적으면 읽기가 걸린다.
