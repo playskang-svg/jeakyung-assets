@@ -57,7 +57,7 @@ Deno.serve(async (request: Request) => {
 
   // 부를 수 있는 것은 둘뿐이다.
   //   예약 실행 — 세션이 없으므로 이 함수 전용 비밀값으로 자신을 증명한다.
-  //   최고관리자 — 자기 로그인 세션으로 증명한다.
+  //   시스템 관리자 — 자기 로그인 세션으로 증명한다.
   let authorizedAs = '';
   const presentedToken = request.headers.get('x-cleanup-token');
   if (presentedToken) {
