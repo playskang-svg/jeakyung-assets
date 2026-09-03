@@ -6129,6 +6129,19 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
   font-variant-numeric: tabular-nums;
 }
 
+/* 접속 시간. 시계와 같은 크기로 두되 구분선을 앞에 세워 다른 값임을 보인다. */
+.gw-topclock-session {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gw-muted);
+  font-size: 12.5px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.gw-topclock-session i { color: var(--gw-border); font-style: normal; }
+
 .gw-topclock-button {
   display: inline-flex;
   align-items: center;
@@ -6194,7 +6207,8 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
   .gw-topsearch.is-open { padding: 0 6px 0 10px; }
   .gw-topsearch.is-open input { width: 128px; padding: 0 4px; }
   .gw-topclock-date,
-  .gw-topclock-time { display: none; }
+  .gw-topclock-time,
+  .gw-topclock-session { display: none; }
   .gw-topbar-tools { gap: 4px; }
 }
 
