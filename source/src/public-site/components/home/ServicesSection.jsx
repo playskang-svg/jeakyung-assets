@@ -38,6 +38,7 @@ export default function ServicesSection({ onSelectService }) {
             <h3>신선식품 풀필먼트</h3>
             <p>신선식품의 입고부터 보관, 주문 처리와 출고까지 필요한 풀필먼트 범위를 확인합니다.</p>
           </div>
+          <ServiceColumns serviceKey="fresh" serviceName="신선식품 풀필먼트" shape="round" />
           <a href={consultationUrl} data-service="신선식품 풀필먼트" target="_blank" rel="noopener noreferrer" aria-label="신선식품 풀필먼트 카카오톡 상담, 새 창" onClick={() => onSelectService('신선식품 풀필먼트')}>빠른 상담하기 <span aria-hidden="true">→</span></a>
         </article>
 

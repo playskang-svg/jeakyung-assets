@@ -3896,36 +3896,9 @@ p {
    두면 엉뚱한 글이 열린다. */
 .service-columns {
     margin-top: auto;
-    padding-top: 18px;
+    padding-top: 20px;
+    padding-bottom: 4px;
 }
-
-.service-columns-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 10px;
-}
-
-.service-columns-label {
-    margin: 0;
-    color: var(--ink-500, #6b7396);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-}
-
-.service-columns-more {
-    flex: none;
-    color: var(--blue-600, #2450f5);
-    font-size: 12px;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.service-columns-more:hover { text-decoration: underline; }
-.service-columns-more span { display: inline-block; transition: transform .2s cubic-bezier(.2, .7, .3, 1); }
-.service-columns-more:hover span { transform: translateX(3px); }
 
 /* 양옆을 흐리게 지워 띠가 카드 밖에서 이어지는 것처럼 보이게 한다. */
 .service-columns-strip {
@@ -3962,11 +3935,10 @@ p {
     animation-play-state: paused;
 }
 
-.service-columns-track > li { flex: 0 0 clamp(88px, 22vw, 108px); }
+.service-columns-track > li { flex: 0 0 clamp(140px, 34vw, 190px); }
 
 .service-columns-track a {
-    display: grid;
-    gap: 7px;
+    display: block;
     text-decoration: none;
     color: inherit;
 }
@@ -3993,17 +3965,11 @@ p {
 .service-columns-track a:focus-visible .service-columns-shot { outline: 2px solid var(--blue-600, #2450f5); outline-offset: 2px; }
 .service-columns-blank { display: block; width: 100%; height: 100%; background: linear-gradient(135deg, #dfe5f5, #eef1f7); }
 
-.service-columns-track strong {
-    font-size: 12px;
-    font-weight: 650;
-    line-height: 1.4;
-    color: var(--ink-950, #11172b);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
+/* 동그란 띠. 모서리만 다르고 흐르는 방식은 네모난 띠와 같다. 원은 네모보다
+   작아 보이므로 사이가 벌어지지 않게 간격을 조금 좁힌다. */
+.service-columns--round .service-columns-shot { border-radius: 50%; }
+.service-columns--round .service-columns-track { gap: 8px; }
+.service-columns--round .service-columns-track a:focus-visible .service-columns-shot { border-radius: 50%; }
 
 /* 소식 페이지 본문에 실리는 유튜브. 16:9 를 지키고 폭에 맞춰 줄어든다. */
 .site-article-video {
@@ -4031,6 +3997,5 @@ p {
         overflow-x: auto;
     }
     .service-columns-strip { mask-image: none; }
-    .service-columns-shot img,
-    .service-columns-more span { transition: none; }
+    .service-columns-shot img { transition: none; }
 }

@@ -149,20 +149,42 @@ function TopSearch() {
   );
 }
 
+// 로그인한 뒤 흐른 시간을 "1:12"(시간:분)으로 적는다. 초까지 적으면 옆 시계와
+// 숫자 두 벌이 함께 뛰어 어지럽다. 한 시간이 안 되면 분만 남긴다.
+function elapsedLabel(fromMs, nowMs) {
+  const minutes = Math.max(0, Math.floor((nowMs - fromMs) / 60000));
+  const hours = Math.floor(minutes / 60);
+  return hours > 0 ? `${hours}:${String(minutes % 60).padStart(2, '0')}` : `${minutes}분`;
+}
+
 // 날짜·시계와 일정 버튼. 홈 화면 위쪽에 있던 것을 상단바로 올렸다 — 매일
 // 보는 값이라 홈에서만 보이면 다른 화면에서는 달력을 따로 열어야 했다.
 // 좁은 화면에서는 날짜와 시계를 접고 일정 버튼만 남긴다.
 function TopClock() {
+  const { session } = useAuth();
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(timer);
   }, []);
   const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+  // 로그인 시각은 세션에 실려 오므로 새로고침해도 그대로다. 화면을 연 시각을
+  // 쓰면 새로고침할 때마다 0분으로 되돌아간다.
+  const signedInAt = session?.user?.last_sign_in_at ? new Date(session.user.last_sign_in_at) : null;
+  const signedInValid = signedInAt && !Number.isNaN(signedInAt.getTime());
   return (
     <div className="gw-topclock">
       <span className="gw-topclock-date">{now.getMonth() + 1}월 {now.getDate()}일 {WEEKDAYS[now.getDay()]}</span>
       <time className="gw-topclock-time" dateTime={now.toISOString()}>{time}</time>
+      {signedInValid && (
+        <span
+          className="gw-topclock-session"
+          title={`${String(signedInAt.getHours()).padStart(2, '0')}:${String(signedInAt.getMinutes()).padStart(2, '0')} 접속`}
+        >
+          <i aria-hidden="true">|</i>
+          접속 {elapsedLabel(signedInAt.getTime(), now.getTime())}
+        </span>
+      )}
       <Link className="gw-topclock-button" to="/view/schedule" title="사내일정" aria-label="사내일정">
         <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M8 3v4M16 3v4M3 10h18" /></svg>
         <span className="gw-tool-label">일정</span>

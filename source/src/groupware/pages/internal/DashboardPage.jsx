@@ -156,9 +156,13 @@ function GalleryStrip({ items, isSample }) {
   );
 }
 
+// 홈 화면 목록에 붙는 날짜. 연도까지 자리를 채워 적어 길이가 늘 같다 —
+// 줄마다 길이가 다르면 오른쪽 끝이 들쭉날쭉해 보인다.
 const shortDate = (value) => {
   const date = new Date(value);
-  return `${date.getMonth() + 1}.${String(date.getDate()).padStart(2, '0')}`;
+  if (Number.isNaN(date.getTime())) return '';
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
 };
 
 // 다섯 줄짜리 글 목록. 공지사항과 최신 게시글이 같은 모양을 쓴다.
