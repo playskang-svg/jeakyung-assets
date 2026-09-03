@@ -21,7 +21,7 @@ const SIZES = [['sm', '작게'], ['md', '보통'], ['lg', '크게']];
 const VISIBILITY = [
   ['all', '모두'],
   ['admin', '관리자'],
-  ['super_admin', '최고관리자만'],
+  ['super_admin', '시스템 관리자만'],
 ];
 
 const EMPTY = { id: null, label: '', url: '', variant: 'plain', size: 'md', open_in: 'frame', visibility: 'all', sort_order: 100, is_active: true };

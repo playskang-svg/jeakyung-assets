@@ -155,7 +155,7 @@ export default function BoardBuilderPanel({ directory }) {
   const saveGroup = async (event) => {
     event.preventDefault();
     try { await saveBoardGroup(group); setGroup(EMPTY_GROUP); setStatus('게시판 그룹을 저장했습니다.'); await load(); }
-    catch { setStatus('그룹을 저장하지 못했습니다. 코드 중복과 최고관리자 권한을 확인해 주세요.'); }
+    catch { setStatus('그룹을 저장하지 못했습니다. 코드 중복과 시스템 관리자 권한을 확인해 주세요.'); }
   };
 
   const updateSetting = (key, value) => setForm((current) => ({ ...current, settings: { ...current.settings, [key]: value } }));
