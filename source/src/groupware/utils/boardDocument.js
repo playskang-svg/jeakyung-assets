@@ -122,7 +122,7 @@ export function boardDocumentHasContent(documentValue) {
   const visit = (node) => {
     if (hasContent || !node || typeof node !== 'object') return;
     // 주소로 연결한 이미지 하나만 있는 글도 빈 글이 아니다.
-    if (node.type === 'inlineImage' || node.type === 'externalImage' || (node.type === 'text' && node.text?.trim())) hasContent = true;
+    if (node.type === 'inlineImage' || node.type === 'externalImage' || node.type === 'youtubeEmbed' || (node.type === 'text' && node.text?.trim())) hasContent = true;
     if (Array.isArray(node.content)) node.content.forEach(visit);
   };
   visit(documentValue);

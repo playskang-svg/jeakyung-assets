@@ -20,6 +20,10 @@ export const getRecentBoardPosts = (limit = 5) => rpc('get_my_recent_board_posts
 export const searchBoardPosts = (query, limit = 30) => rpc('search_board_posts', { p_query: query, p_limit: limit }).then((data) => data ?? []);
 export const getBoardOverview = (slug) => rpc('get_board_overview', { p_slug: slug });
 export const getBoardPosts = (slug, { search = '', category = null, page = 1, scope = 'all' } = {}) => rpc('get_board_posts', { p_slug: slug, p_search: search || null, p_category: category, p_page: page, p_scope: scope });
+
+// 홈 화면 앨범 띠 전용. 목록에 필요한 것만 받는다 — 대표 이미지와, 본문에
+// 붙은 첫 유튜브 영상 번호. 권한이 없으면 예외 대신 빈 배열이 온다.
+export const getAlbumHighlights = (slug, limit = 12) => rpc('get_album_highlights', { p_slug: slug, p_limit: limit });
 export const getBoardPost = (postId) => rpc('get_board_post', { p_post_id: postId });
 export const createBoardPostDraft = (boardId) => rpc('create_board_post_draft', { p_board_id: boardId });
 export const saveBoardPost = (post) => rpc('save_board_post', {

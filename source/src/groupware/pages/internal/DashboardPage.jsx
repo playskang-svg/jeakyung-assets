@@ -1,14 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { getMyDashboardWidgets, setDashboardPreference } from '../../services/dashboardService.js';
-import { BOARD_CATALOG_CHANGED_EVENT, getAttachmentViewUrl, getBoardPosts, getRecentBoardPosts, getVisibleBoards } from '../../services/boardService.js';
+import { BOARD_CATALOG_CHANGED_EVENT, getAlbumHighlights, getAttachmentViewUrl, getBoardPosts, getRecentBoardPosts, getVisibleBoards } from '../../services/boardService.js';
 import { getMyLinkPages } from '../../services/linkPageService.js';
 import { getButtonBox } from '../../services/buttonBoxService.js';
 import ProfileCard from '../../components/profile/ProfileCard.jsx';
 import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getQuickLinks } from '../../services/quickLinkService.js';
+import { youTubeThumbnail } from '../../components/editor/YouTubeEmbed.js';
 
 // 홈 화면에 내보내지 않는 위젯.
 //   앞의 셋 — 홈 화면 위쪽이 직접 그린다. 위젯으로 또 그리면 같은 목록이 한
@@ -70,70 +71,74 @@ function SampleTile({ tile }) {
   );
 }
 
-// 사내앨범을 가로로 훑는 상자. 세로로 쌓으면 홈 화면이 한없이 길어지므로
-// 한 줄에 두고 좌우로 민다. 손가락으로 쓸어도 되고 양옆 단추로도 넘어간다.
+// 앨범 타일 하나. 사진 글과 영상 글이 같은 모양을 쓰되, 영상에는 재생 표시를
+// 얹어 누르기 전에 무엇인지 알 수 있게 한다.
+function GalleryCard({ item }) {
+  const inner = (
+    <>
+      <span className="gw-gallery-shot">
+        {item.thumbnail
+          ? <img src={item.thumbnail} alt="" loading="lazy" referrerPolicy="no-referrer" />
+          : <SampleTile tile={item.tile} />}
+        {item.isVideo && (
+          <span className="gw-gallery-play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 7.5v9l7.5-4.5z" fill="currentColor" /></svg>
+          </span>
+        )}
+      </span>
+      <strong>{item.label}{item.isVideo && <span className="gw-visually-hidden"> (영상)</span>}</strong>
+      {item.caption && <span className="gw-gallery-caption">{item.caption}</span>}
+    </>
+  );
+  return item.to
+    ? <Link to={item.to} title={item.label}>{inner}</Link>
+    : <span className="gw-gallery-figure" title={item.label}>{inner}</span>;
+}
+
+// 사내앨범을 왼쪽으로 흘려 보내는 띠.
+//
+// 목록을 두 벌 이어 붙이고 절반만큼 왼쪽으로 민 뒤 처음으로 되돌린다. 되돌아온
+// 자리의 그림이 방금 지나간 그림과 같으므로 끊긴 자리가 눈에 띄지 않는다.
+//
+// 도는 시간은 장수에 비례해 잡는다. 고정값으로 두면 사진이 늘어날수록 빨라져
+// 어지럽다. 타일 한 장에 3초면 초당 60px 안팎 — 멈춰 보이지도, 흘려 보기
+// 어렵지도 않은 속도다.
+//
+// 마우스를 올리거나 키보드 초점이 들어오면 멈춘다. 흐르는 것을 누르게 두면
+// 엉뚱한 글이 열린다.
 function GalleryStrip({ items, isSample }) {
-  const trackRef = useRef(null);
-  const [edge, setEdge] = useState({ start: true, end: false });
+  const note = isSample && (
+    <p className="gw-gallery-note">아직 올라온 사진이 없어 예시 그림을 두었습니다. 사내앨범에 사진이나 유튜브 영상을 올리면 이 자리가 바뀝니다.</p>
+  );
 
-  const measure = () => {
-    const el = trackRef.current;
-    if (!el) return;
-    setEdge({
-      start: el.scrollLeft <= 2,
-      end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 2,
-    });
-  };
-
-  useEffect(() => { measure(); }, [items]);
-
-  // 한 번에 보이는 만큼씩 민다. 카드 한 장씩 넘기면 답답하고, 화면 폭에
-  // 따라 보이는 장수가 다르므로 고정값을 쓰지 않는다.
-  const nudge = (direction) => {
-    const el = trackRef.current;
-    if (!el) return;
-    el.scrollBy({ left: direction * Math.max(el.clientWidth - 60, 160), behavior: 'smooth' });
-  };
+  // 두어 장뿐이면 흘려 봤자 빈 자리만 지나간다. 그때는 그냥 세워 둔다.
+  if (items.length <= 2) {
+    return (
+      <div className="gw-gallery-strip">
+        <ul className="gw-gallery-track gw-gallery-track--static">
+          {items.map((item) => <li key={item.key}><GalleryCard item={item} /></li>)}
+        </ul>
+        {note}
+      </div>
+    );
+  }
 
   return (
-    <div className="gw-gallery-strip">
-      <button
-        type="button" className="gw-gallery-nav gw-gallery-nav--prev"
-        aria-label="이전 사진 보기" disabled={edge.start} onClick={() => nudge(-1)}
-      >
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 5 8 12 15 19" /></svg>
-      </button>
-
-      <ul className="gw-gallery-track" ref={trackRef} onScroll={measure}>
-        {items.map((item) => (
-          <li key={item.key}>
-            {item.to
-              ? <Link to={item.to} title={item.label}>
-                  <span className="gw-gallery-shot">{item.thumbnail ? <img src={item.thumbnail} alt="" loading="lazy" /> : <SampleTile tile={item.tile} />}</span>
-                  <strong>{item.label}</strong>
-                  {item.caption && <span className="gw-gallery-caption">{item.caption}</span>}
-                </Link>
-              : <span className="gw-gallery-figure" title={item.label}>
-                  <span className="gw-gallery-shot">{item.thumbnail ? <img src={item.thumbnail} alt="" loading="lazy" /> : <SampleTile tile={item.tile} />}</span>
-                  <strong>{item.label}</strong>
-                  {item.caption && <span className="gw-gallery-caption">{item.caption}</span>}
-                </span>}
-          </li>
-        ))}
-      </ul>
-
-      <button
-        type="button" className="gw-gallery-nav gw-gallery-nav--next"
-        aria-label="다음 사진 보기" disabled={edge.end} onClick={() => nudge(1)}
-      >
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 5 16 12 9 19" /></svg>
-      </button>
-
-      {isSample && <p className="gw-gallery-note">아직 올라온 사진이 없어 예시 그림을 두었습니다. 사내앨범에 사진을 올리면 이 자리가 바뀝니다.</p>}
+    <div className="gw-gallery-strip gw-gallery-strip--flowing">
+      <div className="gw-gallery-viewport">
+        <ul className="gw-gallery-track" style={{ '--gw-gallery-seconds': `${Math.max(items.length * 3, 12)}s` }}>
+          {items.map((item) => <li key={item.key}><GalleryCard item={item} /></li>)}
+          {/* 이어 붙인 두 번째 벌. 되돌아가는 순간을 감추기 위한 것이라
+              화면 낭독기에는 잡히지 않는다. */}
+          {items.map((item) => (
+            <li key={`echo-${item.key}`} aria-hidden="true"><GalleryCard item={item} /></li>
+          ))}
+        </ul>
+      </div>
+      {note}
     </div>
   );
 }
-
 
 const shortDate = (value) => {
   const date = new Date(value);
@@ -232,7 +237,7 @@ export default function DashboardPage() {
     const [widgetResult, boardResult, linkPageResult, noticeResult, recentResult, quickResult, albumResult] = await Promise.allSettled([
       getMyDashboardWidgets(), getVisibleBoards(), getMyLinkPages(),
       getBoardPosts(NOTICE_SLUG, { page: 1 }), getRecentBoardPosts(FEED_ROWS),
-      getQuickLinks(), getBoardPosts(ALBUM_SLUG, { page: 1 }),
+      getQuickLinks(), getAlbumHighlights(ALBUM_SLUG, GALLERY_TILES),
     ]);
     if (widgetResult.status === 'fulfilled') setWidgets(widgetResult.value);
     else setError('대시보드 구성을 불러오지 못했습니다.');
@@ -246,13 +251,18 @@ export default function DashboardPage() {
     // 앨범은 대표 이미지 주소를 한 장씩 따로 받아야 해서 뒤에서 채운다.
     // 권한이 없거나 게시판이 없으면 빈 배열로 두고 샘플 그림이 대신 선다.
     if (albumResult.status === 'fulfilled') {
-      const picks = (albumResult.value.items ?? []).filter((item) => item.cover_attachment_id).slice(0, GALLERY_TILES);
+      // 사진 글은 대표 이미지를, 영상 글은 유튜브 미리보기를 건다. 둘 다 없는
+      // 글은 띠에 걸 그림이 없으므로 건너뛴다.
+      const picks = (albumResult.value ?? []).filter((item) => item.cover_attachment_id || item.youtube_id);
       const shots = await Promise.allSettled(picks.map(async (item) => ({
         key: item.id,
         label: item.title,
         caption: shortDate(item.created_at),
         to: `/boards/${ALBUM_SLUG}/posts/${item.id}`,
-        thumbnail: await getAttachmentViewUrl(item.cover_attachment_id),
+        isVideo: Boolean(item.youtube_id),
+        thumbnail: item.cover_attachment_id
+          ? await getAttachmentViewUrl(item.cover_attachment_id)
+          : youTubeThumbnail(item.youtube_id),
       })));
       setAlbum(shots.filter((shot) => shot.status === 'fulfilled').map((shot) => shot.value));
     }

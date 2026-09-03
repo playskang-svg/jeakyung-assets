@@ -5658,14 +5658,18 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
   letter-spacing: -.01em;
   word-break: keep-all;
 }
-/* 사내앨범 가로 목록. 카드 폭을 clamp 로 두어 좁은 화면에서는 좁게,
-   넓은 화면에서는 넉넉하게 잡힌다. 화면 폭마다 몇 장이 보이는지 따로
-   정하지 않아도 되고, 어느 폭에서도 다음 장이 살짝 걸쳐 보여 옆으로
-   더 있다는 것이 드러난다. */
+/* 사내앨범 띠.
+   목록을 두 벌 이어 붙이고 절반만큼 왼쪽으로 민 뒤 처음으로 되돌린다.
+   되돌아온 자리의 그림이 방금 지나간 것과 같아 이음매가 보이지 않는다.
+   도는 시간은 장수에 따라 JSX 가 --gw-gallery-seconds 로 넣어 준다. */
 .gw-gallery-panel { padding: 18px 20px 20px; margin-bottom: 16px; }
 
-.gw-gallery-strip {
-  position: relative;
+.gw-gallery-strip { position: relative; }
+
+/* 양옆을 흐리게 지워 띠가 상자 밖에서 이어지는 것처럼 보이게 한다. */
+.gw-gallery-viewport {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent 0, #000 34px, #000 calc(100% - 34px), transparent 100%);
 }
 
 .gw-gallery-track {
@@ -5674,20 +5678,32 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
   margin: 0;
   padding: 2px 0 4px;
   list-style: none;
+  width: max-content;
+  animation: gw-gallery-flow var(--gw-gallery-seconds, 24s) linear infinite;
+}
+
+/* 두 벌 중 한 벌만큼 밀고 되돌아온다. gap 때문에 정확히 -50% 는 아니지만,
+   같은 그림이 같은 자리에 오므로 눈에는 이음매가 없다. */
+@keyframes gw-gallery-flow {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(calc(-50% - 6px), 0, 0); }
+}
+
+/* 멈추지 않으면 흐르는 것을 누르게 되어 엉뚱한 글이 열린다. */
+.gw-gallery-strip--flowing:hover .gw-gallery-track,
+.gw-gallery-strip--flowing:focus-within .gw-gallery-track {
+  animation-play-state: paused;
+}
+
+/* 장수가 적어 흘릴 것이 없을 때. 이때는 손으로 민다. */
+.gw-gallery-track--static {
+  width: auto;
+  animation: none;
   overflow-x: auto;
-  scroll-snap-type: x proximity;
   scrollbar-width: thin;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
 }
 
-.gw-gallery-track::-webkit-scrollbar { height: 6px; }
-.gw-gallery-track::-webkit-scrollbar-thumb { border-radius: 3px; background: var(--gw-border); }
-
-.gw-gallery-track > li {
-  flex: 0 0 clamp(132px, 30vw, 178px);
-  scroll-snap-align: start;
-}
+.gw-gallery-track > li { flex: 0 0 clamp(132px, 30vw, 178px); }
 
 .gw-gallery-track a,
 .gw-gallery-figure {
@@ -5713,11 +5729,35 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform .25s cubic-bezier(.2, .7, .3, 1);
+  transition: transform .3s cubic-bezier(.2, .7, .3, 1);
 }
 
 .gw-gallery-track a:hover .gw-gallery-shot img,
-.gw-gallery-track a:hover .gw-gallery-shot svg { transform: scale(1.05); }
+.gw-gallery-track a:hover .gw-gallery-shot svg { transform: scale(1.06); }
+
+/* 영상 글의 재생 표시. 누르기 전에 사진인지 영상인지 알 수 있어야 한다. */
+.gw-gallery-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: rgba(7, 16, 55, .28);
+  transition: background .2s ease;
+}
+
+.gw-gallery-play svg {
+  width: 38px;
+  height: 38px;
+  padding: 8px;
+  border-radius: 50%;
+  background: rgba(217, 45, 32, .92);
+  box-shadow: 0 4px 14px rgba(7, 16, 55, .3);
+  transition: transform .2s cubic-bezier(.2, .7, .3, 1);
+}
+
+.gw-gallery-track a:hover .gw-gallery-play { background: rgba(7, 16, 55, .16); }
+.gw-gallery-track a:hover .gw-gallery-play svg { transform: scale(1.1); }
 
 .gw-gallery-track strong {
   font-size: 13.5px;
@@ -5732,37 +5772,94 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 
 .gw-gallery-caption { color: var(--gw-muted); font-size: 11.5px; }
 
-/* 좌우 단추. 손가락으로 쓸 수 있는 화면에서는 쓸어 넘기면 되므로 감춘다. */
-.gw-gallery-nav {
-  position: absolute;
-  top: calc(clamp(132px, 30vw, 178px) * 0.375 - 15px);
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--gw-border);
-  border-radius: 50%;
-  background: rgba(255, 255, 255, .94);
-  box-shadow: 0 4px 14px rgba(7, 16, 55, .12);
-  color: var(--gw-navy-950);
-  cursor: pointer;
-  transition: opacity .18s ease, background .18s ease;
-}
-
-.gw-gallery-nav--prev { left: -10px; }
-.gw-gallery-nav--next { right: -10px; }
-.gw-gallery-nav:hover { background: #fff; }
-.gw-gallery-nav:disabled { opacity: 0; pointer-events: none; }
-
 .gw-gallery-note {
   margin: 10px 0 0;
   color: var(--gw-muted);
   font-size: 12.5px;
 }
 
-@media (hover: none) {
-  .gw-gallery-nav { display: none; }
+/* 본문에 넣은 유튜브 영상. 16:9 를 지키고 폭에 맞춰 줄어든다. */
+.gw-youtube {
+  margin: 18px auto;
+  max-width: 720px;
+}
+
+.gw-youtube-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #0b1020;
+}
+
+.gw-youtube-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.gw-youtube-empty {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  margin: 0;
+  color: rgba(255, 255, 255, .7);
+  font-size: 14px;
+}
+
+.gw-youtube figcaption {
+  margin-top: 8px;
+  color: var(--gw-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.gw-youtube figcaption input {
+  width: 100%;
+  border: 1px dashed var(--gw-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  background: transparent;
+}
+
+.gw-youtube.is-selected .gw-youtube-frame { outline: 2px solid var(--gw-blue-600); outline-offset: 2px; }
+
+.gw-youtube-tools {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.gw-youtube-tools button {
+  border: 1px solid var(--gw-border);
+  border-radius: 999px;
+  padding: 4px 12px;
+  background: #fff;
+  color: var(--gw-text);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.gw-youtube-tools button:hover { background: var(--gw-surface-2, #f2f4f9); }
+
+/* 움직임을 줄이라고 설정한 사람에게는 흐르지 않게 하고 손으로 밀게 둔다. */
+@media (prefers-reduced-motion: reduce) {
+  .gw-gallery-track {
+    width: auto;
+    animation: none;
+    overflow-x: auto;
+  }
+  .gw-gallery-viewport { mask-image: none; }
+  .gw-gallery-shot img,
+  .gw-gallery-shot svg,
+  .gw-gallery-play,
+  .gw-gallery-play svg { transition: none; }
 }
 
 .gw-launch-card span {

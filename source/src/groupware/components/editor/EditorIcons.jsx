@@ -47,6 +47,7 @@ export const HighlightIcon = () => <Icon><path d="m14 5 5 5-7.5 7.5H7l-1-3z" /><
 export const LinkIcon = () => <Icon><path d="M10.5 13.5a3.5 3.5 0 0 0 5 0l3-3a3.54 3.54 0 0 0-5-5l-1.4 1.4" /><path d="M13.5 10.5a3.5 3.5 0 0 0-5 0l-3 3a3.54 3.54 0 0 0 5 5l1.4-1.4" /></Icon>;
 export const ImageUrlIcon = () => <Icon><circle cx="12" cy="12" r="8.2" /><path d="M3.8 12h16.4M12 3.8c2.1 2.3 3.2 5.2 3.2 8.2s-1.1 5.9-3.2 8.2c-2.1-2.3-3.2-5.2-3.2-8.2s1.1-5.9 3.2-8.2z" /></Icon>;
 export const ImageIcon = () => <Icon><rect x="3.2" y="5" width="17.6" height="14" rx="2.2" /><circle cx="8.6" cy="10" r="1.6" /><path d="m4 17 4.6-4.3a1.8 1.8 0 0 1 2.4 0L16 17M14.5 14.4l1.6-1.4a1.8 1.8 0 0 1 2.4 0l2 1.8" /></Icon>;
+export const YouTubeIcon = () => <Icon><rect x="2.6" y="5.4" width="18.8" height="13.2" rx="3.4" /><path d="m10.4 9.6 5 2.4-5 2.4z" /></Icon>;
 export const RuleIcon = () => <Icon><path d="M4 12h16" /><path d="M6 7h12M6 17h12" opacity=".38" /></Icon>;
 
 export const CodeIcon = () => <Icon><path d="m8.5 8-4.5 4 4.5 4M15.5 8l4.5 4-4.5 4" /></Icon>;
