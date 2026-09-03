@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { getMyDashboardWidgets, setDashboardPreference } from '../../services/dashboardService.js';
-import { BOARD_CATALOG_CHANGED_EVENT, getAlbumHighlights, getAttachmentViewUrl, getBoardPosts, getRecentBoardPosts, getVisibleBoards } from '../../services/boardService.js';
+import { BOARD_CATALOG_CHANGED_EVENT, getAlbumHighlights, getBoardPosts, getRecentBoardPosts, getVisibleBoards, resolvePostThumbnail } from '../../services/boardService.js';
 import { getMyLinkPages } from '../../services/linkPageService.js';
 import { getButtonBox } from '../../services/buttonBoxService.js';
 import ProfileCard from '../../components/profile/ProfileCard.jsx';
@@ -267,20 +267,20 @@ export default function DashboardPage() {
     // 앨범은 대표 이미지 주소를 한 장씩 따로 받아야 해서 뒤에서 채운다.
     // 권한이 없거나 게시판이 없으면 빈 배열로 두고 샘플 그림이 대신 선다.
     if (albumResult.status === 'fulfilled') {
-      // 사진 글은 대표 이미지를, 영상 글은 유튜브 미리보기를 건다. 둘 다 없는
-      // 글은 띠에 걸 그림이 없으므로 건너뛴다.
-      const picks = (albumResult.value ?? []).filter((item) => item.cover_attachment_id || item.youtube_id);
-      const shots = await Promise.allSettled(picks.map(async (item) => ({
+      // 사진 글은 본문에서 그림 한 장을(대표 → 올린 그림 → 주소로 넣은 그림),
+      // 영상 글은 유튜브 미리보기를 건다.
+      const shots = await Promise.allSettled((albumResult.value ?? []).map(async (item) => ({
         key: item.id,
         label: item.title,
         caption: shortDate(item.created_at),
         to: `/boards/${ALBUM_SLUG}/posts/${item.id}`,
         isVideo: Boolean(item.youtube_id),
-        thumbnail: item.cover_attachment_id
-          ? await getAttachmentViewUrl(item.cover_attachment_id)
-          : youTubeThumbnail(item.youtube_id),
+        thumbnail: (await resolvePostThumbnail(item)) || youTubeThumbnail(item.youtube_id),
       })));
-      setAlbum(shots.filter((shot) => shot.status === 'fulfilled').map((shot) => shot.value));
+      // 걸 그림을 못 찾은 글은 띠에서 뺀다. 빈 칸이 지나가면 고장으로 보인다.
+      setAlbum(shots
+        .filter((shot) => shot.status === 'fulfilled' && shot.value.thumbnail)
+        .map((shot) => shot.value));
     }
     setLoading(false);
   };
