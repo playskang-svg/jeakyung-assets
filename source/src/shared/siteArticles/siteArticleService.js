@@ -8,6 +8,15 @@ export async function getPublicSiteArticles(client, limit = 12) {
   return data ?? [];
 }
 
+// 서비스 카드에 붙는 칼럼 목록. 소식/정보와 같은 모양으로 오되, 그 서비스의
+// 글만 골라 준다. 본문은 소식/정보와 같은 getPublicSiteArticle 로 받는다.
+export async function getPublicServiceArticles(client, serviceKey, limit = 12) {
+  if (!client || !serviceKey) return [];
+  const { data, error } = await client.rpc('get_public_service_articles', { p_service_key: serviceKey, p_limit: limit });
+  if (error) throw error;
+  return data ?? [];
+}
+
 export async function getPublicSiteArticle(client, id) {
   if (!client) return null;
   const { data, error } = await client.rpc('get_public_site_article', { p_id: id });
