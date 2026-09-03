@@ -9,6 +9,7 @@ import PendingPage from './pages/auth/PendingPage.jsx';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage.jsx';
 import SignupPage from './pages/auth/SignupPage.jsx';
 import UpdatePasswordPage from './pages/auth/UpdatePasswordPage.jsx';
+import AttendancePage from './pages/internal/AttendancePage.jsx';
 import BoardPage from './pages/internal/BoardPage.jsx';
 import LinkTreePage from './pages/internal/LinkTreePage.jsx';
 import BoardsPage from './pages/internal/BoardsPage.jsx';
@@ -74,6 +75,7 @@ export default function App() {
             <Route element={<AppShell />}>
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="profile" element={<MyProfilePage />} />
+              <Route path="attendance" element={<AttendancePage />} />
               <Route path="mypage" element={<Navigate to="/profile" replace />} />
               <Route path="organization" element={<OrganizationPage />} />
               <Route path="boards" element={<BoardsPage />} />
