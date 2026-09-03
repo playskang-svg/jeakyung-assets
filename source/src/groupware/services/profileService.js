@@ -29,7 +29,8 @@ export async function updateEmployeeProfile(profile) {
     p_full_name: profile.fullName,
     p_employee_number: profile.employeeNumber || null,
     p_department_id: profile.departmentId,
-    p_position_id: profile.positionId,
+    // 직급은 선택이다. 빈 문자열을 그대로 보내면 uuid 로 못 읽는다.
+    p_position_id: profile.positionId || null,
     p_job_title_id: profile.jobTitleId,
     p_hire_date: profile.hireDate || null,
     p_company_email: profile.companyEmail || null,

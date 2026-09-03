@@ -125,9 +125,9 @@ export default function SignupPage() {
             </select>
           </div>
           <div className="gw-field">
-            <label htmlFor="signup-position">직급</label>
-            <select id="signup-position" name="requestedPositionId" defaultValue="" required disabled={optionsLoading || !auth.configured}>
-              <option value="">직급을 선택해 주세요</option>
+            <label htmlFor="signup-position">직급 <span>(선택)</span></label>
+            <select id="signup-position" name="requestedPositionId" defaultValue="" disabled={optionsLoading || !auth.configured}>
+              <option value="">직급 없음</option>
               {options.positions.map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
             </select>
           </div>
