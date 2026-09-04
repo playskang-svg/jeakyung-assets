@@ -10,11 +10,20 @@ import { formatClock, getTodayAttendance, punchIn, punchOut } from '../../servic
 //
 // 찍고 나면 단추 자리에 시각이 그대로 남는다. 오늘 몇 시에 왔는지가 이 칸의
 // 목적이므로, 다 찍은 뒤에도 빈 자리가 되지 않아야 한다.
+// 3:15 — 출근 이후 흐른 시간. 한 시간이 안 되면 분만 남긴다(상단바 "접속
+// N분" 표시와 같은 규칙이라, 두 시계가 서로 다른 형식으로 읽히지 않는다).
+function elapsedSince(fromIso, nowMs) {
+  const minutes = Math.max(0, Math.floor((nowMs - new Date(fromIso).getTime()) / 60000));
+  const hours = Math.floor(minutes / 60);
+  return hours > 0 ? `${hours}:${String(minutes % 60).padStart(2, '0')}` : `${minutes}분`;
+}
+
 export default function AttendancePunch() {
   const [record, setRecord] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
     let alive = true;
@@ -24,6 +33,15 @@ export default function AttendancePunch() {
       .finally(() => { if (alive) setLoaded(true); });
     return () => { alive = false; };
   }, []);
+
+  // 출근했지만 아직 퇴근 전일 때만 흘러간다 — 퇴근을 찍은 뒤에는 근무 시간이
+  // 더 늘어나면 안 된다.
+  const working = Boolean(record?.checked_in_at) && !record?.checked_out_at;
+  useEffect(() => {
+    if (!working) return undefined;
+    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, [working]);
 
   const punch = async (kind) => {
     const label = kind === 'in' ? '출근' : '퇴근';
@@ -52,6 +70,14 @@ export default function AttendancePunch() {
         <p className="gw-punch-slot is-done">
           <span>{label}</span>
           <time dateTime={done}>{formatClock(done)}</time>
+          {/* 출근한 뒤 퇴근 전에만 보인다 — 지금 몇 시고, 출근한 뒤 얼마나
+              흘렀는지를 실시간으로 보여준다. */}
+          {kind === 'in' && working && (
+            <span className="gw-punch-live">
+              <time dateTime={now.toISOString()}>{formatClock(now.toISOString())}</time>
+              <span className="gw-punch-elapsed">근무 {elapsedSince(done, now.getTime())}</span>
+            </span>
+          )}
         </p>
       );
     }
