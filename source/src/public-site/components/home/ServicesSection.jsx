@@ -39,7 +39,7 @@ export default function ServicesSection() {
             <h3>3PL 물류대행</h3>
             <p>입고, 보관, 주문 처리와 출고까지 기업 운영에 필요한 물류 업무를 연결해 살펴봅니다.</p>
           </div>
-          <ServiceColumns serviceKey="3pl" serviceName={SERVICE_NAMES['3pl']} />
+          <ServiceColumns serviceKey="3pl" serviceName={SERVICE_NAMES['3pl']} mode="paged" />
           <ServiceMore serviceKey="3pl" />
         </article>
 
@@ -53,7 +53,7 @@ export default function ServicesSection() {
             <h3>신선식품 풀필먼트</h3>
             <p>신선식품의 입고부터 보관, 주문 처리와 출고까지 필요한 풀필먼트 범위를 확인합니다.</p>
           </div>
-          <ServiceColumns serviceKey="fresh" serviceName={SERVICE_NAMES.fresh} shape="round" />
+          <ServiceColumns serviceKey="fresh" serviceName={SERVICE_NAMES.fresh} shape="round" mode="paged" />
           <ServiceMore serviceKey="fresh" />
         </article>
 
