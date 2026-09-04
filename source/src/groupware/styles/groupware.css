@@ -1705,6 +1705,30 @@ body.groupware-root a.gw-secondary-button {
   font-variant-numeric: tabular-nums;
 }
 
+/* 출근한 뒤 퇴근 전까지만 보이는 실시간 칸 — 지금 시각과 흐른 근무 시간.
+   앞의 출근 시각(굵게)과 헷갈리지 않게 옅은 구분선 뒤에 옅은 색으로 둔다. */
+.gw-punch-live {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding-left: 6px;
+  border-left: 1px solid var(--gw-border);
+}
+
+.gw-punch-live time {
+  color: var(--gw-muted);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.gw-punch-elapsed {
+  color: var(--gw-blue-600);
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
 .gw-punch-button {
   min-height: 26px;
   border: 0;
