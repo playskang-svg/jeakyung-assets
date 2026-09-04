@@ -99,6 +99,8 @@ function buildItems({ directory, usage, approval, popups }) {
     { key: 'linkpages', title: '페이지 구성', section: 'linkpages', state: '게시판·문서·바로가기 묶음 구성', tone: OK },
     { key: 'quicklinks', title: '페이지 이동', section: 'quicklinks', state: '홈 화면 버튼과 연결 주소', tone: OK },
     { key: 'sitearticles', title: '소식/정보', section: 'sitearticles', state: '공개 사이트 메인 노출 글', tone: OK },
+    { key: 'presence', title: '접속 현황·로그', section: 'presence', state: '지금 접속 중인 회원과 로그인 이력', tone: OK },
+    { key: 'attendance', title: '출퇴근 등록 기록', section: 'attendance', state: '전체 회원 출근·퇴근 기록', tone: OK },
     { key: 'boards', title: '게시판 구성·권한', to: '/admin/boards', ...boardItem(usage) },
     { key: 'approval', title: '전자결재 분류·양식', to: '/approval/admin', ...approvalItem(approval) },
     { key: 'popups', title: '팝업 문서', to: '/admin/popups', ...popupItem(popups) },

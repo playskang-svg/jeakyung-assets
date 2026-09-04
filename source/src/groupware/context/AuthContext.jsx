@@ -9,6 +9,11 @@ import {
   updatePassword,
 } from '../services/authService.js';
 import { getIdentity } from '../services/membershipService.js';
+import { touchPresence } from '../services/presenceService.js';
+
+// 하트비트 간격. 서버가 접속 중으로 인정하는 창(3분)보다 짧아야, 한 번 놓쳐도
+// 다음 번에 다시 "접속 중"으로 잡힌다.
+const PRESENCE_INTERVAL_MS = 60_000;
 
 const EMPTY_AUTH = Object.freeze({
   configured: false,
@@ -143,6 +148,19 @@ export function AuthProvider({ children }) {
       listener.subscription.unsubscribe();
     };
   }, [applySession]);
+
+  // 접속 하트비트. 승인된 회원으로 화면이 떠 있는 동안만 보낸다 — 로그인
+  // 화면이나 대기 화면에서까지 찍으면 "접속 중"의 뜻이 흐려진다. 처음 한 번
+  // 곧바로 찍고, 그 뒤로는 일정 간격으로 이어 찍는다. 실패해도(잠깐 네트워크가
+  // 끊겨도) 다음 차례에 다시 시도할 뿐, 화면에 티 내지 않는다.
+  useEffect(() => {
+    if (authState.status !== 'approved') return undefined;
+    let active = true;
+    const beat = () => { if (active) touchPresence().catch(() => {}); };
+    beat();
+    const timer = window.setInterval(beat, PRESENCE_INTERVAL_MS);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [authState.status]);
 
   const actions = useMemo(() => ({
     async signIn(credentials) {

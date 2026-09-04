@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { useAuth } from '../../context/AuthContext.jsx';
 import AttendancePunch from './AttendancePunch.jsx';
+import OnlinePeek from './OnlinePeek.jsx';
 import ProfileAvatar from './ProfileAvatar.jsx';
 
 function value(input) { return input || '미등록'; }
@@ -40,9 +41,13 @@ export default function ProfileCard() {
           </div>
           <p>{value(profile.department_name)} · {value(profile.position_name)} · {value(profile.job_title_name)}<span className="gw-active-role-badge">{activeRoleName}</span></p>
         </div>
-        {/* 이름 줄과 단추 사이의 빈자리. 매일 한 번씩 누르는 것이라 홈에서
-            바로 닿아야 하고, 다른 화면으로 들어갔다 나오게 하면 안 쓴다. */}
-        <AttendancePunch />
+        {/* 이름 줄과 단추 사이의 빈자리. 출퇴근은 매일 한 번씩 누르는 것이라
+            홈에서 바로 닿아야 하고, 지금 접속자 창도 같은 자리에 둔다 —
+            둘 다 "지금" 을 보여 주는 값이라 따로 화면을 열게 하면 번거롭다. */}
+        <div className="gw-profile-side">
+          <AttendancePunch />
+          <OnlinePeek />
+        </div>
         <div className="gw-profile-card-actions">
           <button
             type="button"
