@@ -20,6 +20,11 @@ export const punchOut = () => rpc('punch_out');
 export const getMyAttendance = (from = null, to = null) =>
   rpc('get_my_attendance', { p_from: from, p_to: to }).then((rows) => rows ?? []);
 
+// 관리자 전용 — 전체(또는 한 사람) 출퇴근 기록. profileId 를 주지 않으면 전체,
+// 기간을 주지 않으면 최근 31일.
+export const getMemberAttendance = (profileId = null, from = null, to = null, limit = 500) =>
+  rpc('get_member_attendance', { p_profile_id: profileId, p_from: from, p_to: to, p_limit: limit }).then((rows) => rows ?? []);
+
 // 오늘 하루치. 카드에 걸 값이라 한 건만 받는다.
 export async function getTodayAttendance() {
   const today = todayKey();

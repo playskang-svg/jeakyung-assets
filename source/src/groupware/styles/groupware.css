@@ -1662,9 +1662,19 @@ body.groupware-root a.gw-secondary-button {
 
 .gw-profile-card-hero .gw-secondary-button { display: grid; place-items: center; text-decoration: none; }
 
+/* ── 이름 줄과 단추 사이의 여백 ────────────────────────────────────── */
+/* 출퇴근 칸과 지금 접속자 창이 함께 서는 자리. 둘 다 "지금" 을 보여 주는
+   값이라 세로로 쌓아 한 칸에 둔다. */
+.gw-profile-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
 /* ── 출퇴근 ────────────────────────────────────────────────────────── */
-/* 이름 줄과 단추 사이의 빈자리. 매일 한 번 누르는 것이라 홈에서 바로
-   닿아야 한다. 찍은 뒤에는 단추가 시각으로 바뀌어 그 자리에 남는다. */
+/* 매일 한 번 누르는 것이라 홈에서 바로 닿아야 한다. 찍은 뒤에는 단추가
+   시각으로 바뀌어 그 자리에 남는다. */
 .gw-punch {
   display: grid;
   justify-items: center;
@@ -1727,6 +1737,66 @@ body.groupware-root a.gw-secondary-button {
 
 .gw-punch-more:hover { color: var(--gw-blue-600); text-decoration: underline; }
 .gw-punch-error { grid-column: 1 / -1; margin: 0; color: #b42318; font-size: 11.5px; text-align: center; }
+
+/* ── 지금 접속자 작은 창 ──────────────────────────────────────────── */
+.gw-online-peek { position: relative; display: grid; justify-items: center; gap: 2px; font-size: 11.5px; }
+
+.gw-online-peek-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--gw-muted);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gw-online-peek-trigger:hover { color: var(--gw-navy-950); }
+
+.gw-online-peek-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, .18);
+}
+
+.gw-online-peek-more {
+  max-width: 220px;
+  overflow: hidden;
+  color: var(--gw-muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 눌렀을 때 펼쳐지는 명단. 작은 창이라 아래로 떠서 다른 요소를 밀지 않는다. */
+.gw-online-peek-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  z-index: 5;
+  display: grid;
+  gap: 2px;
+  min-width: 168px;
+  max-height: 220px;
+  margin: 0;
+  padding: 8px 10px;
+  overflow-y: auto;
+  list-style: none;
+  transform: translateX(-50%);
+  border: 1px solid var(--gw-border);
+  border-radius: 12px;
+  background: var(--gw-surface);
+  box-shadow: 0 12px 28px rgba(11, 21, 96, .14);
+}
+
+.gw-online-peek-list li { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 3px 2px; }
+.gw-online-peek-list li.is-me { font-weight: 700; }
+.gw-online-peek-list small { flex: none; color: var(--gw-muted); font-size: 10.5px; }
 /* 값 하나짜리 항목이라 카드 안에 또 카드를 두지 않고, 옅은 구분선만으로
    나눈다. (이중 카드가 세로 공간을 크게 낭비하던 부분) */
 .gw-profile-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 0; border-top: 1px solid var(--gw-border); background: var(--gw-border); }
@@ -1762,6 +1832,32 @@ body.groupware-root a.gw-secondary-button {
 .gw-employee-list strong,
 .gw-employee-list small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gw-employee-list small { color: var(--gw-muted); font-size: 14px; }
+
+/* ── 관리자: 접속 현황·로그 ───────────────────────────────────────── */
+.gw-presence-admin-layout { display: grid; grid-template-columns: minmax(230px,.36fr) minmax(0,1fr); gap: 22px; }
+
+.gw-presence-member-list { display: grid; align-content: start; gap: 8px; max-height: 640px; overflow-y: auto; margin: 0; padding: 0; list-style: none; }
+.gw-presence-member-list > li > button { width: 100%; display: flex; align-items: center; gap: 10px; border: 1px solid var(--gw-border); border-radius: 13px; padding: 10px; color: var(--gw-text); background: #fff; text-align: left; cursor: pointer; }
+.gw-presence-member-list > li > button.is-selected { border-color: #9eb1ef; background: var(--gw-blue-100); }
+.gw-presence-member-list > li > button > span:not(.gw-presence-dot) { min-width: 0; display: grid; flex: 1; }
+.gw-presence-member-list strong,
+.gw-presence-member-list small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gw-presence-member-list small { color: var(--gw-muted); font-size: 12.5px; }
+
+.gw-presence-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--gw-border); }
+.gw-presence-dot.is-online { background: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, .16); }
+
+.gw-presence-lastseen { flex: none; color: var(--gw-muted); font-size: 12px; font-weight: 700; white-space: nowrap; }
+
+.gw-presence-detail { min-width: 0; display: grid; align-content: start; gap: 14px; border: 1px solid var(--gw-border); border-radius: 18px; padding: 22px; background: #fbfcff; }
+.gw-presence-detail h3 { margin: 0; color: var(--gw-navy-950); font-size: 17px; }
+
+.gw-presence-events { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.gw-presence-events li { display: grid; gap: 2px; border-radius: 10px; padding: 10px 12px; background: #fff; border: 1px solid var(--gw-border); }
+.gw-presence-events time { color: var(--gw-navy-950); font-weight: 700; font-size: 14px; }
+.gw-presence-events span { color: var(--gw-muted); font-size: 12.5px; }
+.gw-presence-events small { color: var(--gw-muted); font-size: 11.5px; overflow-wrap: anywhere; }
+
 .gw-employee-editor { min-width: 0; display: grid; gap: 20px; border: 1px solid var(--gw-border); border-radius: 18px; padding: 22px; background: #fbfcff; }
 .gw-employee-editor > header { display: flex; justify-content: space-between; gap: 18px; }
 .gw-employee-editor h3 { margin: 0; font-size: 22px; }
@@ -3702,7 +3798,8 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
   .gw-permission-row label,
   .gw-permission-row .gw-icon-danger-button { justify-self: start; }
   .gw-profile-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .gw-employee-admin-layout { grid-template-columns: minmax(210px,.34fr) minmax(0,1fr); }
+  .gw-employee-admin-layout,
+  .gw-presence-admin-layout { grid-template-columns: minmax(210px,.34fr) minmax(0,1fr); }
 
   .gw-organization-panel:first-child {
     grid-column: 1 / -1;
@@ -3928,21 +4025,24 @@ body.groupware-root .gw-comment-form .gw-field textarea { min-height: 54px; }
   .gw-popup-admin-list,
   .gw-popup-target-grid { grid-template-columns: 1fr; }
 
-  /* 좁아지면 출퇴근 칸과 단추 묶음을 아래 줄로 내린다. 이때 묶음 자체가
-     1열에 남으면 그 폭만큼 첫 열이 넓어져 아바타 옆에 빈자리가 생긴다 —
-     묶음에 grid-column 을 줘야 하고, 안쪽 단추에 주면 아무 일도 하지 않는다
-     (단추는 격자 칸이 아니라 flex 항목이다). */
+  /* 좁아지면 출퇴근·접속자 묶음과 단추 묶음을 아래 줄로 내린다. 이때 묶음
+     자체가 1열에 남으면 그 폭만큼 첫 열이 넓어져 아바타 옆에 빈자리가
+     생긴다 — 묶음에 grid-column 을 줘야 하고, 안쪽 단추에 주면 아무 일도
+     하지 않는다(단추는 격자 칸이 아니라 flex 항목이다). */
   .gw-profile-card-hero { grid-template-columns: auto minmax(0,1fr); align-items: center; }
   .gw-profile-card-actions { grid-column: 1 / -1; }
   .gw-profile-card-actions .gw-secondary-button { flex: 1; width: auto; }
-  .gw-punch { grid-column: 1 / -1; justify-items: stretch; text-align: center; }
+  .gw-profile-side { grid-column: 1 / -1; }
+  .gw-punch { justify-items: stretch; text-align: center; }
   .gw-punch-slots { justify-content: center; }
   .gw-profile-facts,
   .gw-profile-editor-layout,
   .gw-employee-search,
   .gw-employee-admin-layout,
+  .gw-presence-admin-layout,
   .gw-readonly-profile dl { grid-template-columns: 1fr; }
-  .gw-employee-list { max-height: 280px; }
+  .gw-employee-list,
+  .gw-presence-member-list { max-height: 280px; }
   .gw-employee-editor > header { display: grid; }
   .gw-admin-photo-control { justify-content: space-between; }
   .gw-profile-history li { grid-template-columns: 1fr; }
