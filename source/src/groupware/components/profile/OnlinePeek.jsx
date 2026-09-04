@@ -37,7 +37,7 @@ export default function OnlinePeek() {
         onClick={() => setOpen((current) => !current)}
       >
         <span className="gw-online-peek-dot" aria-hidden="true" />
-        <span>지금 접속 {people.length}명</span>
+        <span>현재접속자 {people.length}명</span>
       </button>
       {open && (
         <ul className="gw-online-peek-list" id="gw-online-peek-list">
