@@ -116,6 +116,19 @@
           "value": "noindex, nofollow"
         }
       ]
+    },
+    {
+      "source": "/notice/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
     }
   ]
 }
