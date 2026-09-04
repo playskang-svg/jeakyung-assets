@@ -42,8 +42,21 @@ await mkdir(path.join(root, 'groupware'), { recursive: true });
 await cp(path.join(dist, 'groupware/index.html'), path.join(root, 'groupware/index.html'));
 
 // 3) 손으로 관리하는 HTML 의 자산 참조를 새 해시로 갈아 끼운다.
+//
+// 이름이 겹치는 청크는 항상 존재할 수 있다(예: 어느 진입점에서도 이름을
+// 못 딴 공용 청크가 관례상 'dist' 로 뭉뚱그려지는 경우) — 손으로 관리하는
+// HTML 이 그 이름을 직접 가리키지만 않으면 해가 없다. 문제는 손으로 관리하는
+// HTML 이 가리키는 이름 자체가 겹칠 때다. 그러면 어느 후보로 갈아 끼울지
+// 알 수 없고, 조용히 하나를 골랐다가는 진입점 대신 그 진입점이 물고 있는
+// 작은 공유 청크를 페이지 스크립트로 심어 버릴 수 있다(vite.config.js 의
+// 입력 이름이 어떤 src 파일의 베이스네임과 같아지는 바람에 실제로 한 번
+// 사고가 났다). 그래서 후보가 둘 이상이면 그 자리에서 바로 멈춘다.
 const built = new Map();
-for (const name of await readdir(path.join(root, 'assets'))) built.set(keyOf(name), name);
+for (const name of await readdir(path.join(root, 'assets'))) {
+  const key = keyOf(name);
+  const list = built.get(key);
+  if (list) list.push(name); else built.set(key, [name]);
+}
 
 const unresolved = [];
 for (const rel of HAND_WRITTEN) {
@@ -51,9 +64,12 @@ for (const rel of HAND_WRITTEN) {
   const before = await readFile(file, 'utf8');
   const after = before.replace(/assets\/([A-Za-z0-9_.-]+\.(?:js|css|webp|png|jpe?g|svg|woff2?))/g,
     (whole, name) => {
-      const replacement = built.get(keyOf(name));
-      if (!replacement) { unresolved.push(`${rel} → ${name}`); return whole; }
-      return whole.replace(name, replacement);
+      const candidates = built.get(keyOf(name));
+      if (!candidates) { unresolved.push(`${rel} → ${name}`); return whole; }
+      if (candidates.length > 1) {
+        fail(`${rel} 의 ${name} 이(가) 여러 산출물과 겹칩니다: ${candidates.join(', ')}\n   vite.config.js 의 입력 이름을 겹치지 않게 바꿔 주세요.`);
+      }
+      return whole.replace(name, candidates[0]);
     });
   if (after !== before) await writeFile(file, after);
 }
@@ -69,4 +85,5 @@ for (const rel of [...HAND_WRITTEN, 'groupware/index.html']) {
 }
 if (missing.length) fail(`실재하지 않는 자산을 가리킵니다:\n   ${missing.join('\n   ')}`);
 
-console.log(`✔ 자산 ${built.size}개 반영, 참조 정상 (${HAND_WRITTEN.length + 1}개 HTML 확인)`);
+const assetCount = [...built.values()].reduce((sum, list) => sum + list.length, 0);
+console.log(`✔ 자산 ${assetCount}개 반영, 참조 정상 (${HAND_WRITTEN.length + 1}개 HTML 확인)`);

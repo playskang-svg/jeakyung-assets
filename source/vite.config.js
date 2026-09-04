@@ -91,7 +91,13 @@ export default defineConfig(({ command, mode }) => {
           home: fileURLToPath(new URL('index.html', import.meta.url)),
           privacy: fileURLToPath(new URL('privacy/index.html', import.meta.url)),
           news: fileURLToPath(new URL('news/index.html', import.meta.url)),
-          services: fileURLToPath(new URL('services/index.html', import.meta.url)),
+          // 'services' 로 두면 src/public-site/data/services.js 가 만드는
+          // 공유 청크(services-해시.js)와 진입점 청크의 이름이 똑같아진다.
+          // 둘 다 같은 접두사를 쓰면 sync-build.mjs 가 둘 중 하나를 조용히
+          // 잘못 골라 실제로는 빈 데이터 모듈을 페이지 스크립트로 심어 버린다
+          // (2026-09 서비스 페이지 백지 사고). 진입점 이름을 다르게 둬 겹치지
+          // 않게 한다.
+          servicesPage: fileURLToPath(new URL('services/index.html', import.meta.url)),
           groupware: fileURLToPath(new URL('groupware/index.html', import.meta.url)),
         },
       },
