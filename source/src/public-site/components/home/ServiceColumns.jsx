@@ -71,6 +71,35 @@ export default function ServiceColumns({ serviceKey, serviceName, shape = 'squar
     };
   }, [paged, measure, articles.length]);
 
+  // 단추로 넘기는 띠는 가만히 있으면 좌우로 밀 수 있다는 것이 한눈에
+  // 안 보인다(마우스가 없는 화면에서는 단추도 늘 옅게만 떠 있다). 뜨고
+  // 나서 한 번, 살짝 밀었다 되돌려 손으로 밀어 보라는 낌새만 준다.
+  // 넘길 것이 없거나(칸이 다 보이는 카드) 움직임을 줄이라고 설정한
+  // 사람에게는 하지 않는다.
+  //
+  // scroll-snap-type 이 걸려 있으면 28px 처럼 짧은 스크롤은 스냅이 도로
+  // 붙잡아 아예 움직이지 않는다(칸 시작점 가까이만 붙잡는 proximity 라도
+  // 마찬가지) — 낌새를 주는 동안만 꺼 둔다.
+  useEffect(() => {
+    if (!paged || articles.length === 0) return undefined;
+    const track = trackRef.current;
+    if (!track) return undefined;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
+
+    const timers = [];
+    timers.push(window.setTimeout(() => {
+      if (track.scrollWidth <= track.clientWidth + 1) return;
+      const snap = track.style.scrollSnapType;
+      track.style.scrollSnapType = 'none';
+      track.scrollTo({ left: 28, behavior: 'smooth' });
+      timers.push(window.setTimeout(() => {
+        track.scrollTo({ left: 0, behavior: 'smooth' });
+        timers.push(window.setTimeout(() => { track.style.scrollSnapType = snap; }, 420));
+      }, 420));
+    }, 700));
+    return () => timers.forEach(window.clearTimeout);
+  }, [paged, articles.length]);
+
   // 보이는 만큼에서 조금 덜 민다. 한 칸이 걸쳐 남아 있어야 이어지는
   // 목록이라는 것이 보인다.
   const page = (direction) => {
