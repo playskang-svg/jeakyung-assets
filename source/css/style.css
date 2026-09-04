@@ -1448,33 +1448,44 @@ p {
     line-height: 1.8;
 }
 
+/* 로고 대신 상호명을 큼직한 활자로 채운 블록. 실제 로고 파일이 오기
+   전까지는 이 편이 정확하다 — 확보하지 못한 상표를 함부로 흉내 내지
+   않는다. 평소에는 옅게 가라앉혀 두고, 손이 닿으면 카드 전체가 짙게
+   뒤집힌다(다른 카드들의 hover 반전과 같은 말투). */
 .partners-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 14px;
-    max-width: 900px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    max-width: 960px;
     margin: 0 auto;
+    padding: 0;
+    list-style: none;
 }
 
 .partners-list li span {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    min-height: 56px;
-    padding: 0 28px;
+    justify-content: center;
+    min-height: 112px;
+    padding: 20px;
     border: 1px solid var(--line);
-    border-radius: 999px;
-    color: var(--ink-950);
+    border-radius: 20px;
     background: #fff;
-    font-size: 16px;
-    font-weight: 750;
-    transition: border-color 0.25s, color 0.25s, background 0.25s;
+    color: var(--ink-500);
+    font-size: clamp(18px, 1.9vw, 23px);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-align: center;
+    line-height: 1.3;
+    transition: transform 0.3s var(--ease-out), background 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 
 .partners-list li span:hover {
-    border-color: var(--blue-600);
-    color: var(--blue-600);
-    background: var(--surface);
+    transform: translateY(-6px);
+    border-color: var(--navy-800);
+    color: #fff;
+    background: var(--navy-800);
+    box-shadow: 0 16px 32px rgba(11, 21, 96, 0.18);
 }
 
 .partners-note {

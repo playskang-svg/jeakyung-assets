@@ -37,12 +37,6 @@ export default function HomePage() {
           <div className="value-grid">
             <CoreValues />
           </div>
-
-          <section className="location-panel" id="location" aria-labelledby="location-title">
-            <span className="location-backdrop" aria-hidden="true"><span className="location-backdrop-grid" />
-              <svg viewBox="0 0 900 420" preserveAspectRatio="xMidYMid slice" focusable="false"><path className="location-route" d="M40 330 C 210 300, 250 150, 430 140 S 700 190, 860 96"/><path className="location-route location-route--soft" d="M20 210 C 190 250, 320 320, 500 300 S 760 250, 880 300"/><circle className="location-pin" cx="430" cy="140" r="7"/><circle className="location-pin location-pin--b" cx="500" cy="300" r="6"/></svg></span>
-            <LocationSection />
-          </section>
         </div>
       </section>
 
@@ -75,6 +69,14 @@ export default function HomePage() {
       <section className="contact-section" id="contact" aria-labelledby="contact-title">
         <ContactSection />
       </section>
+
+      <div className="content-width">
+        <section className="location-panel" id="location" aria-labelledby="location-title">
+          <span className="location-backdrop" aria-hidden="true"><span className="location-backdrop-grid" />
+            <svg viewBox="0 0 900 420" preserveAspectRatio="xMidYMid slice" focusable="false"><path className="location-route" d="M40 330 C 210 300, 250 150, 430 140 S 700 190, 860 96"/><path className="location-route location-route--soft" d="M20 210 C 190 250, 320 320, 500 300 S 760 250, 880 300"/><circle className="location-pin" cx="430" cy="140" r="7"/><circle className="location-pin location-pin--b" cx="500" cy="300" r="6"/></svg></span>
+          <LocationSection />
+        </section>
+      </div>
     </>
   );
 }
