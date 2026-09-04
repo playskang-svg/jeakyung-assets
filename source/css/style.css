@@ -3187,6 +3187,23 @@ p {
   max-width: 100%;
 }
 
+/* 본문 글쓴이가 <style> 에 짧은 클래스 이름(.hero 등)을 즐겨 쓰는데, 그 이름이
+   사이트 전역 클래스와 같으면 전역 규칙이 함께 걸린다. 실제로 홈 화면의
+   .hero(높이 100svh 인 배너)와 이름이 겹쳐, 본문 속 <figure class="hero"> 가
+   화면 높이만큼 빈 칸으로 늘어나는 사고가 있었다(이미지가 안 뜨면 특히 크게
+   보인다). 본문 안에서는 그런 전역 규칙을 여기서 다시 지운다 — 글쓴이가
+   흔히 쓸 법한 이름을 먼저 방어해 둔다. */
+.news-article-body .hero,
+.site-popup-document .hero {
+  position: static;
+  display: block;
+  height: auto;
+  min-height: 0;
+  color: inherit;
+  isolation: auto;
+  overflow: visible;
+}
+
 .news-article-body > :first-child { margin-top: 0; }
 .news-article-body > :last-child { margin-bottom: 0; }
 
