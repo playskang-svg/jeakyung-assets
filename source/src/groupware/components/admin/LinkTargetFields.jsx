@@ -36,7 +36,7 @@ export function linkTargetPayload(item) {
     link_type: type,
     board_id: type === 'board' ? item.board_id : '',
     target_page_id: type === 'page' ? item.target_page_id : '',
-    url: isUrlType(type) ? (item.url ?? '').trim() : '',
+    url: isUrlType(type) ? ((item.url ?? '').trim() || '#') : '',
   };
 }
 
@@ -46,9 +46,17 @@ export function isLinkTargetComplete(item) {
   if (isContentType(type)) return true;
   if (type === 'board') return Boolean(item.board_id);
   if (type === 'page') return Boolean(item.target_page_id);
+  // 외부 주소는 아직 주소를 입력하지 않았더라도 버튼 틀을 먼저 만들 수 있도록 허용 (비어있으면 기본 #)
+  if (type === 'external') {
+    const url = (item.url ?? '').trim();
+    return !url || url === '#' || /^(https?:\/\/|\/)/i.test(url);
+  }
   // 화면 안에 싣는 주소는 https 만 받는다. https 페이지가 http 를 못 싣기 때문이다.
-  if (type === 'embed') return /^(https:\/\/|\/)/i.test((item.url ?? '').trim());
-  return /^(https?:\/\/|\/)/i.test((item.url ?? '').trim());
+  if (type === 'embed') {
+    const url = (item.url ?? '').trim();
+    return !url || /^(https:\/\/|\/)/i.test(url);
+  }
+  return true;
 }
 
 export default function LinkTargetFields({ item, boards, pages, excludePageId, onChange, index, types = LINK_TYPES }) {
