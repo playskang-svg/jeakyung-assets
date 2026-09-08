@@ -111,8 +111,17 @@ export default function PostWritePage() {
   const submit = async (formElement, status) => {
     if (saving || uploadingAttachments || !overview || !activePostId) return;
     const form = new FormData(formElement);
+    const title = (form.get('title') || '').trim();
+    if (!title && status === 'published') {
+      setError('게시글 제목을 입력해 주세요.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const titleInput = formElement.querySelector('input[name="title"]');
+      if (titleInput) titleInput.focus();
+      return;
+    }
     if (status === 'published' && !boardDocumentHasContent(documentValue)) {
       setError('게시할 본문 내용이나 이미지를 입력해 주세요.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     setSaving(true);
@@ -133,7 +142,7 @@ export default function PostWritePage() {
       const id = await saveBoardPost({
         id: activePostId,
         boardId: overview.board.id,
-        title: form.get('title'),
+        title: title || (post?.title && post.title !== '(제목 없음)' ? post.title : '(제목 없음)'),
         contentDocument: documentValue,
         categoryId,
         postPrefix: form.get('postPrefix'),
@@ -148,6 +157,7 @@ export default function PostWritePage() {
     } catch (saveError) {
       console.error('saveBoardPost failed:', saveError);
       setError(saveError?.message || '게시글을 저장하지 못했습니다. 신규 이미지는 자동 정리 후보로 유지됩니다. 권한과 입력값을 확인해 주세요.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setSaving(false);
     }
   };
@@ -193,8 +203,8 @@ export default function PostWritePage() {
   return <article className="gw-page" aria-labelledby="write-title">
     <header className="gw-page-header"><div><span className="gw-eyebrow">WRITE</span><h1 id="write-title">{overview.board.name} {postId ? '글 수정' : '글쓰기'}</h1></div><div className="gw-admin-actions"><button type="button" className="gw-secondary-button" onClick={goToList}>목록 보기</button></div></header>
     {error && <div className="gw-notice gw-notice--warning" role="alert">{error}</div>}
-    <form className="gw-editor-form" onSubmit={(event) => { event.preventDefault(); submit(event.currentTarget, 'published'); }}>
-      <label className="gw-field"><span>제목</span><input name="title" required maxLength="240" defaultValue={post?.title === '(제목 없음)' ? '' : post?.title ?? ''} /></label>
+    <form className="gw-editor-form" noValidate onSubmit={(event) => { event.preventDefault(); submit(event.currentTarget, 'published'); }}>
+      <label className="gw-field"><span>제목</span><input name="title" maxLength="240" defaultValue={post?.title === '(제목 없음)' ? '' : post?.title ?? ''} placeholder="제목을 입력하세요" /></label>
       {overview.board.settings.use_prefix && <label className="gw-field"><span>말머리</span><input name="postPrefix" maxLength="40" defaultValue={post?.prefix ?? ''} /></label>}
       {overview.categories.length > 0 && (
         <label className="gw-field">
@@ -220,7 +230,16 @@ export default function PostWritePage() {
         {overview.permissions.notice && overview.board.settings.allow_important !== false && <label><input name="important" type="checkbox" defaultChecked={post?.is_important ?? false} /> 중요글</label>}
         {overview.permissions.pin && overview.board.settings.use_pinned !== false && <label><input name="pinned" type="checkbox" defaultChecked={post?.is_pinned ?? false} /> 상단 고정</label>}
       </div>
-      <div className="gw-admin-actions"><button type="button" className="gw-secondary-button" onClick={goToList}>목록 보기</button><button className="gw-primary-button" type="submit" disabled={saving || uploadingAttachments}>게시</button><button className="gw-secondary-button" type="button" disabled={saving || uploadingAttachments} onClick={(event) => submit(event.currentTarget.form, 'draft')}>임시 저장</button></div>
+      {error && <div className="gw-notice gw-notice--warning" role="alert" style={{ margin: '16px 0 8px' }}>{error}</div>}
+      <div className="gw-admin-actions">
+        <button type="button" className="gw-secondary-button" onClick={goToList}>목록 보기</button>
+        <button className="gw-primary-button" type="submit" disabled={saving || uploadingAttachments}>
+          {saving ? '게시 중…' : '게시'}
+        </button>
+        <button className="gw-secondary-button" type="button" disabled={saving || uploadingAttachments} onClick={(event) => submit(event.currentTarget.form, 'draft')}>
+          임시 저장
+        </button>
+      </div>
     </form>
   </article>;
 }
