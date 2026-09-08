@@ -1,0 +1,12 @@
+.git
+.claude
+source
+docs
+scripts
+references
+supabase
+*.md
+vercel.json
+.vercelignore
+wrangler.jsonc
+worker.js

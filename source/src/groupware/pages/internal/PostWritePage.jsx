@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import BoardPostEditor from '../../components/editor/BoardPostEditor.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -20,12 +20,14 @@ import {
 
 export default function PostWritePage() {
   const { boardSlug, postId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const auth = useAuth();
   const draftRequest = useRef(false);
   const [overview, setOverview] = useState(null);
   const [post, setPost] = useState(null);
   const [activePostId, setActivePostId] = useState(postId ?? null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(() => searchParams.get('category') || '');
   const [documentValue, setDocumentValue] = useState(EMPTY_BOARD_DOCUMENT);
   const [initialUrls, setInitialUrls] = useState({});
   const [initialAttachments, setInitialAttachments] = useState([]);
@@ -52,6 +54,9 @@ export default function PostWritePage() {
           const urls = await getInlineAttachmentUrls(postData.attachments);
           if (!active) return;
           setPost(postData.post);
+          if (postData.post.category_id) {
+            setSelectedCategoryId(postData.post.category_id);
+          }
           setActivePostId(postData.post.id);
           setDocumentValue(contentDocument);
           setInitialUrls(urls);
@@ -66,8 +71,23 @@ export default function PostWritePage() {
         draftRequest.current = true;
         const draftId = await createBoardPostDraft(boardOverview.board.id);
         if (!active) return;
+        const queryCategory = searchParams.get('category');
+        const matched = boardOverview.categories?.find(
+          (c) => c.id === queryCategory || c.name === queryCategory || c.code === queryCategory
+        );
+        const matchedCategoryId = matched ? matched.id : (queryCategory || '');
+
         setActivePostId(draftId);
-        setPost({ id: draftId, title: '', content_document: EMPTY_BOARD_DOCUMENT, status: 'draft' });
+        setPost({
+          id: draftId,
+          title: '',
+          content_document: EMPTY_BOARD_DOCUMENT,
+          category_id: matchedCategoryId || null,
+          status: 'draft',
+        });
+        if (matchedCategoryId) {
+          setSelectedCategoryId(matchedCategoryId);
+        }
         setDocumentValue(EMPTY_BOARD_DOCUMENT);
       } catch {
         if (active) setError('글쓰기 권한을 확인하지 못했거나 편집용 임시 글을 만들지 못했습니다.');
@@ -76,6 +96,11 @@ export default function PostWritePage() {
     load();
     return () => { active = false; };
   }, [boardSlug, postId]);
+
+  const goToList = () => {
+    const returnCat = selectedCategoryId || searchParams.get('category');
+    navigate(`/boards/${boardSlug}${returnCat ? `?category=${encodeURIComponent(returnCat)}` : ''}`);
+  };
 
   const submit = async (formElement, status) => {
     if (saving || uploadingAttachments || !overview || !activePostId) return;
@@ -92,7 +117,7 @@ export default function PostWritePage() {
         boardId: overview.board.id,
         title: form.get('title'),
         contentDocument: documentValue,
-        categoryId: form.get('categoryId'),
+        categoryId: form.get('categoryId') || selectedCategoryId || null,
         postPrefix: form.get('postPrefix'),
         isAnonymous: form.get('anonymous') === 'on',
         isNotice: form.get('notice') === 'on',
@@ -147,12 +172,26 @@ export default function PostWritePage() {
   }
 
   return <article className="gw-page" aria-labelledby="write-title">
-    <header className="gw-page-header"><div><span className="gw-eyebrow">WRITE</span><h1 id="write-title">{overview.board.name} {postId ? '글 수정' : '글쓰기'}</h1></div><div className="gw-admin-actions"><button type="button" className="gw-secondary-button" onClick={() => navigate(`/boards/${boardSlug}`)}>목록 보기</button></div></header>
+    <header className="gw-page-header"><div><span className="gw-eyebrow">WRITE</span><h1 id="write-title">{overview.board.name} {postId ? '글 수정' : '글쓰기'}</h1></div><div className="gw-admin-actions"><button type="button" className="gw-secondary-button" onClick={goToList}>목록 보기</button></div></header>
     {error && <div className="gw-notice gw-notice--warning" role="alert">{error}</div>}
     <form className="gw-editor-form" onSubmit={(event) => { event.preventDefault(); submit(event.currentTarget, 'published'); }}>
       <label className="gw-field"><span>제목</span><input name="title" required maxLength="240" defaultValue={post?.title === '(제목 없음)' ? '' : post?.title ?? ''} /></label>
       {overview.board.settings.use_prefix && <label className="gw-field"><span>말머리</span><input name="postPrefix" maxLength="40" defaultValue={post?.prefix ?? ''} /></label>}
-      {overview.categories.length > 0 && <label className="gw-field"><span>카테고리</span><select name="categoryId" defaultValue={post?.category_id ?? ''}><option value="">선택 안 함</option>{overview.categories.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>}
+      {overview.categories.length > 0 && (
+        <label className="gw-field">
+          <span>카테고리</span>
+          <select
+            name="categoryId"
+            value={selectedCategoryId}
+            onChange={(event) => setSelectedCategoryId(event.target.value)}
+          >
+            <option value="">선택 안 함</option>
+            {overview.categories.map((item) => (
+              <option key={item.id} value={item.id}>{item.name}</option>
+            ))}
+          </select>
+        </label>
+      )}
       <div className="gw-field"><span>본문</span><BoardPostEditor board={overview.board} postId={activePostId} initialDocument={documentValue} initialUrls={initialUrls} initialAttachments={initialAttachments} onChange={setDocumentValue} onImageIdsChange={(ids) => { setInlineImageIds(ids); if (coverAttachmentId && !ids.includes(coverAttachmentId)) setCoverAttachmentId(''); }} /></div>
       {overview.board.settings.allow_attachments && <section className="gw-compose-attachments" aria-labelledby="compose-attachments-title"><div><h2 id="compose-attachments-title">첨부파일</h2><p>글을 게시하기 전에도 파일을 추가하거나 삭제할 수 있습니다.</p></div>{generalAttachments.length > 0 && <ul>{generalAttachments.map((item) => <li key={item.id}><span><strong>{item.original_name}</strong><small>{Math.ceil(item.file_size / 1024)}KB</small></span><button type="button" onClick={() => removeAttachment(item.id)} aria-label={`${item.original_name} 삭제`}>삭제</button></li>)}</ul>}{overview.permissions.upload && <label className="gw-file-button">{uploadingAttachments ? '업로드 중…' : '파일 선택'}<input type="file" multiple disabled={uploadingAttachments} onChange={uploadAttachments} /></label>}</section>}
       {overview.board.board_type === 'gallery' && inlineImageIds.length > 0 && <label className="gw-field"><span>갤러리 대표 이미지</span><select value={coverAttachmentId} onChange={(event) => setCoverAttachmentId(event.target.value)}><option value="">본문 첫 이미지 자동 사용</option>{inlineImageIds.map((id, index) => <option key={id} value={id}>본문 이미지 {index + 1}</option>)}</select></label>}
@@ -162,7 +201,7 @@ export default function PostWritePage() {
         {overview.permissions.notice && overview.board.settings.allow_important !== false && <label><input name="important" type="checkbox" defaultChecked={post?.is_important ?? false} /> 중요글</label>}
         {overview.permissions.pin && overview.board.settings.use_pinned !== false && <label><input name="pinned" type="checkbox" defaultChecked={post?.is_pinned ?? false} /> 상단 고정</label>}
       </div>
-      <div className="gw-admin-actions"><button type="button" className="gw-secondary-button" onClick={() => navigate(`/boards/${boardSlug}`)}>목록 보기</button><button className="gw-primary-button" type="submit" disabled={saving || uploadingAttachments}>게시</button><button className="gw-secondary-button" type="button" disabled={saving || uploadingAttachments} onClick={(event) => submit(event.currentTarget.form, 'draft')}>임시 저장</button></div>
+      <div className="gw-admin-actions"><button type="button" className="gw-secondary-button" onClick={goToList}>목록 보기</button><button className="gw-primary-button" type="submit" disabled={saving || uploadingAttachments}>게시</button><button className="gw-secondary-button" type="button" disabled={saving || uploadingAttachments} onClick={(event) => submit(event.currentTarget.form, 'draft')}>임시 저장</button></div>
     </form>
   </article>;
 }

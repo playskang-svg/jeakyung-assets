@@ -14,8 +14,9 @@ export default function PostDetailPage({ boardSlug: boardSlugProp, postId: postI
   const boardSlug = boardSlugProp ?? routeParams.boardSlug;
   const postId = postIdProp ?? routeParams.postId;
   const navigate = useNavigate(); const auth = useAuth();
-  const goToList = () => (onBack ? onBack() : navigate(`/boards/${boardSlug}`));
   const [data, setData] = useState(null); const [overview, setOverview] = useState(null); const [error, setError] = useState(''); const [actionError, setActionError] = useState(''); const [replyTo, setReplyTo] = useState(null); const [editingComment, setEditingComment] = useState(null); const [commentStatus, setCommentStatus] = useState(''); const [commentSaving, setCommentSaving] = useState(false); const [uploading, setUploading] = useState(false); const commentBoxRef = useRef(null);
+  const postCategory = data?.post?.category_id;
+  const goToList = () => (onBack ? onBack() : navigate(`/boards/${boardSlug}${postCategory ? `?category=${encodeURIComponent(postCategory)}` : ''}`));
   const load = () => Promise.all([getBoardPost(postId), getBoardOverview(boardSlug)]).then(([postData, boardData]) => { setData(postData); setOverview(boardData); setError(''); }).catch(() => setError('게시글을 볼 권한이 없거나 글을 찾을 수 없습니다.'));
   useEffect(() => { load(); }, [boardSlug, postId]);
   if (error) return <div className="gw-route-state"><div className="gw-notice gw-notice--warning" role="alert">{error}<br />{onBack
@@ -82,7 +83,7 @@ export default function PostDetailPage({ boardSlug: boardSlugProp, postId: postI
       <div>
         {onBack
           ? <button type="button" className="gw-flat-button" onClick={goToList}>목록</button>
-          : <Link className="gw-flat-button" to={`/boards/${boardSlug}`}>목록</Link>}
+          : <Link className="gw-flat-button" to={`/boards/${boardSlug}${postCategory ? `?category=${encodeURIComponent(postCategory)}` : ''}`}>목록</Link>}
         {overview.permissions.comment && overview.board.settings.allow_replies
           && <button type="button" className="gw-flat-button" onClick={() => { setEditingComment(null); setReplyTo(null); commentBoxRef.current?.focus(); }}>답글</button>}
       </div>

@@ -198,7 +198,7 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
 
     {overview.permissions.create && (
       <div className="gw-board-write-row">
-        <Link className="gw-board-write-button" to={`/boards/${boardSlug}/write`}>{isDiscussion ? '새 대화 시작' : '글쓰기'}</Link>
+        <Link className="gw-board-write-button" to={`/boards/${boardSlug}/write${category ? `?category=${encodeURIComponent(category)}` : ''}`}>{isDiscussion ? '새 대화 시작' : '글쓰기'}</Link>
       </div>
     )}
   </article>;
