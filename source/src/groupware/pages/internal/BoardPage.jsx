@@ -69,7 +69,11 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
     : <Link to={`/boards/${boardSlug}/posts/${postId}`} {...rest}>{children}</Link>);
 
   const isDiscussion = overview.board.board_type === 'discussion';
-  const totalPages = Math.max(1, Math.ceil((posts.total_count ?? posts.items.length) / (posts.page_size || 20)));
+  const pageSize = Number(overview.board?.settings?.page_size) || posts.page_size || 20;
+  const totalCount = posts.total_count != null
+    ? posts.total_count
+    : (posts.items.length === pageSize ? (page * pageSize) + 1 : ((page - 1) * pageSize) + posts.items.length);
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const selectCategory = (categoryId) => setParams((current) => {
     if (categoryId) current.set('category', categoryId);
     else current.delete('category');
@@ -92,8 +96,6 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
   // 표 형태 목록은 일반 게시판(공지·자유)에만 쓴다. 갤러리는 썸네일 격자,
   // 대화형은 댓글 수를 앞세운 카드가 각각 그 형식의 요점이라 그대로 둔다.
   const isTableList = !isDiscussion && overview.board.board_type !== 'gallery';
-  const pageSize = posts.page_size || 20;
-  const totalCount = posts.total_count ?? posts.items.length;
   // 글 번호는 최신 글이 가장 큰 수가 되게 매긴다. 페이지를 넘겨도 이어진다.
   const numberOf = (index) => totalCount - ((page - 1) * pageSize) - index;
 

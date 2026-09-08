@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { supabase } from '../lib/supabase.js';
 import { APPROVAL_STATE_CHANGED_EVENT, approvalService } from '../services/approvalService.js';
 import PopupLayer from '../../shared/popup/PopupLayer.jsx';
-import PresenceList from '../components/messenger/PresenceList.jsx';
+// import PresenceList from '../components/messenger/PresenceList.jsx';
 import ChatWidget from '../components/messenger/ChatWidget.jsx';
 
 function getPopupTarget(pathname) {
@@ -94,7 +94,6 @@ export default function AppShell() {
               </Link>
             )}
             <div className="gw-notification-menu" ref={notificationRef}><button type="button" aria-expanded={notificationsOpen} aria-controls="groupware-notification-panel" title="개인 알림" onClick={() => setNotificationsOpen((current) => !current)}><span aria-hidden="true">●</span><span className="gw-tool-label">알림</span>{headerState.unread_count > 0 && <span className="gw-topbar-count">{headerState.unread_count}</span>}</button>{notificationsOpen && <div className="gw-notification-panel" id="groupware-notification-panel"><header><strong>개인 알림</strong>{headerState.unread_count > 0 && <button type="button" onClick={async () => { await approvalService.markNotificationRead(); setHeaderState((current) => ({ ...current, unread_count: 0, notifications: current.notifications.map((item) => ({ ...item, read_at: item.read_at ?? new Date().toISOString() })) })); }}>모두 읽음</button>}</header><div>{headerState.notifications.map((item) => <button type="button" className={item.read_at ? '' : 'is-unread'} key={item.id} onClick={async () => { if (!item.read_at) await approvalService.markNotificationRead(item.id); setNotificationsOpen(false); if (item.route) navigate(item.route); }}><strong>{item.title}</strong><span>{item.message}</span><time>{new Date(item.created_at).toLocaleString('ko-KR')}</time></button>)}</div>{headerState.notifications.length === 0 && <p>새 알림이 없습니다.</p>}</div>}</div>
-            <PresenceList onUserClick={(targetUser) => setSelectedChatUser(targetUser)} />
             <UserAccountMenu onSignOutError={setSignOutError} />
           </div>
         </header>
