@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import QRCode from 'qrcode';
 
 import { useAuth } from '../../context/AuthContext.jsx';
 import CompanyMark from '../../components/CompanyMark.jsx';
@@ -75,52 +76,29 @@ function CardMapGraphic() {
   );
 }
 
-// 명함용 벡터 QR 코드 컴포넌트
-function CardQrGraphic() {
+// 명함용 실제 스마트폰 스캔 가능한 고해상도 QR 코드 컴포넌트
+function CardQrGraphic({ qrDataUrl, qrType }) {
   return (
-    <div className="gw-card-qr-box">
-      <svg viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="29" height="29" rx="3" fill="white"/>
-        {/* 모서리 마커 */}
-        <rect x="2" y="2" width="7" height="7" rx="1.5" fill="#0f172a"/>
-        <rect x="3.5" y="3.5" width="4" height="4" rx="0.5" fill="white"/>
-        <rect x="4.5" y="4.5" width="2" height="2" fill="#0f172a"/>
-        
-        <rect x="20" y="2" width="7" height="7" rx="1.5" fill="#0f172a"/>
-        <rect x="21.5" y="3.5" width="4" height="4" rx="0.5" fill="white"/>
-        <rect x="22.5" y="4.5" width="2" height="2" fill="#0f172a"/>
-        
-        <rect x="2" y="20" width="7" height="7" rx="1.5" fill="#0f172a"/>
-        <rect x="3.5" y="21.5" width="4" height="4" rx="0.5" fill="white"/>
-        <rect x="4.5" y="22.5" width="2" height="2" fill="#0f172a"/>
-        
-        {/* QR 패턴 도트 */}
-        <rect x="11" y="3" width="2" height="2" fill="#0f172a"/>
-        <rect x="14" y="2" width="2" height="2" fill="#0f172a"/>
-        <rect x="16" y="4" width="2" height="2" fill="#0f172a"/>
-        <rect x="11" y="7" width="2" height="2" fill="#0f172a"/>
-        <rect x="15" y="8" width="2" height="2" fill="#0f172a"/>
-        <rect x="3" y="11" width="2" height="2" fill="#0f172a"/>
-        <rect x="7" y="12" width="2" height="2" fill="#0f172a"/>
-        <rect x="11" y="11" width="2" height="2" fill="#0f172a"/>
-        <rect x="13" y="13" width="2" height="2" fill="#0f172a"/>
-        <rect x="17" y="11" width="2" height="2" fill="#0f172a"/>
-        <rect x="21" y="12" width="2" height="2" fill="#0f172a"/>
-        <rect x="25" y="10" width="2" height="2" fill="#0f172a"/>
-        <rect x="5" y="15" width="2" height="2" fill="#0f172a"/>
-        <rect x="9" y="16" width="2" height="2" fill="#0f172a"/>
-        <rect x="12" y="17" width="2" height="2" fill="#0f172a"/>
-        <rect x="15" y="15" width="2" height="2" fill="#0f172a"/>
-        <rect x="19" y="16" width="2" height="2" fill="#0f172a"/>
-        <rect x="24" y="14" width="2" height="2" fill="#0f172a"/>
-        <rect x="11" y="21" width="2" height="2" fill="#0f172a"/>
-        <rect x="14" y="23" width="2" height="2" fill="#0f172a"/>
-        <rect x="17" y="20" width="2" height="2" fill="#0f172a"/>
-        <rect x="12" y="25" width="2" height="2" fill="#0f172a"/>
-        <rect x="21" y="22" width="2" height="2" fill="#0f172a"/>
-        <rect x="24" y="24" width="2" height="2" fill="#0f172a"/>
-      </svg>
-      <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 700, letterSpacing: '-0.02em' }}>SCAN CONTACT</span>
+    <div
+      className="gw-card-qr-box"
+      title={
+        qrType === 'url'
+          ? '스마트폰 카메라로 비추면 웹사이트(https://jeakyung.com)가 즉시 열립니다.'
+          : '스마트폰 카메라로 비추면 스마트폰 연락처에 즉시 추가(vCard)됩니다.'
+      }
+    >
+      {qrDataUrl ? (
+        <img
+          src={qrDataUrl}
+          alt="실제 스캔 가능한 명함 QR 코드"
+          className="gw-card-qr-img"
+        />
+      ) : (
+        <div style={{ fontSize: '9px', color: '#94a3b8' }}>QR 생성중...</div>
+      )}
+      <span className="gw-card-qr-label">
+        {qrType === 'url' ? 'VISIT WEBSITE' : 'SAVE CONTACT'}
+      </span>
     </div>
   );
 }
@@ -171,6 +149,8 @@ export default function BusinessCardPage() {
       enCompanyName: 'JEAKYUNG LOGIS',
       enTagline: 'Beyond Logistics, Better Solutions.',
       enAddress: '',
+      qrType: 'vcard', // 'vcard' | 'url'
+      qrCustomUrl: '',
 
       // 뒷면 — 회사 약도
       mapLocationName: '재경로지스 서울경기지사',
@@ -198,8 +178,90 @@ export default function BusinessCardPage() {
 
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [shareToast, setShareToast] = useState('');
+  const [qrDataUrl, setQrDataUrl] = useState('');
 
   const patch = (key, value) => setCard((current) => ({ ...current, [key]: value }));
+
+  // 실제 스캔 가능한 QR 코드 자동 생성 (vCard 또는 홈페이지 URL)
+  useEffect(() => {
+    let active = true;
+
+    async function generateQR() {
+      try {
+        let content = '';
+        if (card.qrType === 'url') {
+          content = card.qrCustomUrl || `https://${COMPANY.site}`;
+        } else {
+          // vCard 3.0 포맷 — 스마트폰 카메라로 스캔 시 즉시 주소록 연락처 등록
+          const nameToUse = card.name || card.enName || '재경로지스';
+          const orgToUse = card.enCompanyName || COMPANY.name;
+          const titleToUse = card.title || card.enTitle || '';
+          const deptToUse = card.department || card.enDepartment || '';
+          const mobileToUse = card.mobile || '';
+          const officeToUse = card.office || '';
+          const emailToUse = card.email || '';
+          const addressToUse = card.address || card.enAddress || '';
+
+          const vcard = [
+            'BEGIN:VCARD',
+            'VERSION:3.0',
+            `FN:${nameToUse}`,
+            card.name && card.name.length >= 2
+              ? `N:${card.name.slice(0, 1)};${card.name.slice(1)};;;`
+              : `N:${nameToUse};;;;`,
+            `ORG:${orgToUse}${deptToUse ? ';' + deptToUse : ''}`,
+            titleToUse ? `TITLE:${titleToUse}` : '',
+            mobileToUse ? `TEL;TYPE=CELL:${mobileToUse}` : '',
+            officeToUse ? `TEL;TYPE=WORK:${officeToUse}` : '',
+            emailToUse ? `EMAIL;TYPE=WORK:${emailToUse}` : '',
+            addressToUse ? `ADR;TYPE=WORK:;;${addressToUse};;;;` : '',
+            `URL:https://${COMPANY.site}`,
+            'NOTE:재경로지스 임직원 디지털 명함',
+            'END:VCARD',
+          ].filter(Boolean).join('\n');
+
+          content = vcard;
+        }
+
+        const url = await QRCode.toDataURL(content, {
+          width: 256,
+          margin: 1,
+          color: {
+            dark: '#0f172a',
+            light: '#ffffff',
+          },
+          errorCorrectionLevel: 'M',
+        });
+
+        if (active) {
+          setQrDataUrl(url);
+        }
+      } catch (err) {
+        console.error('QR code generation failed:', err);
+      }
+    }
+
+    generateQR();
+
+    return () => {
+      active = false;
+    };
+  }, [
+    card.qrType,
+    card.qrCustomUrl,
+    card.name,
+    card.enName,
+    card.title,
+    card.enTitle,
+    card.department,
+    card.enDepartment,
+    card.mobile,
+    card.office,
+    card.email,
+    card.address,
+    card.enAddress,
+    card.enCompanyName,
+  ]);
 
   // 프로필 사진 우선순위: 명함 전용 사진(photoUrl) > 프로필 기본 사진(profilePhotoUrl)
   const activePhotoUrl = card.photoUrl || profilePhotoUrl;
@@ -436,7 +498,7 @@ ${card.name || '이름'} ${[card.department, card.title].filter(Boolean).join(' 
                 </div>
 
                 <div className="gw-card-body-right">
-                  <CardQrGraphic />
+                  <CardQrGraphic qrDataUrl={qrDataUrl} qrType={card.qrType || 'vcard'} />
                 </div>
               </div>
             </div>
@@ -676,6 +738,37 @@ ${card.name || '이름'} ${[card.department, card.title].filter(Boolean).join(' 
                   }}
                 />
               </label>
+
+              <label className="gw-field">
+                <span>뒷면 QR 코드 스캔 시 동작</span>
+                <select
+                  value={card.qrType || 'vcard'}
+                  onChange={(e) => patch('qrType', e.target.value)}
+                  style={{
+                    border: '1px solid var(--gw-border)',
+                    borderRadius: '8px',
+                    padding: '8px 12px',
+                    fontSize: '13px',
+                    background: '#fff',
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  <option value="vcard">📱 스마트폰 연락처 저장 (vCard — 카메라로 비추면 이름/번호/이메일 저장)</option>
+                  <option value="url">🌐 회사 홈페이지 이동 (https://jeakyung.com)</option>
+                </select>
+              </label>
+
+              {card.qrType === 'url' && (
+                <label className="gw-field">
+                  <span>연결할 웹사이트 주소</span>
+                  <input
+                    value={card.qrCustomUrl || `https://${COMPANY.site}`}
+                    placeholder={`https://${COMPANY.site}`}
+                    maxLength={120}
+                    onChange={(e) => patch('qrCustomUrl', e.target.value)}
+                  />
+                </label>
+              )}
             </div>
           )}
 
