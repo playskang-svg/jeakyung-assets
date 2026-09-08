@@ -38,7 +38,7 @@ function PostFlags({ post }) {
 // props로 게시판을 받고, 뒤로가기·목록 이동처럼 전체 화면 전제의 동선은 숨긴다.
 // onOpenPost: 글을 눌렀을 때 다른 화면으로 이동하는 대신 이 함수를 부른다.
 // 팝업 안에서 목록 ↔ 본문을 같은 화면에서 바꿔 끼우기 위해 쓴다.
-export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, onOpenPost = null }) {
+export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, onOpenPost = null, buttonBox = null }) {
   const navigate = useNavigate();
   const routeParams = useParams(); const boardSlug = boardSlugProp ?? routeParams.boardSlug;
   const [params, setParams] = useSearchParams();
@@ -118,6 +118,29 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
         {!embedded && <Link className="gw-secondary-button" to="/boards">전체목록</Link>}
       </div>
     </header>
+
+    {/* 바로가기 버튼 박스 (탭 이름과 게시판 카테고리 사이 공간) */}
+    {buttonBox && Array.isArray(buttonBox.items) && buttonBox.items.length > 0 && (
+      <div className="gw-board-shortcuts" role="toolbar" aria-label="바로가기 링크">
+        {buttonBox.items.map((shortcut) => (
+          <a
+            key={shortcut.id || shortcut.label}
+            href={shortcut.url && shortcut.url !== '#' ? shortcut.url : '#'}
+            target={shortcut.url && shortcut.url !== '#' ? '_blank' : undefined}
+            rel={shortcut.url && shortcut.url !== '#' ? 'noopener noreferrer' : undefined}
+            className="gw-board-shortcut-btn"
+            onClick={(e) => {
+              if (!shortcut.url || shortcut.url === '#') {
+                e.preventDefault();
+                alert('관리자 화면(페이지 또는 버튼 박스 관리)에서 바로가기 링크를 설정해 주세요.');
+              }
+            }}
+          >
+            {shortcut.label}
+          </a>
+        ))}
+      </div>
+    )}
 
     {/* 분류 탭. 고른 것만 진하게 채워 지금 어디를 보고 있는지 한눈에 보이게 한다. */}
     {overview.categories.length > 0 && (

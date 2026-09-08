@@ -56,6 +56,11 @@ export default function LinkTreePage() {
                 aria-current={item.id === activeItem?.id ? 'page' : undefined}
                 onClick={() => selectItem(item)}
               >
+                {item.button_box && (
+                  <span className="gw-tab-link-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: '-1px', marginRight: '5px' }}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
+                  </span>
+                )}
                 {item.label}
               </button>
             ) : (
@@ -67,8 +72,8 @@ export default function LinkTreePage() {
           </nav>
         )}
       </header>
-      {/* 고른 탭에 매달린 버튼 줄. 탭을 바꾸면 이 줄도 함께 바뀐다. */}
-      {activeItem?.button_box && (
+      {/* 고른 탭에 매달린 버튼 줄. 게시판이 아닌 항목일 때만 상단에 둔다. (게시판은 제목과 카테고리 사이에 배치) */}
+      {activeItem?.button_box && activeItem.item_type !== 'board' && (
         <div className="gw-linktree-buttons">
           <ButtonBoxGrid box={activeItem.button_box} items={activeItem.button_box.items} />
         </div>

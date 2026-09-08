@@ -33,7 +33,7 @@ function ButtonList({ buttons }) {
 export default function PageSection({ item }) {
   if (item.item_type === 'board') {
     return item.board_slug
-      ? <BoardPage key={item.id} boardSlug={item.board_slug} embedded />
+      ? <BoardPage key={item.id} boardSlug={item.board_slug} embedded buttonBox={item.button_box} />
       : <p className="gw-empty-state">연결된 게시판을 찾을 수 없습니다.</p>;
   }
 
