@@ -6867,19 +6867,21 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
 /* 명함 공유 버튼 */
 .gw-card-share-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   margin-top: 14px;
+  flex-wrap: wrap;
 }
 
 .gw-share-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  flex: 1;
-  padding: 11px 16px;
-  border-radius: 10px;
-  font-size: 14px;
+  gap: 6px;
+  flex: 1 1 calc(50% - 6px);
+  min-width: 130px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -6887,19 +6889,33 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+.gw-share-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .gw-share-btn--kakao {
   background-color: #FEE500;
   color: #191919;
+  flex: 1 1 100%;
 }
-.gw-share-btn--kakao:hover {
+.gw-share-btn--kakao:hover:not(:disabled) {
   background-color: #fdd800;
+}
+
+.gw-share-btn--download {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+.gw-share-btn--download:hover:not(:disabled) {
+  background-color: #1d4ed8;
 }
 
 .gw-share-btn--email {
   background-color: #0f172a;
   color: #ffffff;
 }
-.gw-share-btn--email:hover {
+.gw-share-btn--email:hover:not(:disabled) {
   background-color: #1e293b;
 }
 

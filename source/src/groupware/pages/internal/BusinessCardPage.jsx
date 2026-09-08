@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import QRCode from 'qrcode';
+import html2canvas from 'html2canvas';
 
 import { useAuth } from '../../context/AuthContext.jsx';
 import CompanyMark from '../../components/CompanyMark.jsx';
@@ -168,7 +169,9 @@ export default function BusinessCardPage() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return { ...initial, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        if (parsed.enName) parsed.enName = parsed.enName.replace(/-/g, '').trim();
+        return { ...initial, ...parsed };
       }
     } catch {
       // ignore JSON parse error
@@ -176,6 +179,9 @@ export default function BusinessCardPage() {
     return initial;
   });
 
+  const frontCardRef = useRef(null);
+  const backCardRef = useRef(null);
+  const [isCapturing, setIsCapturing] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [shareToast, setShareToast] = useState('');
   const [qrDataUrl, setQrDataUrl] = useState('');
@@ -287,19 +293,19 @@ export default function BusinessCardPage() {
     patch('photoUrl', '');
   };
 
-  // 한글 입력값을 영문으로 자동 변환 (원클릭 자동 채우기)
+  // 한글 입력값을 영문으로 자동 변환 (원클릭 자동 채우기 - 하이픈 표기 일체 제거)
   const handleAutoTranslate = () => {
-    const enName = romanizeKoreanName(card.name);
-    const enTitle = translateTitle(card.title);
-    const enDept = translateDepartment(card.department);
-    const enAddr = translateAddress(card.address);
+    const enName = (romanizeKoreanName(card.name) || '').replace(/-/g, '').replace(/\s+/g, ' ').trim();
+    const enTitle = (translateTitle(card.title) || '').replace(/-/g, '').trim();
+    const enDept = (translateDepartment(card.department) || '').replace(/-/g, '').trim();
+    const enAddr = (translateAddress(card.address) || '').replace(/-/g, '').trim();
 
     setCard((prev) => ({
       ...prev,
-      enName: enName || prev.enName,
-      enTitle: enTitle || prev.enTitle,
-      enDepartment: enDept || prev.enDepartment,
-      enAddress: enAddr || prev.enAddress,
+      enName: enName || (prev.enName ? prev.enName.replace(/-/g, '').trim() : ''),
+      enTitle: enTitle || (prev.enTitle ? prev.enTitle.replace(/-/g, '').trim() : ''),
+      enDepartment: enDept || (prev.enDepartment ? prev.enDepartment.replace(/-/g, '').trim() : ''),
+      enAddress: enAddr || (prev.enAddress ? prev.enAddress.replace(/-/g, '').trim() : ''),
       enCompanyName: prev.enCompanyName || COMPANY.nameEn,
       enTagline: prev.enTagline || COMPANY.tagline,
     }));
@@ -334,9 +340,35 @@ Beyond Logistics, Better Solutions.`;
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
-  // 카카오톡 / 클립보드 공유 핸들러
+  // 명함 엘리먼트를 고해상도 PNG Blob으로 렌더링
+  const generateCardBlob = async (element) => {
+    if (!element) return null;
+    const canvas = await html2canvas(element, {
+      scale: 3, // 선명한 3배율 고화질 렌더링
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+    });
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => resolve(blob), 'image/png', 0.95);
+    });
+  };
+
+  // 카카오톡 / 명함 이미지 공유 핸들러
   const handleKakaoShare = async () => {
-    const shareText = `[명함] ${COMPANY.name}
+    setIsCapturing(true);
+    setShareToast('명함 이미지를 생성하고 있습니다…');
+    try {
+      const frontElement = frontCardRef.current;
+      const blob = await generateCardBlob(frontElement);
+      if (!blob) throw new Error('명함 이미지를 생성하지 못했습니다.');
+
+      const cleanName = (card.name || '재경로지스').replace(/\s+/g, '_');
+      const fileName = `${cleanName}_명함.png`;
+      const file = new File([blob], fileName, { type: 'image/png' });
+
+      const shareText = `[명함] ${COMPANY.name}
 ${card.name || '이름'} ${[card.department, card.title].filter(Boolean).join(' · ')}
 ━━━━━━━━━━━━━━━━━━━━
 • 휴대폰: ${card.mobile || '-'}
@@ -345,25 +377,83 @@ ${card.name || '이름'} ${[card.department, card.title].filter(Boolean).join(' 
 • 주소: ${card.address || '-'}
 • 웹사이트: https://${COMPANY.site}`;
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${COMPANY.name} ${card.name} 명함`,
-          text: shareText,
-          url: `https://${COMPANY.site}`,
-        });
-        return;
-      } catch {
-        // user cancelled or share failed, fallback to clipboard
+      // 1. 모바일 기기 및 Web Share API 지원 환경: 이미지 파일을 직접 공유
+      // 주의: url 파라미터를 단독으로 주면 앱이 이미지를 버리고 url 링크만 전송하므로 파일과 본문 텍스트로 전달
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: `${COMPANY.name} ${card.name} 명함`,
+            text: shareText,
+          });
+          setShareToast('✓ 명함 이미지가 공유되었습니다.');
+          setTimeout(() => setShareToast(''), 4000);
+          return;
+        } catch (shareErr) {
+          if (shareErr.name === 'AbortError') {
+            setShareToast('');
+            return;
+          }
+        }
       }
-    }
 
+      // 2. PC / 데스크톱 환경: 클립보드에 이미지(PNG)를 직접 복사!
+      // 카카오톡 PC 대화방에 바로 붙여넣기(Cmd/Ctrl+V)하면 명함 사진이 짠 하고 전송됨
+      if (navigator.clipboard && window.ClipboardItem) {
+        try {
+          await navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': blob }),
+          ]);
+          setShareToast('✓ 명함 사진이 클립보드에 복사되었습니다! 카카오톡 대화방에 붙여넣기(Ctrl+V / Cmd+V)하시면 명함 이미지가 바로 전송됩니다.');
+          setTimeout(() => setShareToast(''), 7000);
+          return;
+        } catch {
+          // fallback to download
+        }
+      }
+
+      // 3. 클립보드 이미지 복사 미지원 시: 이미지 파일 자동 다운로드
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+      setShareToast('✓ 명함 이미지가 다운로드되었습니다. 카카오톡 대화방에 사진을 전송하세요!');
+      setTimeout(() => setShareToast(''), 5000);
+    } catch (err) {
+      console.error(err);
+      alert('명함 이미지 생성 중 오류가 발생했습니다: ' + (err.message || err));
+    } finally {
+      setIsCapturing(false);
+    }
+  };
+
+  // 명함 이미지 파일 다운로드 (앞면 / 뒷면)
+  const handleDownloadCard = async (type = 'front') => {
+    setIsCapturing(true);
+    setShareToast(`명함 ${type === 'front' ? '앞면' : '뒷면'} 이미지를 저장하고 있습니다…`);
     try {
-      await navigator.clipboard.writeText(shareText);
-      setShareToast('카카오톡 공유용 명함 내용이 복사되었습니다. 대화방에 붙여넣기(Cmd/Ctrl+V)하세요!');
+      const element = type === 'front' ? frontCardRef.current : backCardRef.current;
+      if (!element) throw new Error('명함 미리보기를 찾을 수 없습니다.');
+      const blob = await generateCardBlob(element);
+      if (!blob) throw new Error('이미지를 생성하지 못했습니다.');
+
+      const cleanName = (card.name || '재경로지스').replace(/\s+/g, '_');
+      const fileName = `${cleanName}_명함_${type === 'front' ? '앞면' : '뒷면'}.png`;
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+      setShareToast(`✓ 명함 ${type === 'front' ? '앞면' : '뒷면'} 이미지가 다운로드되었습니다.`);
       setTimeout(() => setShareToast(''), 4000);
-    } catch {
-      alert('클립보드 복사에 실패했습니다.');
+    } catch (err) {
+      alert('다운로드 중 오류가 발생했습니다: ' + (err.message || err));
+    } finally {
+      setIsCapturing(false);
     }
   };
 
@@ -397,7 +487,7 @@ ${card.name || '이름'} ${[card.department, card.title].filter(Boolean).join(' 
         {/* ========================================================================= */}
         <section className="gw-card-preview-wrap" aria-label="명함 미리보기">
           {/* 1. 명함 앞면 (라운드 외곽 + 3D 입체 그림자 + 우측 프로필 사진) */}
-          <div className="gw-card-preview">
+          <div className="gw-card-preview" ref={frontCardRef}>
             <div className="gw-card-preview-top">
               <CompanyMark className="gw-card-mark" />
               <div>
@@ -461,121 +551,157 @@ ${card.name || '이름'} ${[card.department, card.title].filter(Boolean).join(' 
           </div>
 
           {/* 3. 명함 뒷면 (선택된 템플릿 렌더링) */}
-          {card.backType === 'english' && (
-            <div className="gw-card-preview gw-card-preview--back gw-card-preview--english">
-              <div className="gw-card-preview-top">
-                <CompanyMark className="gw-card-mark" />
-                <div>
-                  <strong>{card.enCompanyName || COMPANY.nameEn}</strong>
-                  <span>{card.enTagline || COMPANY.tagline}</span>
-                </div>
-              </div>
-
-              <hr className="gw-card-divider" />
-
-              <div className="gw-card-body">
-                <div className="gw-card-body-left">
-                  <div className="gw-card-preview-name">
-                    <strong style={{ textTransform: 'uppercase', letterSpacing: '-0.02em' }}>
-                      {card.enName || (card.name ? romanizeKoreanName(card.name) : 'NAME')}
-                    </strong>
-                    <span>
-                      {[
-                        card.enDepartment || (card.department ? translateDepartment(card.department) : ''),
-                        card.enTitle || (card.title ? translateTitle(card.title) : ''),
-                      ].filter(Boolean).join(', ') || 'Department, Title'}
-                    </span>
+          <div ref={backCardRef}>
+            {card.backType === 'english' && (
+              <div className="gw-card-preview gw-card-preview--back gw-card-preview--english">
+                <div className="gw-card-preview-top">
+                  <CompanyMark className="gw-card-mark" />
+                  <div>
+                    <strong>{card.enCompanyName || COMPANY.nameEn}</strong>
+                    <span>{card.enTagline || COMPANY.tagline}</span>
                   </div>
-                  <dl className="gw-card-preview-contact">
-                    {card.mobile && <div><dt>M</dt><dd>{card.mobile}</dd></div>}
-                    {card.office && <div><dt>T</dt><dd>{card.office}</dd></div>}
-                    {card.email && <div><dt>E</dt><dd>{card.email}</dd></div>}
-                    {(card.enAddress || card.address) && (
-                      <div><dt>A</dt><dd>{card.enAddress || translateAddress(card.address)}</dd></div>
-                    )}
-                    <div><dt>W</dt><dd>{COMPANY.site}</dd></div>
-                  </dl>
                 </div>
 
-                <div className="gw-card-body-right">
-                  <CardQrGraphic qrDataUrl={qrDataUrl} qrType={card.qrType || 'vcard'} />
-                </div>
-              </div>
-            </div>
-          )}
+                <hr className="gw-card-divider" />
 
-          {card.backType === 'map' && (
-            <div className="gw-card-preview gw-card-preview--back gw-card-preview--map">
-              <div className="gw-card-map-header">
-                <CompanyMark className="gw-card-mark gw-card-mark--sm" />
-                <div>
-                  <strong>{card.mapLocationName || '재경로지스 서울경기지사'}</strong>
-                  <span>{card.mapAddress || card.address || '경기도 평택시 비전2로 79 (비전동) 701호'}</span>
-                </div>
-              </div>
+                <div className="gw-card-body">
+                  <div className="gw-card-body-left">
+                    <div className="gw-card-preview-name">
+                      <strong style={{ textTransform: 'uppercase', letterSpacing: '-0.02em' }}>
+                        {(card.enName || (card.name ? romanizeKoreanName(card.name) : 'NAME')).replace(/-/g, '').trim()}
+                      </strong>
+                      <span>
+                        {[
+                          card.enDepartment || (card.department ? translateDepartment(card.department) : ''),
+                          card.enTitle || (card.title ? translateTitle(card.title) : ''),
+                        ].filter(Boolean).join(', ') || 'Department, Title'}
+                      </span>
+                    </div>
+                    <dl className="gw-card-preview-contact">
+                      {card.mobile && <div><dt>M</dt><dd>{card.mobile}</dd></div>}
+                      {card.office && <div><dt>T</dt><dd>{card.office}</dd></div>}
+                      {card.email && <div><dt>E</dt><dd>{card.email}</dd></div>}
+                      {(card.enAddress || card.address) && (
+                        <div><dt>A</dt><dd>{card.enAddress || translateAddress(card.address)}</dd></div>
+                      )}
+                      <div><dt>W</dt><dd>{COMPANY.site}</dd></div>
+                    </dl>
+                  </div>
 
-              <div className="gw-card-map-svg-wrap">
-                <CardMapGraphic />
-              </div>
-
-              <div className="gw-card-map-info-grid">
-                <div className="gw-card-map-info-item">
-                  <span className="gw-map-badge">🚇 대중교통</span>
-                  <p title={card.mapSubway}>{card.mapSubway || '1호선 평택역 1번 출구 버스 15분 / 지제역 SRT'}</p>
-                </div>
-                <div className="gw-card-map-info-item">
-                  <span className="gw-map-badge">🚗 자가용/주차</span>
-                  <p title={card.mapParking}>{card.mapParking || '건물 지하 주차장 완비 / 안성IC 10분'}</p>
+                  <div className="gw-card-body-right">
+                    <CardQrGraphic qrDataUrl={qrDataUrl} qrType={card.qrType || 'vcard'} />
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {card.backType === 'slogan' && (
-            <div className="gw-card-preview gw-card-preview--back gw-card-preview--slogan">
-              <div className="gw-slogan-content">
-                <div className="gw-slogan-top">
+            {card.backType === 'map' && (
+              <div className="gw-card-preview gw-card-preview--back gw-card-preview--map">
+                <div className="gw-card-map-header">
                   <CompanyMark className="gw-card-mark gw-card-mark--sm" />
-                  <span>JEAKYUNG LOGISTICS</span>
-                </div>
-
-                <div className="gw-slogan-main">
-                  <h4 className="gw-slogan-title">{card.sloganMain || 'Beyond Logistics, Better Solutions.'}</h4>
-                  <p className="gw-slogan-sub">
-                    {card.sloganSub || '신뢰와 혁신을 바탕으로 최적화된 운송 솔루션을 제공하며, 고객과 함께 성장하는 스마트 물류 파트너'}
-                  </p>
-                  <div className="gw-slogan-values">
-                    {(card.sloganValues || '신속 정시 배송, 안전 최우선, 스마트 물류 시스템, 고객 맞춤 솔루션')
-                      .split(',')
-                      .map((v, i) => (
-                        <span key={i} className="gw-slogan-pill">{v.trim()}</span>
-                      ))}
+                  <div>
+                    <strong>{card.mapLocationName || '재경로지스 서울경기지사'}</strong>
+                    <span>{card.mapAddress || card.address || '경기도 평택시 비전2로 79 (비전동) 701호'}</span>
                   </div>
                 </div>
 
-                <div className="gw-slogan-foot">
-                  <span>{card.sloganFoot || `고객지원 ${card.office || '1588-0000'}`}</span>
-                  <span>{COMPANY.site}</span>
+                <div className="gw-card-map-svg-wrap">
+                  <CardMapGraphic />
+                </div>
+
+                <div className="gw-card-map-info-grid">
+                  <div className="gw-card-map-info-item">
+                    <span className="gw-map-badge">🚇 대중교통</span>
+                    <p title={card.mapSubway}>{card.mapSubway || '1호선 평택역 1번 출구 버스 15분 / 지제역 SRT'}</p>
+                  </div>
+                  <div className="gw-card-map-info-item">
+                    <span className="gw-map-badge">🚗 자가용/주차</span>
+                    <p title={card.mapParking}>{card.mapParking || '건물 지하 주차장 완비 / 안성IC 10분'}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {card.backType === 'slogan' && (
+              <div className="gw-card-preview gw-card-preview--back gw-card-preview--slogan">
+                <div className="gw-slogan-content">
+                  <div className="gw-slogan-top">
+                    <CompanyMark className="gw-card-mark gw-card-mark--sm" />
+                    <span>JEAKYUNG LOGISTICS</span>
+                  </div>
+
+                  <div className="gw-slogan-main">
+                    <h4 className="gw-slogan-title">{card.sloganMain || 'Beyond Logistics, Better Solutions.'}</h4>
+                    <p className="gw-slogan-sub">
+                      {card.sloganSub || '신뢰와 혁신을 바탕으로 최적화된 운송 솔루션을 제공하며, 고객과 함께 성장하는 스마트 물류 파트너'}
+                    </p>
+                    <div className="gw-slogan-values">
+                      {(card.sloganValues || '신속 정시 배송, 안전 최우선, 스마트 물류 시스템, 고객 맞춤 솔루션')
+                        .split(',')
+                        .map((v, i) => (
+                          <span key={i} className="gw-slogan-pill">{v.trim()}</span>
+                        ))}
+                    </div>
+                  </div>
+
+                  <div className="gw-slogan-foot">
+                    <span>{card.sloganFoot || `고객지원 ${card.office || '1588-0000'}`}</span>
+                    <span>{COMPANY.site}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           <p className="gw-field-hint">실제 인쇄 비율(90×50mm, 1.5배 확대) 뒷면 미리보기입니다.</p>
 
-          {/* 명함 공유 액션 버튼 */}
+          {/* 명함 공유 및 고화질 사진 저장 액션 버튼 */}
           <div className="gw-card-share-actions">
-            <button type="button" className="gw-share-btn gw-share-btn--kakao" onClick={handleKakaoShare} title="카카오톡으로 명함 공유">
+            <button
+              type="button"
+              className="gw-share-btn gw-share-btn--kakao"
+              onClick={handleKakaoShare}
+              disabled={isCapturing}
+              title="명함 사진으로 카카오톡 공유 (대화방에 사진 복사·전송)"
+            >
               <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                 <path d="M12 3c-5.523 0-10 3.582-10 8 0 2.868 1.895 5.378 4.75 6.784l-.84 3.084c-.113.414.155.83.567.83.15 0 .302-.055.424-.162l3.636-2.457c.478.077.967.121 1.463.121 5.523 0 10-3.582 10-8s-4.477-8-10-8z"/>
               </svg>
-              <span>카카오톡 공유</span>
+              <span>{isCapturing ? '이미지 생성 중…' : '카카오톡 / 명함 사진 공유'}</span>
             </button>
-            <button type="button" className="gw-share-btn gw-share-btn--email" onClick={handleEmailShare} title="이메일로 명함 공유">
+            <button
+              type="button"
+              className="gw-share-btn gw-share-btn--download"
+              onClick={() => handleDownloadCard('front')}
+              disabled={isCapturing}
+              title="명함 앞면 고화질 PNG 이미지 파일 다운로드"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span>앞면 사진 저장</span>
+            </button>
+            <button
+              type="button"
+              className="gw-share-btn gw-share-btn--download"
+              onClick={() => handleDownloadCard('back')}
+              disabled={isCapturing}
+              title="명함 뒷면 고화질 PNG 이미지 파일 다운로드"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span>뒷면 사진 저장</span>
+            </button>
+            <button type="button" className="gw-share-btn gw-share-btn--email" onClick={handleEmailShare} title="이메일로 명함 정보 공유">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
               </svg>
-              <span>이메일 공유</span>
+              <span>이메일</span>
             </button>
           </div>
         </section>
@@ -674,10 +800,10 @@ ${card.name || '이름'} ${[card.department, card.title].filter(Boolean).join(' 
               <label className="gw-field">
                 <span>영문 성명 (Full Name)</span>
                 <input
-                  value={card.enName || ''}
-                  placeholder={card.name ? romanizeKoreanName(card.name) : 'e.g. Seok-ki Kang'}
+                  value={(card.enName || '').replace(/-/g, '')}
+                  placeholder={card.name ? romanizeKoreanName(card.name) : 'e.g. Seokki Kang'}
                   maxLength={60}
-                  onChange={(e) => patch('enName', e.target.value)}
+                  onChange={(e) => patch('enName', e.target.value.replace(/-/g, ''))}
                 />
               </label>
 

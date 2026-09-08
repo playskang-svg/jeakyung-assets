@@ -37,16 +37,17 @@ function romanizeSyllable(char) {
 }
 
 export function romanizeKoreanName(fullName) {
-  fullName = (fullName || '').trim();
+  fullName = (fullName || '').replace(/-/g, '').trim();
   if (!fullName) return '';
   const surname = SURNAMES[fullName[0]] || romanizeSyllable(fullName[0]);
   const given = fullName.slice(1);
-  if (!given) return surname;
+  if (!given) return surname.replace(/-/g, '').trim();
   const parts = [...given].map((c, idx) => {
-    let r = romanizeSyllable(c);
+    let r = romanizeSyllable(c).replace(/-/g, '').trim();
     return idx === 0 ? r.charAt(0).toUpperCase() + r.slice(1).toLowerCase() : r.toLowerCase();
   });
-  return `${parts.join('-')} ${surname}`;
+  // '-' 표기 없이 깔끔한 영문 (예: Seokki Kang)
+  return `${parts.join('')} ${surname}`.replace(/-/g, '').trim();
 }
 
 export const DEPT_TRANSLATIONS = {
