@@ -238,19 +238,24 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
     const previous = editor.getAttributes('link').href ?? '';
     const input = window.prompt('연결할 주소를 입력하세요. 비워 두면 링크가 해제됩니다.', previous);
     if (input === null) return;
-    const href = input.trim();
+    let href = input.trim();
     if (!href) { editor.chain().focus().extendMarkRange('link').unsetLink().run(); return; }
-    if (!/^https?:\/\//i.test(href)) { window.alert('http:// 또는 https:// 로 시작하는 주소만 넣을 수 있습니다.'); return; }
+    if (!/^https?:\/\//i.test(href) && !href.startsWith('/')) {
+      href = `https://${href}`;
+    }
     editor.chain().focus().extendMarkRange('link').setLink({ href }).run();
   };
 
   // 주소로 이미지 넣기. 파일을 올리지 않으므로 용량·장수 제한과는 무관하고,
   // 대신 원본이 사라지면 깨진다는 점을 노드뷰에서 안내한다.
   const insertImageUrl = () => {
-    const input = window.prompt('본문에 넣을 이미지 주소를 입력하세요.', 'https://');
+    const input = window.prompt('본문에 넣을 이미지 주소를 입력하세요.', '');
     if (input === null) return;
-    const src = input.trim();
-    if (!/^https:\/\//i.test(src)) { window.alert('https:// 로 시작하는 주소만 넣을 수 있습니다.'); return; }
+    let src = input.trim();
+    if (!src) return;
+    if (!/^https?:\/\//i.test(src) && !src.startsWith('/')) {
+      src = `https://${src}`;
+    }
     if (src.length > 2000) { window.alert('주소가 너무 깁니다.'); return; }
     editor.chain().focus().insertContent({ type: 'externalImage', attrs: { src, size: defaultImageSize } }).run();
   };
@@ -258,7 +263,7 @@ export default function BoardPostEditor({ board, postId, initialDocument, initia
   // 유튜브 영상 넣기. 주소에서 영상 번호 열한 글자만 뽑아 문서에 남긴다.
   // 주소를 통째로 두지 않으므로 재생 주소는 우리가 만들어 붙인다.
   const insertYouTube = () => {
-    const input = window.prompt('유튜브 주소를 붙여넣으세요.', 'https://www.youtube.com/watch?v=');
+    const input = window.prompt('유튜브 주소를 붙여넣으세요.', '');
     if (input === null) return;
     const videoId = parseYouTubeId(input);
     if (!videoId) { window.alert('유튜브 주소를 알아보지 못했습니다. 주소창의 주소를 그대로 붙여넣어 주세요.'); return; }
