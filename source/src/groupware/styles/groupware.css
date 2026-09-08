@@ -6443,17 +6443,22 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
 
 .gw-card-preview-wrap { position: sticky; top: 76px; }
 
-/* 90×50mm 비율 (1.5배 확대, 테두리 제거) */
+/* 90×50mm 비율 (1.5배 확대, 라운드 외곽 및 3D 입체감 그림자) */
 .gw-card-preview {
   display: flex;
   flex-direction: column;
-  gap: 18px;
   aspect-ratio: 90 / 50;
-  border: none;
-  border-radius: 14px;
-  padding: 30px 32px;
-  background: var(--gw-surface);
-  box-shadow: 0 16px 36px -18px rgba(16, 26, 54, 0.25);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 18px;
+  padding: 26px 30px;
+  background: #ffffff;
+  box-shadow:
+    0 22px 45px -12px rgba(15, 23, 42, 0.14),
+    0 8px 20px -6px rgba(15, 23, 42, 0.08),
+    0 0 1px 1px rgba(15, 23, 42, 0.04);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .gw-card-preview-top { display: flex; align-items: flex-start; gap: 16px; }
@@ -6467,8 +6472,288 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
   height: 1px;
   background: var(--gw-border);
   border: none;
-  margin: 2px 0 6px 0;
+  margin: 4px 0 8px 0;
   opacity: 0.85;
+}
+
+/* 명함 본문: 좌측 정보 + 우측 프로필 사진 */
+.gw-card-body {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.gw-card-body-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gw-card-body-right {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+/* 프로필 사진 프레임 (배율 최적화: 3:4 증명/프로필 비율, 깔끔한 라운드 및 그림자) */
+.gw-card-photo-box {
+  width: 96px;
+  height: 124px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.07);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gw-card-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.gw-card-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  transition: all 0.15s ease;
+}
+
+.gw-card-photo-placeholder:hover {
+  background: #f1f5f9;
+  border-color: var(--gw-blue-600);
+  color: var(--gw-blue-700);
+}
+
+/* 명함 뒷면 섹션 */
+.gw-card-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 24px 0 10px 0;
+}
+
+.gw-card-section-title h3 {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--gw-navy-950);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gw-card-badge-pill {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+/* 뒷면 템플릿별 스타일 */
+.gw-card-preview--back {
+  margin-top: 4px;
+}
+
+/* 1) 뒷면 - 영문 명함 */
+.gw-card-preview--english {
+  background: #ffffff;
+}
+
+.gw-card-qr-box {
+  width: 80px;
+  height: 80px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.gw-card-qr-box svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* 2) 뒷면 - 회사 약도 */
+.gw-card-preview--map {
+  background: #ffffff;
+  padding: 22px 26px;
+  gap: 10px;
+}
+
+.gw-card-map-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gw-card-map-header strong {
+  display: block;
+  font-size: 16px;
+  color: var(--gw-navy-950);
+  font-weight: 700;
+}
+
+.gw-card-map-header span {
+  display: block;
+  font-size: 12.5px;
+  color: var(--gw-muted);
+  margin-top: 1px;
+}
+
+.gw-card-map-svg-wrap {
+  width: 100%;
+  height: 106px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.gw-card-map-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.gw-card-map-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #f8fafc;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #edf2f7;
+}
+
+.gw-map-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gw-navy-950);
+}
+
+.gw-card-map-info-item p {
+  margin: 0;
+  font-size: 11.5px;
+  color: #475569;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 3) 뒷면 - 슬로건 & 비전 */
+.gw-card-preview--slogan {
+  background: linear-gradient(135deg, #0a1628 0%, #112240 50%, #1b3252 100%);
+  color: #ffffff;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow:
+    0 22px 45px -12px rgba(10, 22, 40, 0.35),
+    0 8px 20px -6px rgba(10, 22, 40, 0.2),
+    0 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.gw-slogan-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.gw-slogan-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gw-slogan-top span {
+  font-size: 14px;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.gw-slogan-main {
+  margin: auto 0;
+}
+
+.gw-slogan-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px 0;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.gw-slogan-sub {
+  margin: 0;
+  font-size: 13px;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.gw-slogan-values {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.gw-slogan-pill {
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f1f5f9;
+  padding: 3px 8px;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+}
+
+.gw-slogan-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #64748b;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 8px;
 }
 
 /* 명함 공유 버튼 */
@@ -6510,21 +6795,6 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
   background-color: #1e293b;
 }
 
-/* 로고 그림이 들어간 표시. 글자용 배경과 글꼴 설정을 지우고 그림만 남긴다. */
-.gw-brand-mark.has-logo {
-  background: #fff;
-  border: 1px solid var(--gw-border);
-  padding: 2px;
-  overflow: hidden;
-}
-
-.gw-brand-mark.has-logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
 /* 명함 로고: 테두리 완전 제거 및 이미지 크기 2.5배 확대 */
 .gw-card-mark {
   display: grid;
@@ -6538,6 +6808,12 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
   font-size: 30px;
   font-weight: 800;
   border: none;
+}
+
+.gw-card-mark--sm {
+  width: 48px;
+  height: 48px;
+  font-size: 20px;
 }
 
 .gw-card-mark.has-logo {
@@ -6560,32 +6836,127 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
 }
 
 .gw-card-preview-name { display: grid; gap: 4px; margin-top: auto; }
-.gw-card-preview-name strong { color: var(--gw-navy-950); font-size: 27px; letter-spacing: -0.03em; }
-.gw-card-preview-name span { color: var(--gw-muted); font-size: 16px; }
+.gw-card-preview-name strong { color: var(--gw-navy-950); font-size: 26px; letter-spacing: -0.03em; }
+.gw-card-preview-name span { color: var(--gw-muted); font-size: 15px; }
 
-.gw-card-preview-contact { display: grid; gap: 2px; margin: 0; }
-.gw-card-preview-contact > div { display: flex; gap: 10px; min-width: 0; }
-.gw-card-preview-contact dt { flex: none; width: 15px; color: var(--gw-blue-700); font-size: 13.5px; font-weight: 800; }
+.gw-card-preview-contact { display: grid; gap: 2.5px; margin: 0; }
+.gw-card-preview-contact > div { display: flex; gap: 8px; min-width: 0; align-items: baseline; }
+.gw-card-preview-contact dt { flex: none; width: 14px; color: var(--gw-blue-700); font-size: 13px; font-weight: 800; }
 .gw-card-preview-contact dd {
   margin: 0;
   min-width: 0;
   color: var(--gw-text);
-  font-size: 14.5px;
+  font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* 명함 폼 */
 .gw-card-form {
   display: grid;
-  gap: 10px;
+  gap: 16px;
   border: 1px solid var(--gw-border);
   border-radius: 14px;
-  padding: 18px;
+  padding: 20px;
   background: var(--gw-surface);
 }
 
-.gw-card-form h2 { margin: 0; color: var(--gw-navy-950); font-size: 15px; }
+.gw-card-form h2 {
+  margin: 0;
+  color: var(--gw-navy-950);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* 뒷면 타입 선택 탭 */
+.gw-back-type-tabs {
+  display: flex;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+}
+
+.gw-back-type-btn {
+  flex: 1;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.gw-back-type-btn.is-active {
+  background: #ffffff;
+  color: var(--gw-navy-950);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* 자동 변환 / 자동 채우기 매직 버튼 */
+.gw-magic-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 6px;
+}
+
+.gw-magic-btn:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e40af;
+}
+
+/* 사진 관리 박스 */
+.gw-photo-mgmt-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  margin-top: 4px;
+}
+
+.gw-photo-mgmt-thumb {
+  width: 48px;
+  height: 62px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #e2e8f0;
+  flex: none;
+  border: 1px solid #cbd5e1;
+}
+
+.gw-photo-mgmt-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gw-photo-mgmt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
 
 @media (max-width: 900px) {
   .gw-card-layout { grid-template-columns: minmax(0, 1fr); }
