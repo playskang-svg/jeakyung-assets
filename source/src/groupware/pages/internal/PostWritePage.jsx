@@ -23,11 +23,11 @@ export default function PostWritePage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const auth = useAuth();
-  const draftRequest = useRef(false);
+  const loadedKeyRef = useRef('');
   const [overview, setOverview] = useState(null);
   const [post, setPost] = useState(null);
   const [activePostId, setActivePostId] = useState(postId ?? null);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(() => searchParams.get('category') || '');
+  const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [documentValue, setDocumentValue] = useState(EMPTY_BOARD_DOCUMENT);
   const [initialUrls, setInitialUrls] = useState({});
   const [initialAttachments, setInitialAttachments] = useState([]);
@@ -40,13 +40,18 @@ export default function PostWritePage() {
 
   useEffect(() => {
     let active = true;
+    const currentKey = `${boardSlug}:${postId ?? 'new'}`;
+    if (loadedKeyRef.current === currentKey) return;
+
     const load = async () => {
       try {
+        setError('');
         const boardOverview = await getBoardOverview(boardSlug);
         if (!active) return;
         setOverview(boardOverview);
 
         if (postId) {
+          loadedKeyRef.current = currentKey;
           const postData = await getBoardPost(postId);
           const contentDocument = postData.post.content_document?.type === 'doc'
             ? postData.post.content_document
@@ -54,9 +59,7 @@ export default function PostWritePage() {
           const urls = await getInlineAttachmentUrls(postData.attachments);
           if (!active) return;
           setPost(postData.post);
-          if (postData.post.category_id) {
-            setSelectedCategoryId(postData.post.category_id);
-          }
+          setSelectedCategoryId(postData.post.category_id || '');
           setActivePostId(postData.post.id);
           setDocumentValue(contentDocument);
           setInitialUrls(urls);
@@ -67,15 +70,14 @@ export default function PostWritePage() {
           return;
         }
 
-        if (draftRequest.current) return;
-        draftRequest.current = true;
+        loadedKeyRef.current = currentKey;
         const draftId = await createBoardPostDraft(boardOverview.board.id);
         if (!active) return;
         const queryCategory = searchParams.get('category');
         const matched = boardOverview.categories?.find(
           (c) => c.id === queryCategory || c.name === queryCategory || c.code === queryCategory
         );
-        const matchedCategoryId = matched ? matched.id : (queryCategory || '');
+        const matchedCategoryId = matched ? matched.id : '';
 
         setActivePostId(draftId);
         setPost({
@@ -83,14 +85,18 @@ export default function PostWritePage() {
           title: '',
           content_document: EMPTY_BOARD_DOCUMENT,
           category_id: matchedCategoryId || null,
+          is_notice: boardOverview.board.board_type === 'notice',
           status: 'draft',
         });
-        if (matchedCategoryId) {
-          setSelectedCategoryId(matchedCategoryId);
-        }
+        setSelectedCategoryId(matchedCategoryId);
         setDocumentValue(EMPTY_BOARD_DOCUMENT);
-      } catch {
-        if (active) setError('글쓰기 권한을 확인하지 못했거나 편집용 임시 글을 만들지 못했습니다.');
+        setInitialUrls({});
+        setInitialAttachments([]);
+        setInlineImageIds([]);
+        setGeneralAttachments([]);
+        setCoverAttachmentId('');
+      } catch (loadErr) {
+        if (active) setError(loadErr?.message || '글쓰기 권한을 확인하지 못했거나 편집용 임시 글을 만들지 못했습니다.');
       }
     };
     load();
@@ -111,24 +117,37 @@ export default function PostWritePage() {
     }
     setSaving(true);
     setError('');
+
+    // 해당 게시판의 유효한 카테고리만 사용 (카테고리가 없는 게시판이면 반드시 null)
+    let categoryId = null;
+    if (overview.categories && overview.categories.length > 0) {
+      const formCat = form.get('categoryId');
+      if (formCat && overview.categories.some((c) => c.id === formCat)) {
+        categoryId = formCat;
+      } else if (selectedCategoryId && overview.categories.some((c) => c.id === selectedCategoryId)) {
+        categoryId = selectedCategoryId;
+      }
+    }
+
     try {
       const id = await saveBoardPost({
         id: activePostId,
         boardId: overview.board.id,
         title: form.get('title'),
         contentDocument: documentValue,
-        categoryId: form.get('categoryId') || selectedCategoryId || null,
+        categoryId,
         postPrefix: form.get('postPrefix'),
         isAnonymous: form.get('anonymous') === 'on',
-        isNotice: form.get('notice') === 'on',
-        isImportant: form.get('important') === 'on',
-        isPinned: form.get('pinned') === 'on',
+        isNotice: overview.permissions.notice && (form.get('notice') === 'on' || (overview.board.board_type === 'notice' && form.get('notice') !== 'off')),
+        isImportant: overview.permissions.notice && form.get('important') === 'on',
+        isPinned: overview.permissions.pin && form.get('pinned') === 'on',
         coverAttachmentId: coverAttachmentId || null,
         status,
       });
       navigate(`/boards/${boardSlug}/posts/${id}`);
-    } catch {
-      setError('게시글을 저장하지 못했습니다. 신규 이미지는 자동 정리 후보로 유지됩니다. 권한과 입력값을 확인해 주세요.');
+    } catch (saveError) {
+      console.error('saveBoardPost failed:', saveError);
+      setError(saveError?.message || '게시글을 저장하지 못했습니다. 신규 이미지는 자동 정리 후보로 유지됩니다. 권한과 입력값을 확인해 주세요.');
       setSaving(false);
     }
   };
