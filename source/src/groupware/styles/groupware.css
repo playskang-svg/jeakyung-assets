@@ -105,17 +105,56 @@ body.groupware-root button:disabled {
 }
 
 .gw-brand-mark {
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 42px;
   width: 42px;
   height: 42px;
-  border-radius: 14px;
+  max-width: 42px;
+  max-height: 42px;
+  border-radius: 12px;
   color: #fff;
   background: linear-gradient(145deg, var(--gw-blue-600), var(--gw-navy-900));
-  box-shadow: 0 10px 24px rgba(30, 67, 209, 0.24);
+  box-shadow: 0 4px 12px rgba(30, 67, 209, 0.2);
   font-weight: 900;
+  overflow: hidden;
+  position: relative;
 }
+
+.gw-brand-mark.has-logo {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.gw-brand-mark img,
+.gw-brand-mark.has-logo img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 42px !important;
+  max-height: 42px !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+.has-logo {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+}
+
+.has-logo img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
 
 .gw-brand-copy {
   display: grid;

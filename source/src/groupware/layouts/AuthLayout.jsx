@@ -6,7 +6,7 @@ export default function AuthLayout() {
   return (
     <div className="gw-auth-shell">
       <header className="gw-auth-header">
-        <GroupwareBrand />
+        <GroupwareBrand to="/login" />
         <a className="gw-public-link" href="/">공개 사이트로 이동</a>
       </header>
       <main className="gw-auth-main" id="groupware-main">

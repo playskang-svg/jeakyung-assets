@@ -11,8 +11,34 @@ export default function CompanyMark({ className = '', letter = 'J' }) {
     return <span className={className} aria-hidden="true">{letter}</span>;
   }
   return (
-    <span className={`${className} has-logo`.trim()} aria-hidden="true">
-      <img src={COMPANY_LOGO_URL} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setFailed(true)} />
+    <span
+      className={`${className} has-logo`.trim()}
+      aria-hidden="true"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        lineHeight: 0,
+        maxWidth: '100%',
+        maxHeight: '100%',
+      }}
+    >
+      <img
+        src={COMPANY_LOGO_URL}
+        alt=""
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        onError={() => setFailed(true)}
+        style={{
+          width: '100%',
+          height: '100%',
+          maxWidth: '100%',
+          maxHeight: '100%',
+          objectFit: 'contain',
+          display: 'block',
+        }}
+      />
     </span>
   );
 }

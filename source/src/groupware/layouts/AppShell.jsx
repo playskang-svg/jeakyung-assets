@@ -73,7 +73,7 @@ export default function AppShell() {
       <div className="gw-workspace">
         <header className="gw-topbar">
           <div className="gw-topbar-title">
-            <Link className="gw-topbar-brand" to="/" aria-label="대시보드로 이동"><GroupwareBrand /></Link>
+            <GroupwareBrand to="/" />
           </div>
           <div className="gw-topbar-tools" aria-label="사용자와 업무 도구">
             <TopSearch />
