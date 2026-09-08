@@ -113,7 +113,7 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
     <header className="gw-page-header gw-board-header">
             <h1 id="board-title">{overview.board.name}</h1>
       <div className="gw-board-header-actions">
-        {!embedded && <Link className="gw-secondary-button" to="/boards">목록 이동</Link>}
+        {!embedded && <Link className="gw-secondary-button" to="/boards">전체목록</Link>}
       </div>
     </header>
 
