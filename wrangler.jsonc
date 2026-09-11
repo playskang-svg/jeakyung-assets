@@ -2,7 +2,7 @@
   "name": "jeakyung",
   "main": "worker.js",
   "compatibility_date": "2024-03-20",
-  "account_id": "380b1bc6d94eaf5f614ceffbdd5ef479",
+  "account_id": "46e32ce3c5a1842cb57082e1abaf8a05",
   "routes": [
     { "pattern": "jeakyung.com", "custom_domain": true, "zone_id": "76742882f920c70ae86e1d86a80ef7b5" },
     { "pattern": "www.jeakyung.com", "custom_domain": true, "zone_id": "76742882f920c70ae86e1d86a80ef7b5" }
