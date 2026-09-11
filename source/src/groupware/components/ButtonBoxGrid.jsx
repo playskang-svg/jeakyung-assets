@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import ButtonBoxTargetDialog from './ButtonBoxTargetDialog.jsx';
+import FolderButtons from './FolderButtons.jsx';
 
 // 재사용 버튼 박스 렌더러. 링크 페이지 본문과 대시보드 위젯 양쪽에서 그대로 쓴다.
 // 카드에는 썸네일과 설명만 보여 주고, 누르면 대상이 팝업으로 열린다.
@@ -33,6 +34,15 @@ export default function ButtonBoxGrid({ box, items }) {
   const dialog = openItem
     ? <ButtonBoxTargetDialog item={openItem} onClose={() => setOpenItem(null)} />
     : null;
+
+  if (style === 'folders') {
+    return (
+      <>
+        <FolderButtons items={items} canOpen={canOpenInDialog} onOpen={setOpenItem} />
+        {dialog}
+      </>
+    );
+  }
 
   if (style === 'list') {
     return (

@@ -4691,6 +4691,114 @@ body.groupware-root .gw-linktree-tabs a:hover {
   box-shadow: 0 3px 8px rgba(79, 109, 138, 0.25);
 }
 
+/* 폴더형 버튼 줄 (버튼 박스 디자인 '폴더형'). 네 칸씩 줄을 맞춘다 — 여덟 개가
+   한 줄로 흐르면 끝의 두세 개가 다음 줄에 외톨이로 남는다. */
+.gw-folder-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0 26px;
+  padding: 0;
+  list-style: none;
+}
+
+.gw-folder-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 58px;
+  padding: 10px 14px;
+  border: 1px solid var(--gw-border);
+  border-radius: var(--gw-radius-lg);
+  background: var(--gw-surface);
+  color: var(--gw-text);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.gw-folder-button:hover,
+.gw-folder-button:focus-visible {
+  border-color: var(--gw-blue-600);
+  box-shadow: 0 4px 12px rgba(36, 80, 245, 0.12);
+  transform: translateY(-1px);
+}
+
+.gw-folder-icon {
+  flex: none;
+  color: #f2b01e;
+}
+
+.gw-folder-button-text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 1px;
+}
+
+.gw-folder-button-text strong,
+.gw-folder-button-text small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gw-folder-button-text strong {
+  color: var(--gw-navy-950);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.gw-folder-button-text small {
+  color: var(--gw-muted);
+  font-size: 12px;
+}
+
+.gw-folder-button > i {
+  flex: none;
+  color: var(--gw-muted);
+  font-size: 12px;
+  font-style: normal;
+}
+
+/* 자리만 잡아 둔 버튼. 갈 곳이 없으므로 누를 수 있는 모양을 뺀다. */
+.gw-folder-button.is-placeholder {
+  border-style: dashed;
+  border-color: #c5ccd9;
+  background: var(--gw-background);
+  cursor: default;
+}
+
+.gw-folder-button.is-placeholder:hover {
+  border-color: #c5ccd9;
+  box-shadow: none;
+  transform: none;
+}
+
+.gw-folder-button.is-placeholder .gw-folder-icon {
+  color: #c3cad8;
+}
+
+.gw-folder-button.is-placeholder strong {
+  color: var(--gw-muted);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .gw-folder-buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 379px) {
+  .gw-folder-buttons {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .gw-tab-link-icon {
   display: inline-flex;
   align-items: center;
