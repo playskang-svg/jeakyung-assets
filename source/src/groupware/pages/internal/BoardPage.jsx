@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
+import FolderButtons from '../../components/FolderButtons.jsx';
 import { getBoardOverview, getBoardPosts, resolvePostThumbnail } from '../../services/boardService.js';
 import { formatBoardDateTime } from '../../utils/datetime.js';
 
@@ -120,7 +121,10 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
     </header>
 
     {/* 바로가기 버튼 박스 (탭 이름과 게시판 카테고리 사이 공간) */}
-    {buttonBox && Array.isArray(buttonBox.items) && buttonBox.items.length > 0 && (
+    {buttonBox?.style === 'folders' && Array.isArray(buttonBox.items) && buttonBox.items.length > 0 && (
+      <FolderButtons items={buttonBox.items} />
+    )}
+    {buttonBox && buttonBox.style !== 'folders' && Array.isArray(buttonBox.items) && buttonBox.items.length > 0 && (
       <div className="gw-board-shortcuts" role="toolbar" aria-label="바로가기 링크">
         {buttonBox.items.map((shortcut) => (
           <a

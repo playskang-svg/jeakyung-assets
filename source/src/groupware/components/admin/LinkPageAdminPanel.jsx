@@ -6,7 +6,16 @@ import { deleteLinkPage, getLinkPageAdminCatalog, saveLinkPage } from '../../ser
 import LinkTargetFields, { SECTION_TYPES, emptyLinkTarget, isContentType, isLinkTargetComplete, linkTargetPayload } from './LinkTargetFields.jsx';
 import PageSectionEditor from './PageSectionEditor.jsx';
 
-const EMPTY_FORM = { id: null, title: '', slug: '', description: '', is_active: true, content_type: 'boards', button_box_id: '', items: [] };
+const EMPTY_FORM = { id: null, title: '', slug: '', description: '', is_active: true, visibility: 'all', content_type: 'boards', button_box_id: '', items: [] };
+
+// 홈 '페이지 이동' 버튼과 같은 기준이다. 버튼과 페이지의 공개 범위를 맞춰 두어야
+// 버튼은 열리는데 페이지가 막히는 일이 없다. 볼 수 없는 사람에게는 서버가 항목과
+// 버튼 주소를 아예 내려주지 않는다.
+const VISIBILITY = [
+  ['all', '모두'],
+  ['admin', '관리자'],
+  ['super_admin', '시스템 관리자만'],
+];
 const NEW_ITEM = () => ({ key: crypto.randomUUID(), id: null, label: '', content: {}, button_box_id: '', ...emptyLinkTarget('board') });
 
 // 제목만 입력해도 쓸 수 있는 주소를 얻도록 영문·숫자만 남기고, 전부 걸러지면
@@ -46,6 +55,7 @@ export default function LinkPageAdminPanel() {
     setForm({
       id: page.id, title: page.title, slug: page.slug, description: page.description ?? '',
       is_active: page.is_active,
+      visibility: page.visibility ?? 'all',
       content_type: page.button_box_id ? 'button_box' : 'boards',
       button_box_id: page.button_box_id ?? '',
       items: (page.items ?? []).map((item) => ({
@@ -76,6 +86,7 @@ export default function LinkPageAdminPanel() {
       await saveLinkPage(
         {
           id: form.id, title: form.title, slug, description: form.description, is_active: form.is_active,
+          visibility: form.visibility,
           button_box_id: isButtonBox ? form.button_box_id : '',
         },
         isButtonBox ? [] : form.items
@@ -130,7 +141,11 @@ export default function LinkPageAdminPanel() {
             <li key={page.id}>
               <div>
                 <strong>{page.title}</strong>
-                <span>/pages/{page.slug} · 항목 {(page.items ?? []).length}개{page.is_active ? '' : ' · 비활성'}</span>
+                <span>
+                  /pages/{page.slug} · 항목 {(page.items ?? []).length}개
+                  {page.visibility && page.visibility !== 'all' && ` · ${VISIBILITY.find(([code]) => code === page.visibility)?.[1] ?? page.visibility}`}
+                  {page.is_active ? '' : ' · 비활성'}
+                </span>
               </div>
               <div className="gw-admin-actions">
                 <button type="button" className="gw-secondary-button" onClick={() => startEdit(page)}>편집</button>
@@ -152,6 +167,12 @@ export default function LinkPageAdminPanel() {
             </label>
             <label className="gw-field"><span>설명 (선택)</span>
               <input value={form.description} maxLength={200} onChange={(event) => patchForm({ description: event.target.value })} />
+            </label>
+            <label className="gw-field"><span>볼 수 있는 사람</span>
+              <select value={form.visibility} onChange={(event) => patchForm({ visibility: event.target.value })}>
+                {VISIBILITY.map(([code, name]) => <option key={code} value={code}>{name}</option>)}
+              </select>
+              <small className="gw-field-hint">홈 &lsquo;페이지&rsquo; 줄의 버튼도 같은 범위로 맞춰 주세요. 게시판 탭은 게시판 권한이 따로 적용됩니다.</small>
             </label>
             <div className="gw-check-grid"><label><input type="checkbox" checked={form.is_active} onChange={(event) => patchForm({ is_active: event.target.checked })} /><span>활성 (끄면 목록·주소에서 숨김)</span></label></div>
           </div>

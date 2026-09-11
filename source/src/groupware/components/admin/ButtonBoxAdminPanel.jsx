@@ -11,6 +11,7 @@ const STYLES = [
   ['cards', '카드형 (번호 + 알약 버튼)'],
   ['tiles', '타일형 (제목만 있는 큰 상자)'],
   ['list', '목록형 (좁은 폭에 어울리는 한 줄씩)'],
+  ['folders', '폴더형 (폴더 아이콘 + 이름, 주소 없이 두면 생성 예정 칸)'],
 ];
 
 const EMPTY_FORM = { id: null, title: '', style: 'cards', is_active: true, items: [] };
