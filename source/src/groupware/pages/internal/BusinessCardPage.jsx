@@ -5,6 +5,10 @@ import html2canvas from 'html2canvas';
 
 import { useAuth } from '../../context/AuthContext.jsx';
 import CompanyMark from '../../components/CompanyMark.jsx';
+import {
+  isKnownWorkLocationAddress,
+  resolveBusinessCardAddress,
+} from '../../config/workLocations.js';
 import { getProfilePhotoUrl } from '../../services/profileService.js';
 import {
   romanizeKoreanName,
@@ -107,6 +111,7 @@ function CardQrGraphic({ qrDataUrl, qrType }) {
 export default function BusinessCardPage() {
   const auth = useAuth();
   const profile = auth.profile ?? {};
+  const profileAddress = resolveBusinessCardAddress(profile);
 
   // Supabase 프로필에 등록된 프로필 사진 로드
   const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
@@ -137,7 +142,7 @@ export default function BusinessCardPage() {
       mobile: profile.mobile_phone || '',
       office: profile.office_phone || '',
       email: profile.company_email || '',
-      address: profile.work_location || '',
+      address: profileAddress,
       photoUrl: '', // 사용자가 명함 전용으로 등록하거나 선택한 사진
 
       // 뒷면 양식 선택: 'english' | 'map' | 'slogan'
@@ -171,7 +176,12 @@ export default function BusinessCardPage() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.enName) parsed.enName = parsed.enName.replace(/-/g, '').trim();
-        return { ...initial, ...parsed };
+        return {
+          ...initial,
+          ...parsed,
+          // 예전에 빈 주소로 저장된 명함은 현재 소속의 기본 주소로 복구한다.
+          address: parsed.address?.trim() || initial.address,
+        };
       }
     } catch {
       // ignore JSON parse error
@@ -187,6 +197,33 @@ export default function BusinessCardPage() {
   const [qrDataUrl, setQrDataUrl] = useState('');
 
   const patch = (key, value) => setCard((current) => ({ ...current, [key]: value }));
+
+  // 프로필이 늦게 로드되거나 소속·근무지가 바뀐 경우에도 기본 주소를 맞춘다.
+  // 사용자가 별도로 입력한 주소는 덮어쓰지 않는다.
+  useEffect(() => {
+    setCard((current) => {
+      const currentAddress = current.address?.trim() || '';
+      if (currentAddress && !isKnownWorkLocationAddress(currentAddress)) return current;
+      if (currentAddress === profileAddress) return current;
+      return { ...current, address: profileAddress };
+    });
+  }, [profileAddress]);
+
+  const handleFrontFieldChange = (key, value) => {
+    if (key !== 'department') {
+      patch(key, value);
+      return;
+    }
+
+    setCard((current) => {
+      const next = { ...current, department: value };
+      const currentAddress = current.address?.trim() || '';
+      if (!currentAddress || isKnownWorkLocationAddress(currentAddress)) {
+        next.address = resolveBusinessCardAddress({ ...profile, department_name: value });
+      }
+      return next;
+    });
+  };
 
   // 실제 스캔 가능한 QR 코드 자동 생성 (vCard 또는 홈페이지 URL)
   useEffect(() => {
@@ -745,7 +782,7 @@ ${card.name || '이름'} ${[card.department, card.title].filter(Boolean).join(' 
           {FRONT_FIELDS.map(([key, label]) => (
             <label className="gw-field" key={key}>
               <span>{label}</span>
-              <input value={card[key] || ''} maxLength={60} onChange={(event) => patch(key, event.target.value)} />
+              <input value={card[key] || ''} maxLength={key === 'address' ? 160 : 60} onChange={(event) => handleFrontFieldChange(key, event.target.value)} />
             </label>
           ))}
 
