@@ -1,5 +1,11 @@
 .git
+.github
 .claude
+.agents
+.devcontainer
+.vscode
+.gitignore
+.assetsignore
 source
 docs
 scripts

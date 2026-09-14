@@ -47,7 +47,7 @@ Ship completed changes through the repository's existing static-artifact pipelin
    ```
 
 8. Before production deployment, run `wrangler whoami` and confirm the authenticated account includes exactly `380b1bc6d94eaf5f614ceffbdd5ef479`. The commonly injected token for account `46e32ce3c5a1842cb57082e1abaf8a05` cannot deploy the production Worker or access its zone. Do not change `wrangler.jsonc` to the token's account to work around this; stop and request the correct production-account credential.
-9. Recreate the ignored staging directory from the deployment root, excluding files listed by `.assetsignore`, `dist_public/` itself, `.gitignore`, and `.vscode/`. Confirm the staged `groupware/index.html` references the new JS/CSS filenames, then run `npx wrangler deploy`.
+9. Recreate the ignored staging directory from the deployment root using `.assetsignore` and excluding `dist_public/` itself. The ignore file must keep repository-only `.github`, `.agents`, `.devcontainer`, `.vscode`, and configuration files out of public assets. Confirm the staged `groupware/index.html` references the new JS/CSS filenames, then run `npx wrangler deploy`.
 10. Treat production as complete only when Wrangler reports a successful Worker version deployment and `https://jeakyung.com/groupware/login` serves the new bundle. Vercel success alone is insufficient. If Cloudflare's challenge blocks automated HTTP verification, report that separately; do not claim the public domain is updated without a successful Wrangler deployment.
 
 Keep the local Vite server running if it was already running unless the user asks to stop it.
@@ -59,7 +59,7 @@ Use Fast Track by default for a scoped UI, copy, style, or single-feature update
 1. Run the Cloudflare account preflight first. Do not spend time building if the production account credential is unavailable.
 2. Edit the source of truth and run only the focused check plus `git diff --check`; do not run unrelated suites.
 3. Run exactly one production `npm run release`. Never patch minified root assets by hand and never rebuild a second time merely to deploy.
-4. Validate that `dist_public` is the exact ignored staging target, then mirror the root with `rsync --delete` using `.assetsignore` and explicit exclusions for `dist_public/`, `.gitignore`, and `.vscode/`. This removes obsolete hashed assets while preserving the source tree.
+4. Validate that `dist_public` is the exact ignored staging target, then mirror the root with `rsync --delete` using `.assetsignore` and an explicit exclusion for `dist_public/`. This removes obsolete hashed assets and repository-only files while preserving the source tree.
 5. Confirm staged `groupware/index.html` names the newly built JS and CSS. Run `npx wrangler deploy`; Workers Static Assets uploads only content whose hash changed.
 6. Verify the Wrangler version result and production bundle, then commit and push only the requested source, generated root assets, and deployment-skill changes. Do not wait for the secondary Vercel deployment before reporting Cloudflare production success.
 
