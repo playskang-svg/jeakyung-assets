@@ -6680,22 +6680,22 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 세로로 크게 흘러가며 카드 가장자리에서 잘리는 옅은 브랜드 워터마크. */
+/* 왼쪽 아래에서 오른쪽 위로 올라가며 가장자리에서 잘리는 브랜드 워터마크. */
 .gw-card-preview::before {
   content: "JEAKYUNG";
   position: absolute;
   z-index: 0;
-  top: 50%;
-  left: calc(100% - 42px);
+  top: 54%;
+  left: 50%;
   color: rgba(23, 57, 209, 0.075);
-  font-size: 104px;
+  font-size: 92px;
   font-weight: 900;
   line-height: 1;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
-  transform: translate(-50%, -50%) rotate(-90deg);
+  transform: translate(-50%, -50%) rotate(-27deg);
 }
 
 .gw-card-preview--slogan::before {
