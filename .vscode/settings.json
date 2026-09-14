@@ -1,0 +1,13 @@
+{
+  "files.hotExit": "onExitAndWindowClose",
+  "window.restoreWindows": "all",
+  "workbench.editor.restoreViewState": true,
+  "workbench.startupEditor": "none",
+  "remote.portsAttributes": {
+    "5173": {
+      "label": "재경 그룹웨어 로컬 화면",
+      "onAutoForward": "silent",
+      "protocol": "http"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "재경닷컴 개발 환경",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/restore-workspace.sh",
+  "postStartCommand": "bash .devcontainer/restore-workspace.sh",
+  "forwardPorts": [5173],
+  "portsAttributes": {
+    "5173": {
+      "label": "재경 그룹웨어 로컬 화면",
+      "onAutoForward": "silent",
+      "protocol": "http"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "openai.chatgpt"
+      ],
+      "settings": {
+        "files.hotExit": "onExitAndWindowClose",
+        "window.restoreWindows": "all",
+        "workbench.editor.restoreViewState": true,
+        "workbench.startupEditor": "none"
+      }
+    }
+  }
+}
