@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import QRCode from 'qrcode';
 import html2canvas from 'html2canvas';
@@ -35,6 +35,7 @@ const COMPANY = {
 };
 
 const STORAGE_KEY = 'groupware:business-card';
+const BUSINESS_CARD_WIDTH = 510;
 
 // 벡터 약도 그래픽 컴포넌트 (선명한 SVG 고해상도 인포그래픽)
 function CardMapGraphic() {
@@ -112,6 +113,27 @@ export default function BusinessCardPage() {
   const auth = useAuth();
   const profile = auth.profile ?? {};
   const profileAddress = resolveBusinessCardAddress(profile);
+  const frontCardStageRef = useRef(null);
+  const backCardStageRef = useRef(null);
+
+  // 명함의 인쇄 비율과 내부 배치를 그대로 유지하면서, 모바일에서는 카드 전체를
+  // 사용 가능한 폭에 맞춰 축소한다. 글자/사진만 고정 크기로 남아 잘리는 현상을 막는다.
+  useLayoutEffect(() => {
+    const stages = [frontCardStageRef.current, backCardStageRef.current].filter(Boolean);
+    if (!stages.length) return undefined;
+
+    const resizeCards = () => {
+      stages.forEach((stage) => {
+        const scale = Math.min(stage.clientWidth / BUSINESS_CARD_WIDTH, 1);
+        stage.style.setProperty('--gw-card-scale', String(scale));
+      });
+    };
+
+    resizeCards();
+    const observer = new ResizeObserver(resizeCards);
+    stages.forEach((stage) => observer.observe(stage));
+    return () => observer.disconnect();
+  }, []);
 
   // Supabase 프로필에 등록된 프로필 사진 로드
   const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
@@ -382,10 +404,17 @@ Beyond Logistics, Better Solutions.`;
     if (!element) return null;
     const canvas = await html2canvas(element, {
       scale: 3, // 선명한 3배율 고화질 렌더링
+      width: BUSINESS_CARD_WIDTH,
+      height: BUSINESS_CARD_WIDTH * (50 / 90),
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
       logging: false,
+      onclone: (clonedDocument) => {
+        // 화면에서는 모바일 폭에 맞춰 축소하지만 저장 이미지는 510px 원본 기준으로 만든다.
+        const clonedCard = clonedDocument.getElementById(element.id);
+        if (clonedCard) clonedCard.style.transform = 'none';
+      },
     });
     return new Promise((resolve) => {
       canvas.toBlob((blob) => resolve(blob), 'image/png', 0.95);
@@ -524,47 +553,49 @@ ${card.name || '이름'} ${[card.department, card.title].filter(Boolean).join(' 
         {/* ========================================================================= */}
         <section className="gw-card-preview-wrap" aria-label="명함 미리보기">
           {/* 1. 명함 앞면 (라운드 외곽 + 3D 입체 그림자 + 우측 프로필 사진) */}
-          <div className="gw-card-preview" ref={frontCardRef}>
-            <div className="gw-card-preview-top">
+          <div className="gw-card-preview-stage" ref={frontCardStageRef}>
+            <div className="gw-card-preview" id="gw-business-card-front" ref={frontCardRef}>
+              <div className="gw-card-preview-top">
               <CompanyMark className="gw-card-mark" />
               <div>
                 <strong>{COMPANY.name}</strong>
                 <span>{COMPANY.tagline}</span>
               </div>
-            </div>
-
-            <hr className="gw-card-divider" />
-
-            <div className="gw-card-body">
-              <div className="gw-card-body-left">
-                <div className="gw-card-preview-name">
-                  <strong>{card.name || '이름'}</strong>
-                  <span>{[card.department, card.title].filter(Boolean).join(' · ') || '부서 · 직책'}</span>
-                </div>
-                <dl className="gw-card-preview-contact">
-                  {card.mobile && <div><dt>M</dt><dd>{card.mobile}</dd></div>}
-                  {card.office && <div><dt>T</dt><dd>{card.office}</dd></div>}
-                  {card.email && <div><dt>E</dt><dd>{card.email}</dd></div>}
-                  {card.address && <div><dt>A</dt><dd>{card.address}</dd></div>}
-                  <div><dt>W</dt><dd>{COMPANY.site}</dd></div>
-                </dl>
               </div>
 
-              {/* 우측 빈 공간: 배율 최적화된 프로필 사진 */}
-              <div className="gw-card-body-right">
-                <div className="gw-card-photo-box" title={activePhotoUrl ? `${card.name} 프로필 사진` : '프로필 사진 없음'}>
-                  {activePhotoUrl ? (
-                    <img src={activePhotoUrl} alt={`${card.name} 프로필`} className="gw-card-photo-img" />
-                  ) : (
-                    <label className="gw-card-photo-placeholder" title="클릭하여 프로필 사진 업로드">
-                      <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
-                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="8" r="5" />
-                        <path d="M20 21a8 8 0 0 0-16 0" />
-                      </svg>
-                      <span>사진 등록</span>
-                    </label>
-                  )}
+              <hr className="gw-card-divider" />
+
+              <div className="gw-card-body">
+                <div className="gw-card-body-left">
+                  <div className="gw-card-preview-name">
+                    <strong>{card.name || '이름'}</strong>
+                    <span>{[card.department, card.title].filter(Boolean).join(' · ') || '부서 · 직책'}</span>
+                  </div>
+                  <dl className="gw-card-preview-contact">
+                    {card.mobile && <div><dt>M</dt><dd>{card.mobile}</dd></div>}
+                    {card.office && <div><dt>T</dt><dd>{card.office}</dd></div>}
+                    {card.email && <div><dt>E</dt><dd>{card.email}</dd></div>}
+                    {card.address && <div><dt>A</dt><dd>{card.address}</dd></div>}
+                    <div><dt>W</dt><dd>{COMPANY.site}</dd></div>
+                  </dl>
+                </div>
+
+                {/* 우측 빈 공간: 배율 최적화된 프로필 사진 */}
+                <div className="gw-card-body-right">
+                  <div className="gw-card-photo-box" title={activePhotoUrl ? `${card.name} 프로필 사진` : '프로필 사진 없음'}>
+                    {activePhotoUrl ? (
+                      <img src={activePhotoUrl} alt={`${card.name} 프로필`} className="gw-card-photo-img" />
+                    ) : (
+                      <label className="gw-card-photo-placeholder" title="클릭하여 프로필 사진 업로드">
+                        <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="8" r="5" />
+                          <path d="M20 21a8 8 0 0 0-16 0" />
+                        </svg>
+                        <span>사진 등록</span>
+                      </label>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -588,9 +619,9 @@ ${card.name || '이름'} ${[card.department, card.title].filter(Boolean).join(' 
           </div>
 
           {/* 3. 명함 뒷면 (선택된 템플릿 렌더링) */}
-          <div ref={backCardRef}>
+          <div className="gw-card-preview-stage" ref={backCardStageRef}>
             {card.backType === 'english' && (
-              <div className="gw-card-preview gw-card-preview--back gw-card-preview--english">
+              <div className="gw-card-preview gw-card-preview--back gw-card-preview--english" id="gw-business-card-back" ref={backCardRef}>
                 <div className="gw-card-preview-top">
                   <CompanyMark className="gw-card-mark" />
                   <div>
@@ -633,7 +664,7 @@ ${card.name || '이름'} ${[card.department, card.title].filter(Boolean).join(' 
             )}
 
             {card.backType === 'map' && (
-              <div className="gw-card-preview gw-card-preview--back gw-card-preview--map">
+              <div className="gw-card-preview gw-card-preview--back gw-card-preview--map" id="gw-business-card-back" ref={backCardRef}>
                 <div className="gw-card-map-header">
                   <CompanyMark className="gw-card-mark gw-card-mark--sm" />
                   <div>
@@ -660,7 +691,7 @@ ${card.name || '이름'} ${[card.department, card.title].filter(Boolean).join(' 
             )}
 
             {card.backType === 'slogan' && (
-              <div className="gw-card-preview gw-card-preview--back gw-card-preview--slogan">
+              <div className="gw-card-preview gw-card-preview--back gw-card-preview--slogan" id="gw-business-card-back" ref={backCardRef}>
                 <div className="gw-slogan-content">
                   <div className="gw-slogan-top">
                     <CompanyMark className="gw-card-mark gw-card-mark--sm" />

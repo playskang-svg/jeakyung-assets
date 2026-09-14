@@ -6640,13 +6640,30 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
   margin-top: 16px;
 }
 
-.gw-card-preview-wrap { position: sticky; top: 76px; }
+.gw-card-preview-wrap {
+  position: sticky;
+  top: 76px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* 510px 원본 명함을 한 덩어리로 축소하는 뷰포트. 내부 글자와 사진도 같은
+   비율로 줄어 모바일에서 카드 밖으로 잘리지 않는다. */
+.gw-card-preview-stage {
+  --gw-card-scale: 1;
+  position: relative;
+  width: 100%;
+  max-width: 510px;
+  aspect-ratio: 90 / 50;
+}
 
 /* 90×50mm 비율 (1.5배 확대, 라운드 외곽 및 3D 입체감 그림자) */
 .gw-card-preview {
   display: flex;
   flex-direction: column;
-  aspect-ratio: 90 / 50;
+  width: 510px;
+  height: 283.333px;
+  box-sizing: border-box;
   border: 1px solid rgba(226, 232, 240, 0.9);
   border-radius: 18px;
   padding: 26px 30px;
@@ -6657,7 +6674,37 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
     0 0 1px 1px rgba(15, 23, 42, 0.04);
   position: relative;
   overflow: hidden;
+  isolation: isolate;
+  transform: scale(var(--gw-card-scale));
+  transform-origin: top left;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 세로로 크게 흘러가며 카드 가장자리에서 잘리는 옅은 브랜드 워터마크. */
+.gw-card-preview::before {
+  content: "JEAKYUNG";
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  color: rgba(15, 23, 42, 0.035);
+  font-size: 92px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+.gw-card-preview--slogan::before {
+  color: rgba(255, 255, 255, 0.045);
+}
+
+.gw-card-preview > * {
+  position: relative;
+  z-index: 1;
 }
 
 .gw-card-preview-top { display: flex; align-items: flex-start; gap: 16px; }
@@ -6776,7 +6823,7 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
 
 /* 뒷면 템플릿별 스타일 */
 .gw-card-preview--back {
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 /* 1) 뒷면 - 영문 명함 */
@@ -7192,7 +7239,14 @@ body.groupware-root a.gw-intranet-home-button { color: var(--gw-text); }
 
 @media (max-width: 900px) {
   .gw-card-layout { grid-template-columns: minmax(0, 1fr); }
-  .gw-card-preview-wrap { position: static; max-width: 510px; }
+  .gw-card-preview-wrap { position: static; width: 100%; max-width: 510px; }
+}
+
+@media (max-width: 480px) {
+  .gw-card-page { padding-inline: 0; }
+  .gw-card-section-title { gap: 8px; }
+  .gw-card-section-title h3 { min-width: 0; }
+  .gw-card-badge-pill { flex: none; }
 }
 
 /* ── 검색 결과 ─────────────────────────────────────────────────────── */
