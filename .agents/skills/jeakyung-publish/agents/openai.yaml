@@ -1,0 +1,4 @@
+interface:
+  display_name: "재경닷컴 빠른 배포"
+  short_description: "재경닷컴 변경을 빌드하고 운영 배포까지 검증합니다"
+  default_prompt: "Use $jeakyung-publish to build, publish, and verify the current jeakyung.com update."
