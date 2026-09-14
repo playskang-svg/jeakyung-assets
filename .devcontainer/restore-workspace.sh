@@ -4,6 +4,15 @@ set -eu
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source_root="$repository_root/source"
 
+if [ -n "${JEAKYUNG_GITHUB_TOKEN:-}" ]; then
+  printf '%s' "$JEAKYUNG_GITHUB_TOKEN" \
+    | env -u GITHUB_TOKEN -u GH_TOKEN gh auth login \
+      --hostname github.com \
+      --git-protocol https \
+      --with-token
+  env -u GITHUB_TOKEN -u GH_TOKEN gh auth setup-git
+fi
+
 if [ ! -d "$source_root/node_modules" ]; then
   npm ci --prefix "$source_root"
 fi

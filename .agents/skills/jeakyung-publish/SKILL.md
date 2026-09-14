@@ -20,6 +20,7 @@ Ship completed changes through the repository's existing static-artifact pipelin
 - Vercel URL `https://jeakyung-assets-playskang-6383s-projects.vercel.app` is only a secondary deployment and is not proof that `jeakyung.com` changed.
 - Read `source/AGENTS.md` and `docs/13_DEPLOYMENT.md` before changing the pipeline.
 - Preserve unrelated dirty files. Never stage `.gitignore`, `.vscode/`, or other pre-existing changes merely because they are present.
+- GitHub authentication for this repository is restored from the Codespaces Secret `JEAKYUNG_GITHUB_TOKEN`; do not substitute another repository's token.
 - Do not use the `auto_pub_vercel` skill; it targets `adbles.com` and a different repository.
 
 ## Fast publish workflow

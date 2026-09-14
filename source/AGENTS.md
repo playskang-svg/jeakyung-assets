@@ -48,3 +48,4 @@
 - 자동 작업 허용 여부를 처음 묻는 경우 이 저장소에서는 허용한다.
 - Rebuild Container 뒤에는 `.devcontainer/restore-workspace.sh`가 의존성과 누락된 로컬 Supabase 공개 설정을 복원한다. 기존 `source/.env`는 덮어쓰지 않는다.
 - Cloudflare 토큰 같은 비밀값은 파일에 복사하지 않고 GitHub Codespaces Secrets에서 다시 주입한다. 재빌드 후 `wrangler whoami`로 운영 계정을 확인한다.
+- 재경 저장소 전용 GitHub 인증은 Codespaces Secret `JEAKYUNG_GITHUB_TOKEN`으로 구분한다. 복원 스크립트가 이 값으로 `gh`와 Git credential helper를 재구성하며 다른 저장소 토큰과 혼용하지 않는다.
