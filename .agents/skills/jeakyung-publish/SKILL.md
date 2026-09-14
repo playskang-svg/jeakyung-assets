@@ -1,6 +1,6 @@
 ---
 name: jeakyung-publish
-description: Build, synchronize, publish, and verify updates in playskang-svg/jeakyung-assets for jeakyung.com. Use automatically after completing requested changes in /workspaces/jeakyung-assets unless the user says local-only, preview-only, or not to deploy. Do not use for other repositories.
+description: Build, synchronize, publish, and verify updates in playskang-svg/jeakyung-assets to the jeakyung.com Cloudflare Worker. Use automatically after completing requested changes in /workspaces/jeakyung-assets unless the user says local-only, preview-only, or not to deploy. Do not use for other repositories.
 ---
 
 # 재경닷컴 빠른 배포
@@ -13,9 +13,11 @@ Ship completed changes through the repository's existing static-artifact pipelin
 - Source project: `source/`
 - Deployment repository: `playskang-svg/jeakyung-assets`
 - Production branch: `main`
-- Pipeline: `source` build → `npm run sync` → root static assets → push `main` → Vercel
+- Production pipeline: `source` build → `npm run sync` → root static assets → `dist_public/` → Cloudflare Worker deploy
+- Cloudflare Worker: `jeakyung`, account `380b1bc6d94eaf5f614ceffbdd5ef479`
+- Cloudflare zone: `76742882f920c70ae86e1d86a80ef7b5`
 - Production URL: `https://jeakyung.com`
-- Direct verification URL: `https://jeakyung-assets-playskang-6383s-projects.vercel.app`
+- Vercel URL `https://jeakyung-assets-playskang-6383s-projects.vercel.app` is only a secondary deployment and is not proof that `jeakyung.com` changed.
 - Read `source/AGENTS.md` and `docs/13_DEPLOYMENT.md` before changing the pipeline.
 - Preserve unrelated dirty files. Never stage `.gitignore`, `.vscode/`, or other pre-existing changes merely because they are present.
 - Do not use the `auto_pub_vercel` skill; it targets `adbles.com` and a different repository.
@@ -43,7 +45,8 @@ Ship completed changes through the repository's existing static-artifact pipelin
    env -u GITHUB_TOKEN git push origin main
    ```
 
-8. Verify the pushed commit's GitHub `Vercel` status reaches `success`, then fetch `/groupware/login` from the direct Vercel URL and confirm it references the newly generated groupware JS filename. Confirm that JS and CSS assets return HTTP 200.
-9. A Cloudflare challenge may make automated requests to `jeakyung.com` or `www.jeakyung.com` return 403. Do not treat that alone as a failed deployment when Vercel reports success and the direct production URL serves the new bundle. Report this distinction and provide the public page URL.
+8. Before production deployment, run `wrangler whoami` and confirm the authenticated account includes exactly `380b1bc6d94eaf5f614ceffbdd5ef479`. The commonly injected token for account `46e32ce3c5a1842cb57082e1abaf8a05` cannot deploy the production Worker or access its zone. Do not change `wrangler.jsonc` to the token's account to work around this; stop and request the correct production-account credential.
+9. Recreate the ignored staging directory from the deployment root, excluding files listed by `.assetsignore`, `dist_public/` itself, `.gitignore`, and `.vscode/`. Confirm the staged `groupware/index.html` references the new JS/CSS filenames, then run `npx wrangler deploy`.
+10. Treat production as complete only when Wrangler reports a successful Worker version deployment and `https://jeakyung.com/groupware/login` serves the new bundle. Vercel success alone is insufficient. If Cloudflare's challenge blocks automated HTTP verification, report that separately; do not claim the public domain is updated without a successful Wrangler deployment.
 
 Keep the local Vite server running if it was already running unless the user asks to stop it.

@@ -1,4 +1,21 @@
-# 13. 배포 및 운영 (Vercel)
+# 13. 배포 및 운영
+
+> **현재 운영 기준 (2026-09-14):** `jeakyung.com`과 `www.jeakyung.com`은
+> `wrangler.jsonc`의 Cloudflare Worker `jeakyung`이 `dist_public/` 정적 자산을
+> 직접 서비스한다. 운영 계정은 `380b1bc6d94eaf5f614ceffbdd5ef479`이다.
+> Git 푸시와 아래 Vercel 배포가 성공해도 실제 도메인에는 반영되지 않으므로,
+> `npx wrangler deploy` 성공과 실제 도메인의 신규 번들을 반드시 확인한다.
+> 저장소 전용 최신 절차는 `.agents/skills/jeakyung-publish/SKILL.md`를 따른다.
+
+## 13.0 현재 Cloudflare Worker 배포
+
+1. `source/`에서 `npm run release`로 빌드 및 루트 산출물 동기화를 완료한다.
+2. `.assetsignore` 기준으로 배포 루트를 `dist_public/`에 복제한다.
+3. `wrangler whoami`에서 운영 계정 `380b1bc6d94eaf5f614ceffbdd5ef479` 접근을 확인한다.
+4. `npx wrangler deploy`를 실행한다.
+5. `https://jeakyung.com/groupware/login`이 새 JS/CSS 해시를 제공하는지 확인한다.
+
+아래 Vercel 내용은 보조 배포 구성과 이전 이력을 설명한다.
 
 이 저장소(`playskang-svg/jeakyung-assets`)는 **빌드 완료된 정적 산출물**을 담고 있다.
 별도의 빌드 단계 없이 저장소 루트가 그대로 서빙되며, Vercel Git 연동으로 자동 배포된다.
