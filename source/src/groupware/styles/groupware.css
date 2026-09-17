@@ -2946,6 +2946,13 @@ body.groupware-root a.gw-secondary-button {
   overflow-wrap: anywhere;
 }
 
+/* 조회 화면(.gw-board-document)에는 편집기의 overflow-wrap 이 없어서,
+   공백 없는 긴 URL(구글 문서·드라이브 링크 등)이 줄바꿈되지 않고 모바일
+   화면 밖으로 그대로 밀려났다. 편집기와 같은 규칙을 준다. */
+.gw-board-document {
+  overflow-wrap: anywhere;
+}
+
 .gw-rich-editor .tiptap:focus-visible {
   box-shadow: inset 0 0 0 3px rgba(36, 80, 245, 0.18);
 }
