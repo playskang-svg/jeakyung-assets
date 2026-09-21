@@ -27,6 +27,7 @@ export default {
             method: 'POST',
             headers: {
               'apikey': 'sb_publishable_Jl43SzCeIQ90W-yYKgCQNA_2bS1K7Sd',
+              'Authorization': 'Bearer sb_publishable_Jl43SzCeIQ90W-yYKgCQNA_2bS1K7Sd',
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({ p_id: articleId }),
@@ -36,20 +37,22 @@ export default {
             const article = Array.isArray(data) ? data[0] : data;
             if (article && article.title) {
               const pageTitle = `${article.title} | 재경로지스｜물류`;
-              const summary = (article.summary || article.title).replace(/\s+/g, ' ').trim();
+              const summary = (article.summary || article.title || '').replace(/\s+/g, ' ').trim();
               const thumb = article.thumbnail_url || 'https://jeakyung.com/og-image.png';
 
-              response = new HTMLRewriter()
+              const rewriter = new HTMLRewriter()
                 .on('title', { element(e) { e.setInnerContent(pageTitle); } })
                 .on('meta[property="og:title"]', { element(e) { e.setAttribute('content', pageTitle); } })
                 .on('meta[property="og:description"]', { element(e) { e.setAttribute('content', summary); } })
                 .on('meta[property="og:image"]', { element(e) { e.setAttribute('content', thumb); } })
+                .on('meta[property="og:image:alt"]', { element(e) { e.setAttribute('content', article.title); } })
+                .on('meta[property="og:image:width"]', { element(e) { e.remove(); } })
+                .on('meta[property="og:image:height"]', { element(e) { e.remove(); } })
                 .on('meta[property="og:url"]', { element(e) { e.setAttribute('content', request.url); } })
-                .on('meta[name="description"]', { element(e) { e.setAttribute('content', summary); } })
-                .on('meta[name="twitter:title"]', { element(e) { e.setAttribute('content', pageTitle); } })
-                .on('meta[name="twitter:description"]', { element(e) { e.setAttribute('content', summary); } })
-                .on('meta[name="twitter:image"]', { element(e) { e.setAttribute('content', thumb); } })
-                .transform(response);
+                .on('link[rel="canonical"]', { element(e) { e.setAttribute('href', request.url); } })
+                .on('meta[name="description"]', { element(e) { e.setAttribute('content', summary); } });
+
+              response = rewriter.transform(response);
             }
           }
         } catch {
@@ -58,15 +61,11 @@ export default {
       }
 
       // Ensure HTML is never stale-cached by edge or browser
-      const newHeaders = new Headers(response.headers);
-      newHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-      newHeaders.set('Pragma', 'no-cache');
-      newHeaders.set('Expires', '0');
-      return new Response(response.body, {
-        status: response.status,
-        statusText: response.statusText,
-        headers: newHeaders,
-      });
+      const newResponse = new Response(response.body, response);
+      newResponse.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      newResponse.headers.set('Pragma', 'no-cache');
+      newResponse.headers.set('Expires', '0');
+      return newResponse;
     }
 
     return response;

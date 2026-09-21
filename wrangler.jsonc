@@ -9,6 +9,7 @@
   ],
   "assets": {
     "directory": "./dist_public",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    "run_worker_first": true
   }
 }
