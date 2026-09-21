@@ -138,7 +138,6 @@ export default function NewsPage() {
                 <p className="news-article-meta">
                   {current.category && <span className="site-news-chip">{current.category}</span>}
                   <time dateTime={current.published_at}>{formatDate(current.published_at)}</time>
-                  {(detail?.author || current.author) && <span className="news-article-author">{detail?.author || current.author}</span>}
                 </p>
                 <h2 id="news-article-title">{current.title}</h2>
                 {current.summary && <p className="news-article-summary">{current.summary}</p>}
@@ -219,7 +218,6 @@ export default function NewsPage() {
                         <span className="news-card-meta">
                           {article.category && <span className="site-news-chip">{article.category}</span>}
                           <time dateTime={article.published_at}>{formatDate(article.published_at)}</time>
-                          {article.author && <span className="news-card-author">{article.author}</span>}
                         </span>
                         <strong>{article.title}</strong>
                         {article.summary && <span className="news-card-summary">{article.summary}</span>}
