@@ -4,17 +4,17 @@ export default {
     const lastSegment = url.pathname.split('/').pop() || '';
     const isFile = lastSegment.includes('.');
 
-    let response;
-    // Direct SPA serving for all /groupware routes without file extension
-    if (!isFile && (url.pathname === '/groupware' || url.pathname.startsWith('/groupware/'))) {
-      const fallbackUrl = new URL('/groupware/index.html', request.url);
+    let response = await env.ASSETS.fetch(request);
+
+    // Fallback to /groupware/ for client-side SPA routes (not missing files)
+    if (response.status === 404 && !isFile && url.pathname.startsWith('/groupware')) {
+      const fallbackUrl = new URL('/groupware/', request.url);
       response = await env.ASSETS.fetch(new Request(fallbackUrl, request));
-    } else {
-      response = await env.ASSETS.fetch(request);
-      if (response.status === 404 && url.pathname.startsWith('/groupware')) {
-        const fallbackUrl = new URL('/groupware/index.html', request.url);
-        response = await env.ASSETS.fetch(new Request(fallbackUrl, request));
-      }
+    }
+
+    // Only process successful HTML responses
+    if (response.status !== 200) {
+      return response;
     }
 
     // Dynamic OpenGraph metadata injection for shared articles
