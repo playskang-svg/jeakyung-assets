@@ -3070,6 +3070,71 @@ p {
     gap: 8px;
 }
 
+.news-share-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+}
+
+.news-share-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--ink-700);
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.15s;
+}
+
+.news-share-btn--kakao {
+    background: #FEE500;
+    border-color: #FEE500;
+    color: #191919;
+}
+
+.news-share-btn--kakao:hover {
+    background: #FADA0A;
+    border-color: #FADA0A;
+    color: #191919;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(254, 229, 0, 0.4);
+}
+
+.news-share-btn--link:hover {
+    color: var(--blue-600);
+    border-color: rgba(26, 70, 255, 0.32);
+    background: var(--blue-100);
+    transform: translateY(-1px);
+}
+
+.news-share-toast {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    white-space: nowrap;
+    background: var(--ink-900, #0f172a);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    z-index: 50;
+    pointer-events: none;
+    animation: newsToastFadeIn 0.2s ease-out;
+}
+
+@keyframes newsToastFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .news-back-button,
 .news-secondary-button {
     display: inline-flex;

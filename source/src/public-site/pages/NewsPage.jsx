@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import PopupDocumentContent from '../../shared/popup/PopupDocumentContent.jsx';
 import '../../shared/popup/popup.css';
+import ShareButtonGroup from '../components/common/ShareButtonGroup.jsx';
 
 // 소식/정보 전용 페이지. 분류 탭으로 목록을 거르고, 글을 누르면 같은
 // 화면에서 본문이 열린다. 뒤로가기 / 목록 보기 / 닫기와 브라우저 뒤로가기가
@@ -130,6 +131,7 @@ export default function NewsPage() {
                   <span aria-hidden="true">←</span> 뒤로가기
                 </button>
                 <div className="news-article-toolbar-right">
+                  <ShareButtonGroup title={current.title} summary={current.summary} />
                   <button type="button" className="news-secondary-button" onClick={closeArticle}>목록 보기</button>
                   <button type="button" className="news-close-button" onClick={closeArticle} aria-label="닫기">×</button>
                 </div>

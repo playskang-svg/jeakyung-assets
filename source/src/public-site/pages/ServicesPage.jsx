@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { serviceName, withObjectParticle } from '../data/services.js';
 import PopupDocumentContent from '../../shared/popup/PopupDocumentContent.jsx';
 import '../../shared/popup/popup.css';
+import ShareButtonGroup from '../components/common/ShareButtonGroup.jsx';
 
 // 서비스별 칼럼 전용 페이지. 홈 화면 서비스 카드의 "자세히 보기"와 카드 안
 // 흐르는 띠 그림이 모두 이 주소(?service=3pl 등)로 보낸다.
@@ -137,6 +138,7 @@ export default function ServicesPage() {
                   <span aria-hidden="true">←</span> 뒤로가기
                 </button>
                 <div className="news-article-toolbar-right">
+                  <ShareButtonGroup title={current.title} summary={current.summary} />
                   <button type="button" className="news-secondary-button" onClick={closeArticle}>목록 보기</button>
                   <button type="button" className="news-close-button" onClick={closeArticle} aria-label="닫기">×</button>
                 </div>
