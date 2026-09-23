@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import PopupRichEditor from '../../components/editor/PopupRichEditor.jsx';
@@ -87,13 +87,31 @@ export default function PopupAdminPage() {
     }
   };
 
-  const selectDocument = (item) => setForm({
-    ...item,
-    size: item.size ?? 'medium',
-    starts_at: localDateTime(item.starts_at),
-    ends_at: localDateTime(item.ends_at),
-    archived: Boolean(item.archived_at),
-  });
+  const formRef = useRef(null);
+
+  const sortedDocuments = useMemo(() => {
+    return [...documents].sort((a, b) => {
+      const aArchived = Boolean(a.archived_at);
+      const bArchived = Boolean(b.archived_at);
+      if (aArchived !== bArchived) return aArchived ? 1 : -1;
+      const timeA = new Date(a.starts_at || a.created_at).getTime() || 0;
+      const timeB = new Date(b.starts_at || b.created_at).getTime() || 0;
+      return timeB - timeA;
+    });
+  }, [documents]);
+
+  const selectDocument = (item) => {
+    setForm({
+      ...item,
+      size: item.size ?? 'medium',
+      starts_at: localDateTime(item.starts_at),
+      ends_at: localDateTime(item.ends_at),
+      archived: Boolean(item.archived_at),
+    });
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  };
 
   const toggleTarget = (target, checked) => setForm((current) => ({
     ...current,
@@ -127,9 +145,9 @@ export default function PopupAdminPage() {
   return <article className="gw-page gw-admin-page" aria-labelledby="page-title">
     <header className="gw-page-header"><div><span className="gw-eyebrow">POPUP DOCUMENTS</span><h1 id="page-title">팝업 문서 관리</h1><p>HTML 또는 일반 편집기로 그룹웨어 안내 문서를 작성하고 노출 화면과 게시 기간을 지정합니다.</p></div><div className="gw-admin-actions"><Link className="gw-secondary-button" to="/admin">전체 관리자 화면</Link><button className="gw-primary-button" type="button" onClick={() => setForm(createEmptyDocument())}>새 팝업 만들기</button></div></header>
 
-    <section className="gw-admin-section"><div className="gw-admin-section-heading"><div><h2>팝업 목록</h2><p>게시 중·예약·종료·중지 상태를 확인하고 수정할 문서를 선택하세요.</p></div><span className="gw-count-badge">{documents.length}개</span></div>{loading ? <p className="gw-empty-state">목록을 불러오고 있습니다.</p> : <div className="gw-popup-admin-list">{documents.map((item) => <button type="button" key={item.id} className={form.id === item.id ? 'is-selected' : ''} onClick={() => selectDocument(item)}><span className={`gw-popup-state is-${deliveryState(item).replace(' ', '-')}`}>{deliveryState(item)}</span><strong>{item.title}</strong><small>{item.targets.map((target) => targetLabels[target] ?? target).join(' · ')}</small><time>{new Date(item.starts_at).toLocaleString('ko-KR')} ~ {item.ends_at ? new Date(item.ends_at).toLocaleString('ko-KR') : '종료일 없음'}</time></button>)}</div>}</section>
+    <section className="gw-admin-section"><div className="gw-admin-section-heading"><div><h2>팝업 목록</h2><p>게시 중·예약·종료·중지 상태를 확인하고 수정할 문서를 선택하세요.</p></div><span className="gw-count-badge">{documents.length}개</span></div>{loading ? <p className="gw-empty-state">목록을 불러오고 있습니다.</p> : <div className="gw-popup-admin-list">{sortedDocuments.map((item) => <button type="button" key={item.id} className={form.id === item.id ? 'is-selected' : ''} onClick={() => selectDocument(item)}><span className={`gw-popup-state is-${deliveryState(item).replace(' ', '-')}`}>{deliveryState(item)}</span><strong>{item.title}</strong><small>{item.targets.map((target) => targetLabels[target] ?? target).join(' · ')}</small><time>{new Date(item.starts_at).toLocaleString('ko-KR')} ~ {item.ends_at ? new Date(item.ends_at).toLocaleString('ko-KR') : '종료일 없음'}</time></button>)}</div>}</section>
 
-    <form className="gw-admin-section gw-popup-admin-form" onSubmit={submit}>
+    <form ref={formRef} className="gw-admin-section gw-popup-admin-form" onSubmit={submit}>
       <div className="gw-admin-section-heading"><div><h2>{form.id ? '팝업 문서 수정' : '새 팝업 문서'}</h2><p>일반 편집기는 서식 도구를 제공하고 HTML 편집기는 안전한 HTML 태그만 저장합니다.</p></div></div>
       <div className="gw-admin-form-grid"><label className="gw-field gw-field--full"><span>팝업 제목</span><input required maxLength="120" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></label><label className="gw-field"><span>게시 시작</span><input required type="datetime-local" value={form.starts_at} onChange={(event) => setForm({ ...form, starts_at: event.target.value })} /></label><label className="gw-field"><span>게시 종료(선택)</span><input type="datetime-local" value={form.ends_at} onChange={(event) => setForm({ ...form, ends_at: event.target.value })} /></label><label className="gw-field"><span>정렬 순서</span><input type="number" value={form.sort_order} onChange={(event) => setForm({ ...form, sort_order: Number(event.target.value) })} /></label><label className="gw-field"><span>팝업 크기</span><select value={form.size} onChange={(event) => setForm({ ...form, size: event.target.value })}>{SIZES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label></div>
 
