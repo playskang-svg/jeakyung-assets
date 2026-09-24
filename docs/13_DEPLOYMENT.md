@@ -1,19 +1,33 @@
 # 13. 배포 및 운영
 
-> **현재 운영 기준 (2026-09-14):** `jeakyung.com`과 `www.jeakyung.com`은
-> `wrangler.jsonc`의 Cloudflare Worker `jeakyung`이 `dist_public/` 정적 자산을
-> 직접 서비스한다. 운영 계정은 `380b1bc6d94eaf5f614ceffbdd5ef479`이다.
-> Git 푸시와 아래 Vercel 배포가 성공해도 실제 도메인에는 반영되지 않으므로,
-> `npx wrangler deploy` 성공과 실제 도메인의 신규 번들을 반드시 확인한다.
-> 저장소 전용 최신 절차는 `.agents/skills/jeakyung-publish/SKILL.md`를 따른다.
+> **현재 운영 기준 (2026-09-24):** `jeakyung.com`과 `www.jeakyung.com`은
+> `wrangler.jsonc`의 Cloudflare Worker `jeakyung`이 저장소 루트를 정적 자산
+> 디렉터리(`assets.directory: "."`)로 직접 서비스한다. 운영 계정은
+> `380b1bc6d94eaf5f614ceffbdd5ef479`이다. Cloudflare **Workers Builds**
+> Git 연동이 `main`에 연결되어 있어, `main`에 push하면 Cloudflare가 저장소를
+> 그대로 체크아웃해 `npx wrangler deploy`를 자동 실행한다 — 별도 로컬
+> `wrangler deploy`나 스테이징 폴더 복제가 더 이상 필요 없다.
+> 배포 확인은 GitHub PR/커밋의 **"Workers Builds: jeakyung"** 체크와 실제
+> 도메인의 신규 번들 해시로 한다. 저장소 전용 최신 절차는
+> `.agents/skills/jeakyung-publish/SKILL.md`를 따른다.
 
 ## 13.0 현재 Cloudflare Worker 배포
 
-1. `source/`에서 `npm run release`로 빌드 및 루트 산출물 동기화를 완료한다.
-2. `.assetsignore` 기준으로 배포 루트를 `dist_public/`에 복제한다.
-3. `wrangler whoami`에서 운영 계정 `380b1bc6d94eaf5f614ceffbdd5ef479` 접근을 확인한다.
-4. `npx wrangler deploy`를 실행한다.
-5. `https://jeakyung.com/groupware/login`이 새 JS/CSS 해시를 제공하는지 확인한다.
+1. `source/`에서 `npm run release`로 빌드 및 루트 산출물 동기화를 완료한다 (`assets/`, `groupware/index.html` 등 저장소 루트 파일이 곧 배포 대상이다).
+2. 변경된 루트 산출물과 소스를 커밋해 `main`에 push한다.
+3. GitHub 커밋/PR의 **"Workers Builds: jeakyung"** 체크가 성공(success)으로 뜨는지 확인한다 — Cloudflare가 저장소 루트를 `.assetsignore` 기준으로 걸러 자동 배포한 결과다.
+4. `https://jeakyung.com/groupware/login`이 새 JS/CSS 해시를 제공하는지 확인한다.
+
+수동 배포가 필요한 경우(Workers Builds 실패, 계정 자격 증명 직접 확인 등)에는 13.0.1을 따른다.
+
+### 13.0.1 수동 배포 (Fallback)
+
+Workers Builds가 실패하거나 로컬에서 직접 배포해야 할 때만 사용한다.
+
+1. `.assetsignore` 기준으로 배포 루트를 임시 스테이징 폴더에 복제한다 (저장소 루트를 직접 배포 대상으로 쓰므로, 보통은 이 단계 없이 저장소 루트에서 바로 배포해도 된다).
+2. `wrangler whoami`에서 운영 계정 `380b1bc6d94eaf5f614ceffbdd5ef479` 접근을 확인한다.
+3. `npx wrangler deploy`를 실행한다.
+4. `https://jeakyung.com/groupware/login`이 새 JS/CSS 해시를 제공하는지 확인한다.
 
 아래 Vercel 내용은 보조 배포 구성과 이전 이력을 설명한다.
 

@@ -13,7 +13,7 @@ Ship completed changes through the repository's existing static-artifact pipelin
 - Source project: `source/`
 - Deployment repository: `playskang-svg/jeakyung-assets`
 - Production branch: `main`
-- Production pipeline: `source` build → `npm run sync` → root static assets → `dist_public/` → Cloudflare Worker deploy
+- Production pipeline: `source` build → `npm run sync` → root static assets (committed) → push `main` → Cloudflare Workers Builds auto-deploys via `npx wrangler deploy` (Git integration; `wrangler.jsonc` `assets.directory` is `.`, the repo root itself — no `dist_public/` staging step needed anymore)
 - Cloudflare Worker: `jeakyung`, account `380b1bc6d94eaf5f614ceffbdd5ef479`
 - Cloudflare zone: `76742882f920c70ae86e1d86a80ef7b5`
 - Production URL: `https://jeakyung.com`
@@ -46,9 +46,15 @@ Ship completed changes through the repository's existing static-artifact pipelin
    env -u GITHUB_TOKEN git push origin main
    ```
 
-8. Before production deployment, run `wrangler whoami` and confirm the authenticated account includes exactly `380b1bc6d94eaf5f614ceffbdd5ef479`. The commonly injected token for account `46e32ce3c5a1842cb57082e1abaf8a05` cannot deploy the production Worker or access its zone. Do not change `wrangler.jsonc` to the token's account to work around this; stop and request the correct production-account credential.
-9. Recreate the ignored staging directory from the deployment root using `.assetsignore` and excluding `dist_public/` itself. The ignore file must keep repository-only `.github`, `.agents`, `.devcontainer`, `.vscode`, and configuration files out of public assets. Confirm the staged `groupware/index.html` references the new JS/CSS filenames, then run `npx wrangler deploy`.
-10. Treat production as complete only when Wrangler reports a successful Worker version deployment and `https://jeakyung.com/groupware/login` serves the new bundle. Vercel success alone is insufficient. If Cloudflare's challenge blocks automated HTTP verification, report that separately; do not claim the public domain is updated without a successful Wrangler deployment.
+8. Pushing `main` is now sufficient to trigger production deployment: Cloudflare Workers Builds is connected to this repo's `main` branch and runs `npx wrangler deploy` automatically against the pushed commit, using `wrangler.jsonc`'s `assets.directory: "."` (the repo root, filtered by `.assetsignore`). No local Wrangler credentials or manual staging are required for a normal update.
+9. Confirm the GitHub check **"Workers Builds: jeakyung"** on the pushed commit (or its PR) is `success`, then verify `https://jeakyung.com/groupware/login` serves the new bundle hash. Treat production as complete only once both checks pass — Vercel success alone is insufficient. If the Workers Builds check fails, read its Cloudflare dashboard build log via `details_url` before assuming a manual `wrangler deploy` is needed (see Manual fallback below).
+
+## Manual fallback (only if Workers Builds fails or you need to deploy without pushing)
+
+1. Run `wrangler whoami` and confirm the authenticated account includes exactly `380b1bc6d94eaf5f614ceffbdd5ef479`. The commonly injected token for account `46e32ce3c5a1842cb57082e1abaf8a05` cannot deploy the production Worker or access its zone. Do not change `wrangler.jsonc` to the token's account to work around this; stop and request the correct production-account credential.
+2. Since `assets.directory` is the repo root, `npx wrangler deploy` can be run directly from the deployment root (no staging directory needed). If a temporary excerpt is still preferred, build it with `.assetsignore` and exclude the excerpt path itself.
+3. Confirm `groupware/index.html` references the current JS/CSS filenames, then run `npx wrangler deploy`.
+4. Treat production as complete only when Wrangler reports a successful Worker version deployment and `https://jeakyung.com/groupware/login` serves the new bundle. If Cloudflare's challenge blocks automated HTTP verification, report that separately; do not claim the public domain is updated without a successful Wrangler deployment.
 
 Keep the local Vite server running if it was already running unless the user asks to stop it.
 
@@ -56,11 +62,9 @@ Keep the local Vite server running if it was already running unless the user ask
 
 Use Fast Track by default for a scoped UI, copy, style, or single-feature update that does not change dependencies, migrations, Worker routing, authentication, DNS, or deployment configuration.
 
-1. Run the Cloudflare account preflight first. Do not spend time building if the production account credential is unavailable.
-2. Edit the source of truth and run only the focused check plus `git diff --check`; do not run unrelated suites.
-3. Run exactly one production `npm run release`. Never patch minified root assets by hand and never rebuild a second time merely to deploy.
-4. Validate that `dist_public` is the exact ignored staging target, then mirror the root with `rsync --delete` using `.assetsignore` and an explicit exclusion for `dist_public/`. This removes obsolete hashed assets and repository-only files while preserving the source tree.
-5. Confirm staged `groupware/index.html` names the newly built JS and CSS. Run `npx wrangler deploy`; Workers Static Assets uploads only content whose hash changed.
-6. Verify the Wrangler version result and production bundle, then commit and push only the requested source, generated root assets, and deployment-skill changes. Do not wait for the secondary Vercel deployment before reporting Cloudflare production success.
+1. Edit the source of truth and run only the focused check plus `git diff --check`; do not run unrelated suites.
+2. Run exactly one production `npm run release`. Never patch minified root assets by hand and never rebuild a second time merely to deploy.
+3. Confirm `groupware/index.html` names the newly built JS and CSS, then commit and push only the requested source and generated root assets to `main`. Pushing is the deploy step — Cloudflare Workers Builds picks up the new commit and runs `npx wrangler deploy` automatically (Workers Static Assets uploads only content whose hash changed).
+4. Verify the **"Workers Builds: jeakyung"** GitHub check is `success` and the production bundle at `https://jeakyung.com` reflects the new hash. Do not wait for the secondary Vercel deployment before reporting Cloudflare production success. If Workers Builds fails, fall back to the Manual fallback section above — do not spend time hunting for local Cloudflare credentials first.
 
 Skip Worker deployment entirely when the only changes are non-served repository instructions such as `docs/`, `.agents/`, or `.vscode/`; commit and push those changes only. Use the full workflow instead of Fast Track whenever the update crosses the exclusions in the first paragraph or the focused validation is inconclusive.
