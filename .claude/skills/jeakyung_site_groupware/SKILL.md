@@ -14,7 +14,7 @@ React Router SPA, `basename="/groupware"`, Vite의 별도 빌드 엔트리(`grou
   - 보호(`ProtectedRoute`→`AppShell`): `dashboard, profile, attendance, organization, boards*, pages/:pageSlug, approval/*, calendar, files, view/*, search, business-card`
   - 관리자 전용(`AdminRoute` 중첩, lazy import): `admin, admin/boards, admin/popups`
   - `*` → `/login`
-- Vercel `vercel.json`: `/groupware`, `/groupware/:path*` → `/groupware/index.html` rewrite, `X-Robots-Tag: noindex, nofollow`.
+- Cloudflare `worker.js`: 404이면서 확장자 없는 `/groupware*` 요청을 `/groupware/index.html`로 폴백(SPA rewrite), 응답에 `X-Robots-Tag: noindex, nofollow` 부여.
 
 ## 인증 & 회원(멤버십)
 

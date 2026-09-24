@@ -62,7 +62,7 @@ React 19 기반 **MPA**(클라이언트 라우팅 없음, 페이지별 Vite 엔�
 ## SEO / robots
 
 - 루트 `robots.txt`: `Allow: /` + 사이트맵 링크. `sitemap.xml`엔 `/`와 `/privacy/`만 등재(뉴스/서비스/비공개 영역은 의도적으로 제외).
-- `vercel.json` headers에서 `X-Robots-Tag: noindex, nofollow`를 `/groupware/(.*)`, `/hl-safety-eval/(.*)`, `/legacy/(.*)`, `/notice/(.*)`에 적용 — **비공개/미등재 페이지를 새로 추가하면 여기에도 규칙을 추가할 것** (실제로 `/notice/` 추가 시 이렇게 했음).
+- `worker.js`(Cloudflare Worker)가 응답에 `X-Robots-Tag: noindex, nofollow`를 `/groupware`, `/hl-safety-eval`, `/legacy`, `/notice` 경로에 적용 — **비공개/미등재 페이지를 새로 추가하면 여기에도 규칙을 추가할 것** (실제로 `/notice/` 추가 시 이렇게 했음). Vercel 시절엔 `vercel.json` headers에 있었으나 2026-09-24 Cloudflare 전환 후 `worker.js`로 옮겼다.
 
 ## 빌드/배포 파이프라인 (front 고유 이슈들)
 
@@ -71,4 +71,4 @@ React 19 기반 **MPA**(클라이언트 라우팅 없음, 페이지별 Vite 엔�
   - `rollupOptions.input`에서 서비스 페이지 엔트리 이름은 `servicesPage`(그냥 `services`가 아님) — `src/public-site/data/services.js`라는 공유 청크 이름과 충돌해서 실제로 "서비스 페이지가 빈 화면으로 나오는" 장애가 있었던 자리. 엔트리 이름을 바꾸지 말 것.
   - 커스텀 플러그인 `preserve-legacy-script`(레거시 `<script src="js/main.js">`를 모듈로 재작성), `groupware-spa-fallback`(dev/preview에서 `/groupware*` 비파일 요청을 `groupware/index.html`로 서빙).
 - **`scripts/sync-build.mjs`**(`npm run sync`/`release`): `dist/assets`를 루트 `assets/`로 전량 교체, `dist/groupware/index.html`을 루트로 복사, 손수 작성 HTML(`index.html`,`news/index.html`,`services/index.html`,`privacy/index.html`)에 박힌 해시 자산 참조를 새 해시로 재기록(파일명 끝 `-<8자해시>` 스트립 후 매칭, 모호하면 `fail()`), 마지막에 모든 참조가 실제 존재하는지 무결성 검사. **front 코드를 고친 뒤엔 이 스크립트까지 실행해야 실제 사이트에 반영된다** (Vite build만으로는 안 됨).
-- Vite 파이프라인 완전히 밖에 있는 손수 HTML: `/notice/index.html`, `/legacy/index.html`, `/hl-safety-eval/`(별도 미니 프로젝트, 자체 `build.mjs`/`netlify.toml`), `/404.html` — 이런 페이지는 `sync-build.mjs`의 `HAND_WRITTEN` 목록에도 없고 `vite.config.js`의 `rollupOptions.input`에도 없다. 새 정적 페이지를 추가할 땐 이 방식(파일을 루트에 직접 두고 `vercel.json` headers에 noindex 규칙만 추가)을 따르면 빌드 파이프라인 의존 없이 즉시 배포 가능.
+- Vite 파이프라인 완전히 밖에 있는 손수 HTML: `/notice/index.html`, `/legacy/index.html`, `/hl-safety-eval/`(별도 미니 프로젝트, 자체 `build.mjs`/`netlify.toml`), `/404.html` — 이런 페이지는 `sync-build.mjs`의 `HAND_WRITTEN` 목록에도 없고 `vite.config.js`의 `rollupOptions.input`에도 없다. 새 정적 페이지를 추가할 땐 이 방식(파일을 루트에 직접 두고 `worker.js`의 `NOINDEX_PREFIXES`에 경로만 추가)을 따르면 빌드 파이프라인 의존 없이 즉시 배포 가능.

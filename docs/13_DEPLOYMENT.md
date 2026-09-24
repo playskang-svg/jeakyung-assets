@@ -10,6 +10,17 @@
 > 배포 확인은 GitHub PR/커밋의 **"Workers Builds: jeakyung"** 체크와 실제
 > 도메인의 신규 번들 해시로 한다. 저장소 전용 최신 절차는
 > `.agents/skills/jeakyung-publish/SKILL.md`를 따른다.
+>
+> **Vercel 파이프라인은 폐기했다 (2026-09-24).** `vercel.json`, `.vercelignore`를
+> 저장소에서 삭제했고 `.assetsignore`에서도 관련 항목을 뺐다. jeakyung.com은
+> 더 이상 Vercel을 거치지 않는다. 다만 Vercel 프로젝트(`playskang-6383s-projects`
+> 팀의 `jeakyung-assets`) 자체의 삭제·Git 연동 해제는 Vercel 대시보드에서
+> 계정 권한이 있는 사람이 직접 해야 한다 — Settings → Git → Disconnect,
+> 또는 Settings → Advanced → Delete Project
+> (https://vercel.com/playskang-6383s-projects/jeakyung-assets/settings).
+> 해제 전까지는 `main`과 다른 브랜치에 push할 때 Vercel이 계속 빌드를 시도하고
+> PR에 `vercel[bot]` 코멘트가 남을 수 있는데, jeakyung.com 서빙과는 무관하므로
+> 무시해도 된다.
 
 ## 13.0 현재 Cloudflare Worker 배포
 
@@ -29,12 +40,13 @@ Workers Builds가 실패하거나 로컬에서 직접 배포해야 할 때만 �
 3. `npx wrangler deploy`를 실행한다.
 4. `https://jeakyung.com/groupware/login`이 새 JS/CSS 해시를 제공하는지 확인한다.
 
-아래 Vercel 내용은 보조 배포 구성과 이전 이력을 설명한다.
+## 13.1 이전 Vercel 배포 (폐기됨, 참고용 이력)
 
-이 저장소(`playskang-svg/jeakyung-assets`)는 **빌드 완료된 정적 산출물**을 담고 있다.
-별도의 빌드 단계 없이 저장소 루트가 그대로 서빙되며, Vercel Git 연동으로 자동 배포된다.
+아래 13.1~13.6은 jeakyung.com이 Vercel을 통해 서빙되던 시절(2026-08-23 ~ 2026-09-24)의
+설정과 절차를 그대로 남긴 이력이다. 지금은 적용되지 않으며, `vercel.json`·`.vercelignore`도
+저장소에서 삭제됐다. 새로 참고할 필요는 없고, 과거 DNS·도메인 전환 판단 근거로만 남긴다.
 
-## 13.1 배포 대상
+### 13.1.1 배포 대상 (당시)
 
 | 항목 | 값 |
 | --- | --- |
@@ -44,9 +56,9 @@ Workers Builds가 실패하거나 로컬에서 직접 배포해야 할 때만 �
 | 프로덕션 브랜치 | `main` |
 | 프로덕션 URL | https://jeakyung-assets-playskang-6383s-projects.vercel.app |
 | 대시보드 | https://vercel.com/playskang-6383s-projects/jeakyung-assets |
-| 프레임워크 프리셋 | 사용 안 함 — `vercel.json`이 빌드 없이 저장소 루트를 서빙하도록 지정한다 |
+| 프레임워크 프리셋 | 사용 안 함 — `vercel.json`이 빌드 없이 저장소 루트를 서빙하도록 지정했다 |
 
-### 저장소·프로젝트 이전 이력
+#### 저장소·프로젝트 이전 이력
 
 - 과거 배포는 `jeakyungdrive01-art/jeakyung-assets`(브랜치 `groupware/approval`)에서
   `jeakyung-preview` 프로젝트로 이루어졌고, 그 Git 연결은 끊어진 상태다.
@@ -57,119 +69,56 @@ Workers Builds가 실패하거나 로컬에서 직접 배포해야 할 때만 �
 - 그때까지 그 프로젝트가 서빙하던 `groupware.jeakyung.com`(그룹웨어 옛 주소)도 함께 폐기했다.
   그룹웨어는 `jeakyung.com/groupware/`로 옮겨졌고 사이트 어디에서도 옛 주소로 보내지 않으므로
   서브도메인을 유지할 이유가 없다. Cloudflare의 `groupware` CNAME 레코드도 같은 날 삭제했다.
-  (레코드를 남겨 두면 Vercel을 가리키는 채로 주인이 없어져, 다른 Vercel 사용자가 그 호스트명을
-  선점할 수 있다. 옛 로그인 주소였던 만큼 위장 로그인 화면에 쓰이기 좋은 자리라 함께 정리했다.)
-- 옛 주소를 되살려야 한다면 `groupware.jeakyung.com`을 `jeakyung-assets`에 도메인으로 붙이고
-  `vercel.json`에 `has: host` 조건부 `redirects`를 넣으면 된다.
 
-## 13.2 자동 배포 규칙
+### 13.1.2 자동 배포 규칙 (당시)
 
-- `main`에 push → **프로덕션 배포**가 자동 생성된다.
-- 그 외 브랜치에 push → **프리뷰 배포**가 자동 생성되고, PR에 프리뷰 URL이 코멘트로 붙는다.
-- 저장소에 소스가 아닌 빌드 산출물이 커밋되므로, 화면을 바꾸려면
-  **원본 프로젝트에서 빌드한 결과물을 이 저장소에 반영**한 뒤 push 한다.
-  (`/assets/*.js`, `/assets/*.css` 파일명은 해시가 포함되어 매 빌드마다 바뀐다.)
+- `main`에 push → **프로덕션 배포**가 자동 생성됐다.
+- 그 외 브랜치에 push → **프리뷰 배포**가 자동 생성되고, PR에 프리뷰 URL이 코멘트로 붙었다.
 
-## 13.3 `vercel.json` 설정 요약
+### 13.1.3 `vercel.json` 설정 요약 (삭제된 파일, 참고용)
 
 - **출력 디렉터리 고정**: `outputDirectory: "."`
   - Vercel 제로컨피그는 저장소에 `public/` 폴더가 있으면 그것을 출력 디렉터리로 간주한다.
-    그대로 두면 루트를 포함한 모든 경로가 404가 되므로 반드시 루트로 고정해야 한다.
+    그대로 두면 루트를 포함한 모든 경로가 404가 되므로 반드시 루트로 고정해야 했다.
   - `framework`, `buildCommand`, `installCommand`는 `null` — 빌드 단계 없음.
 - **SPA 리라이트**: `/groupware`, `/groupware/**` → `/groupware/index.html`
-  - 그룹웨어는 React Router(history 모드) 기반이므로 `/groupware/login` 같은 경로로
-    직접 접속하거나 새로고침해도 URL이 유지된 채 앱이 부팅된다.
-  - GitHub Pages용 `404.html` 우회 스크립트는 Pages 호환을 위해 그대로 두지만,
-    Vercel에서는 리라이트가 먼저 매칭되므로 동작하지 않는다.
-- **캐시 정책**
-  - `/assets/*` : `max-age=31536000, immutable` (파일명 해시로 무효화)
-  - `/public/*` : 1주 캐시 + stale-while-revalidate (이미지·영상)
-  - `/css/*`, `/js/*`, `*.html` : `max-age=0, must-revalidate` (해시 없음 → 즉시 반영)
-- **보안 헤더**: `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Permissions-Policy`
-- **검색 노출 차단**: `/groupware/*`에 `X-Robots-Tag: noindex, nofollow`
-- `.vercelignore`로 `WEBSITE_SPEC.md`, `docs/`, `CNAME`은 배포 산출물에서 제외한다.
+- **캐시 정책**: `/assets/*`는 `max-age=31536000, immutable`, `*.html`은 `max-age=0, must-revalidate` 등.
+- **보안 헤더**·**검색 노출 차단**(`/groupware/*`에 `X-Robots-Tag: noindex, nofollow`) 설정.
 
-## 13.4 도메인 전환 (GitHub Pages → Vercel, DNS는 Cloudflare)
+Cloudflare Worker(`worker.js`)가 SPA 폴백과 캐시 헤더를 자체적으로 처리하므로 위 설정은
+더 이상 필요 없다.
+
+### 13.1.4 도메인 전환 이력 (GitHub Pages → Vercel, DNS는 Cloudflare)
 
 `jeakyung.com`의 DNS는 **Cloudflare**에서 관리한다.
-2026-08-23에 GitHub Pages → Vercel 전환을 완료했으며, apex는 `www`로 308 리다이렉트된다.
-아래는 당시 수행한 절차이자 재현·롤백 기준이다.
+2026-08-23에 GitHub Pages → Vercel 전환을 완료했으며, apex는 `www`로 308 리다이렉트됐다.
+이후 2026-09-24에 Vercel에서 Cloudflare Worker로 다시 전환했다(위 13.0 참고).
+아래는 GitHub Pages → Vercel 전환 당시 수행한 절차 기록이다.
 
-### 13.4.1 사전 조건
+- Cloudflare에서 기존 GitHub Pages 레코드(A/AAAA, `www` CNAME)를 제거하고 Vercel이 안내한
+  레코드로 교체했다. 실제 적용된 apex 레코드는 A가 아니라 CNAME(`050ebfa8358cbaec.vercel-dns-017.com`,
+  Cloudflare가 flattening)이었다.
+- Proxy status는 `DNS only`(회색 구름)로 둬야 Vercel 인증서 발급이 성공했다.
+- MX·TXT(SPF/DKIM) 등 메일 관련 레코드는 건드리지 않았다.
+- 전환 확인 후 저장소 루트의 `CNAME` 파일을 제거하고 GitHub Pages 배포를 비활성화했다.
 
-- `main`에 `vercel.json`이 반영되어 있고 프로덕션 배포가 정상이어야 한다.
-  (도메인을 먼저 붙이면 404를 가리키게 된다.)
-- Vercel 팀이 **Hobby 플랜**이면 상업적 용도 약관 확인이 필요하다. 필요 시 Pro로 전환한다.
+### 13.1.5 Supabase 연동 (당시)
 
-### 13.4.2 Vercel에 도메인 추가
+- 그룹웨어는 Supabase(`https://vzswlvumcdxnryrfwkkl.supabase.co`)를 브라우저에서 직접 호출하므로
+  Vercel 환경변수 설정은 필요 없었다(지금도 마찬가지로, Cloudflare Worker 쪽도 환경변수가 필요 없다).
+- Supabase **Authentication → URL Configuration**에 등록했던 Vercel 프리뷰용 Redirect URL
+  (`https://jeakyung-assets-*-playskang-6383s-projects.vercel.app/**`)은, Vercel 프로젝트를
+  실제로 삭제한 뒤에는 정리해도 된다. `https://www.jeakyung.com/**`, `https://jeakyung.com/**`
+  등 실제 도메인 항목은 그대로 둔다.
 
-1. Vercel → `jeakyung-assets` → Settings → Domains
-2. `jeakyung.com` 추가 → `www.jeakyung.com`의 리다이렉트 구성 여부를 함께 선택
-3. Vercel이 화면에 표시하는 **필요 DNS 레코드 값을 그대로 사용한다.**
-   (apex는 A 레코드, `www`는 CNAME. CNAME 대상은 계정·시점에 따라
-   `cname.vercel-dns.com` 또는 `cname.vercel-dns-0.com` 등으로 다르므로 화면 값을 따른다.)
+### 13.1.6 운영 체크리스트 (당시, 폐기)
 
-### 13.4.3 Cloudflare DNS 변경
-
-1. Cloudflare → `jeakyung.com` → DNS → Records
-2. **기존 GitHub Pages 레코드를 제거**한다.
-   - apex `@` A 레코드: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-   - apex `@` AAAA 레코드: `2606:50c0:8000::153` ~ `2606:50c0:8003::153`
-   - `www` CNAME: `<GitHub 사용자>.github.io`
-3. Vercel이 안내한 레코드를 추가한다.
-4. 실제 적용된 apex 레코드는 A가 아니라 **CNAME**이었다
-   (`@` → `050ebfa8358cbaec.vercel-dns-017.com`). Cloudflare가 apex CNAME을 flattening 하므로 동작한다.
-   기존 A/AAAA를 지우기 전에는 `An A, AAAA, or CNAME record with that host already exists` 오류가 나므로,
-   **삭제 → 추가 순서**를 지켜야 한다.
-5. **Proxy status를 반드시 `DNS only`(회색 구름)로 둔다.**
-   주황색 구름(프록시)이면 Vercel의 인증서 발급이 실패하거나 리다이렉트 루프가 발생한다.
-   이것이 Cloudflare + Vercel 조합에서 가장 흔한 실패 원인이다.
-6. TTL은 `Auto`로 둔다.
-
-> MX·TXT(SPF/DKIM) 등 **메일 관련 레코드는 건드리지 않는다.** 웹 호스팅만 옮기는 작업이다.
-
-### 13.4.4 전환 확인 및 마무리
-
-1. Vercel Domains 화면이 **Valid Configuration**으로 바뀌고 SSL 인증서가 발급될 때까지 기다린다(보통 수 분).
-2. `https://jeakyung.com/`, `https://jeakyung.com/privacy/`,
-   `https://jeakyung.com/groupware/login`(새로고침 포함)을 확인한다.
-3. 정상 확인 후에만 아래를 진행한다. (완료: `CNAME` 파일 제거)
-   - 저장소 루트의 `CNAME` 파일 제거
-   - GitHub 저장소 Settings → Pages에서 배포 비활성화
-4. Supabase 인증 URL에 `https://jeakyung.com`을 등록한다(13.5 참고).
-
-### 13.4.5 롤백
-
-전환 중 문제가 생기면 Cloudflare에서 13.4.3의 GitHub Pages 레코드를 되돌린다.
-`CNAME` 파일과 Pages 설정을 마지막 단계까지 그대로 두는 이유가 이것이다.
-
-## 13.5 Supabase 연동
-
-- 그룹웨어는 Supabase(`https://vzswlvumcdxnryrfwkkl.supabase.co`)를 브라우저에서 직접 호출한다.
-- 프로젝트 URL과 anon 키가 번들에 포함되어 있으므로 **Vercel 환경변수 설정은 필요 없다.**
-- 다만 새 도메인에서 로그인·인증 리다이렉트가 동작하려면 Supabase 쪽
-  **Authentication → URL Configuration**에 아래 URL을 등록해야 한다.
-
-| 구분 | URL |
-| --- | --- |
-| Site URL | `https://www.jeakyung.com` (실제 콘텐츠가 서빙되는 호스트) |
-| Redirect URLs | `https://www.jeakyung.com/**` |
-| Redirect URLs | `https://jeakyung.com/**` (apex는 www로 308 리다이렉트되지만 함께 등록해 둔다) |
-| Redirect URLs | `https://jeakyung-assets-playskang-6383s-projects.vercel.app/**` |
-| Redirect URLs | `https://jeakyung-assets-*-playskang-6383s-projects.vercel.app/**` (프리뷰 배포용) |
-
-- 비밀번호 재설정 경로는 `/groupware/reset-password/update`이므로 해당 경로가
-  리다이렉트 허용 패턴에 포함되는지 확인한다.
-
-## 13.6 운영 체크리스트
-
-- 배포 상태·로그 확인: https://vercel.com/playskang-6383s-projects/jeakyung-assets
-- 문제가 생긴 배포는 Vercel 대시보드의 **Instant Rollback**으로 직전 프로덕션으로 되돌린다.
-- 배포 후 확인 경로: `https://www.jeakyung.com/`, `/privacy/`,
-  `/groupware/login`(새로고침 포함), 메인 영상·이미지 로딩
+- 배포 상태·로그 확인은 Vercel 대시보드 대신 GitHub 커밋/PR의 "Workers Builds: jeakyung" 체크와
+  Cloudflare 대시보드(https://dash.cloudflare.com/380b1bc6d94eaf5f614ceffbdd5ef479/workers/services/view/jeakyung/production)를 사용한다.
+- 문제가 생긴 배포는 Cloudflare 대시보드에서 이전 Worker 버전으로 롤백한다(Vercel Instant Rollback은 더 이상 해당 없음).
 
 ### 알려진 불일치
 
 `index.html`과 `privacy/index.html`의 `<link rel="canonical">`은 apex(`https://jeakyung.com/...`)를
-가리키는데, 실제 서빙 호스트는 `www`이고 apex는 그쪽으로 308 리다이렉트된다.
-Vercel Domains에서 apex를 기본 도메인으로 바꾸거나, canonical을 `www`로 맞춰 정리해야 한다.
+가리키는데, 실제 서빙 호스트는 `www`이고 apex는 그쪽으로 308 리다이렉트된다. Cloudflare Worker의
+`routes`에서 apex를 기본으로 바꾸거나, canonical을 `www`로 맞춰 정리해야 한다.

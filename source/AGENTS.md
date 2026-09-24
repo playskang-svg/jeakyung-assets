@@ -36,8 +36,9 @@
 - 이 저장소의 요청된 업데이트가 검증까지 끝나면, 사용자가 `로컬만`, `미배포`, `프리뷰만`이라고 지정하지 않은 한 운영 배포까지 이어서 완료한다.
 - 저장소 전용 절차는 `../.agents/skills/jeakyung-publish/SKILL.md`를 따른다.
 - 위 상시 승인은 기존 Cloudflare Worker 정적 자산 배포에만 적용한다. 운영 Worker 계정은 `wrangler.jsonc`의 `380b1bc6d94eaf5f614ceffbdd5ef479`이며 다른 계정으로 바꾸지 않는다.
-- `main`에는 Cloudflare Workers Builds Git 연동이 붙어 있어 push만으로 `npx wrangler deploy`가 자동 실행된다. 다만 Git push 자체가 배포 완료를 뜻하지는 않는다 — 반드시 GitHub 커밋/PR의 **"Workers Builds: jeakyung"** 체크가 success인지, 그리고 실제 도메인이 신규 번들 해시를 서빙하는지 확인해야 한다. Vercel 성공은 이 확인을 대신하지 못한다. 이 체크가 실패하면 `jeakyung-publish` SKILL.md의 Manual fallback을 따른다.
-- DNS, Cloudflare·Vercel 프로젝트 설정, 비밀값, 파괴적 데이터베이스 변경은 별도 승인 없이 변경하지 않는다.
+- `main`에는 Cloudflare Workers Builds Git 연동이 붙어 있어 push만으로 `npx wrangler deploy`가 자동 실행된다. 다만 Git push 자체가 배포 완료를 뜻하지는 않는다 — 반드시 GitHub 커밋/PR의 **"Workers Builds: jeakyung"** 체크가 success인지, 그리고 실제 도메인이 신규 번들 해시를 서빙하는지 확인해야 한다. 이 체크가 실패하면 `jeakyung-publish` SKILL.md의 Manual fallback을 따른다.
+- Vercel 배포 파이프라인은 2026-09-24에 폐기했다(`vercel.json`, `.vercelignore` 삭제). jeakyung.com은 더 이상 Vercel을 거치지 않으며, Vercel 관련 체크·코멘트가 PR에 남아도 무시한다. Vercel 프로젝트 자체의 삭제·Git 연동 해제는 `playskang-6383s-projects` 팀 대시보드 권한이 있는 사람이 별도로 처리해야 한다(이 저장소 작업으로는 할 수 없다).
+- DNS, Cloudflare 프로젝트 설정, 비밀값, 파괴적 데이터베이스 변경은 별도 승인 없이 변경하지 않는다.
 - 빌드나 검증 실패, 원격 브랜치 충돌, 배포 범위 밖의 변경이 발견되면 운영 반영을 중단하고 원인을 보고한다.
 - 단일 UI·문구·스타일 등 부분 업데이트는 `jeakyung-publish`의 Fast Track을 기본 적용한다. 의존성·DB·인증·Worker 라우팅·DNS·배포 설정 변경은 Fast Track 대상이 아니다.
 

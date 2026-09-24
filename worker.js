@@ -1,3 +1,30 @@
+// Paths that must never be indexed by search engines (internal/private or noindex-marked areas).
+// Mirrors the noindex rules the old vercel.json headers config applied.
+const NOINDEX_PREFIXES = ['/groupware', '/hl-safety-eval', '/legacy', '/notice'];
+
+function applyCommonHeaders(response, pathname) {
+  const withHeaders = new Response(response.body, response);
+  const headers = withHeaders.headers;
+
+  // Security headers (previously set by vercel.json's global "/(.*)" rule)
+  headers.set('X-Content-Type-Options', 'nosniff');
+  headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  headers.set('X-Frame-Options', 'SAMEORIGIN');
+  headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+
+  if (NOINDEX_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))) {
+    headers.set('X-Robots-Tag', 'noindex, nofollow');
+  }
+
+  if (pathname.startsWith('/assets/')) {
+    headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+  } else if (pathname === '/favicon.ico' || pathname === '/favicon.svg') {
+    headers.set('Cache-Control', 'public, max-age=86400');
+  }
+
+  return withHeaders;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -12,9 +39,9 @@ export default {
       response = await env.ASSETS.fetch(new Request(fallbackUrl, request));
     }
 
-    // Only process successful HTML responses
+    // Only process successful HTML responses further; still apply common headers to everything else.
     if (response.status !== 200) {
-      return response;
+      return applyCommonHeaders(response, url.pathname);
     }
 
     // Dynamic OpenGraph metadata injection for shared articles
@@ -61,13 +88,13 @@ export default {
       }
 
       // Ensure HTML is never stale-cached by edge or browser
-      const newResponse = new Response(response.body, response);
+      const newResponse = applyCommonHeaders(response, url.pathname);
       newResponse.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
       newResponse.headers.set('Pragma', 'no-cache');
       newResponse.headers.set('Expires', '0');
       return newResponse;
     }
 
-    return response;
+    return applyCommonHeaders(response, url.pathname);
   },
 };
