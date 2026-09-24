@@ -5,7 +5,7 @@ description: 재경로지스｜물류(jeakyung.com) 웹사이트/그룹웨어 �
 
 # 재경사이트 (jeakyung-assets) — 인덱스
 
-이 저장소는 **재경로지스｜물류**(3PL 물류회사)의 (1) 공개 마케팅 홈페이지 `jeakyung.com`과 (2) 내부 직원용 그룹웨어(인트라넷) `jeakyung.com/groupware`를 **하나의 저장소, 하나의 Vercel 배포**로 함께 서빙한다. 백엔드는 Supabase(프로젝트 ref `vzswlvumcdxnryrfwkkl`) 하나를 공유한다.
+이 저장소는 **재경로지스｜물류**(3PL 물류회사)의 (1) 공개 마케팅 홈페이지 `jeakyung.com`과 (2) 내부 직원용 그룹웨어(인트라넷) `jeakyung.com/groupware`를 **하나의 저장소, 하나의 Cloudflare Worker 배포**로 함께 서빙한다(2026-09-24부로 Vercel에서 Cloudflare Workers로 전환, `docs/13_DEPLOYMENT.md` 참고). 백엔드는 Supabase(프로젝트 ref `vzswlvumcdxnryrfwkkl`) 하나를 공유한다.
 
 ## 하위 스킬 (실제 작업은 여기로)
 
@@ -21,13 +21,14 @@ description: 재경로지스｜물류(jeakyung.com) 웹사이트/그룹웨어 �
 ## 저장소 전체 구조
 
 ```
-/                         ← Vercel이 실제로 서빙하는 정적 루트 (outputDirectory: ".")
+/                         ← Cloudflare Worker(jeakyung)가 실제로 서빙하는 정적 루트 (wrangler.jsonc assets.directory: ".")
   index.html, news/, services/, privacy/   ← 손으로 유지하는 HTML 셸 (Vite가 빌드 후 자산만 갈아끼움)
   groupware/index.html    ← Vite가 통째로 빌드한 SPA 산출물 (build artifact, 직접 수정 금지)
   assets/                 ← 해시된 JS/CSS (배포 시 전량 교체)
   notice/, legacy/, hl-safety-eval/   ← Vite 파이프라인 밖의 손수 작성 정적 페이지 (noindex)
-  vercel.json             ← rewrites(그룹웨어 SPA fallback) + headers(캐시/보안/noindex) 전부 여기
-source/                   ← 실제 개발 소스 (Vite 프로젝트). .vercelignore 로 배포 대상에서 제외됨
+  worker.js, wrangler.jsonc   ← SPA 폴백·캐시 헤더·OG 메타 주입 Worker 코드와 배포 설정
+  .assetsignore           ← Cloudflare가 정적 자산으로 안 올릴 저장소 전용 경로 목록 (source/, docs/ 등)
+source/                   ← 실제 개발 소스 (Vite 프로젝트). `.assetsignore`로 배포 대상에서 제외됨
   src/public-site/**      ← 공개 홈페이지 (jeakyung_site_front)
   src/groupware/**        ← 그룹웨어 SPA (jeakyung_site_groupware / board / approval)
   src/shared/**           ← 둘이 공유하는 코드 (팝업 시스템, site_articles, supabaseAnon)
@@ -35,7 +36,7 @@ source/                   ← 실제 개발 소스 (Vite 프로젝트). .verceli
   scripts/sync-build.mjs  ← "npm run release" 시 dist/ → 저장소 루트로 반영하는 스크립트
 ```
 
-**빌드→배포 흐름**: `source/`에서 `npm run build`(vite build) → `npm run sync`(`scripts/sync-build.mjs`, root 자산 교체 + 손수 HTML의 해시된 자산 참조 재기록) → git commit/push → Vercel이 루트를 그대로 정적 서빙. `source/`는 `.vercelignore`로 배포에서 제외되므로 **반드시 sync까지 실행해야 실제 사이트에 반영**된다.
+**빌드→배포 흐름**: `source/`에서 `npm run build`(vite build) → `npm run sync`(`scripts/sync-build.mjs`, root 자산 교체 + 손수 HTML의 해시된 자산 참조 재기록) → git commit/push `main` → Cloudflare Workers Builds(Git 연동)가 저장소 루트를 그대로 `npx wrangler deploy`로 자동 배포. `source/`는 `.assetsignore`로 배포에서 제외되므로 **반드시 sync까지 실행해야 실제 사이트에 반영**되고, push 후에는 GitHub 커밋/PR의 **"Workers Builds: jeakyung"** 체크가 success인지 확인한다. 자세한 절차는 `docs/13_DEPLOYMENT.md`와 `.agents/skills/jeakyung-publish/SKILL.md` 참고. Vercel 파이프라인은 2026-09-24에 폐기했다.
 
 ## 이 프로젝트 전역에서 반드시 지킬 규칙
 

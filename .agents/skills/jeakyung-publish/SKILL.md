@@ -5,7 +5,7 @@ description: Build, synchronize, publish, and verify updates in playskang-svg/je
 
 # 재경닷컴 빠른 배포
 
-Ship completed changes through the repository's existing static-artifact pipeline. The user has requested production publishing by default after updates in this repository, so a separate deployment confirmation is unnecessary. Stop before publishing if validation fails, the branch has diverged, or the requested change would require DNS, Vercel project configuration, secrets, destructive database work, or unrelated files.
+Ship completed changes through the repository's existing static-artifact pipeline. The user has requested production publishing by default after updates in this repository, so a separate deployment confirmation is unnecessary. Stop before publishing if validation fails, the branch has diverged, or the requested change would require DNS, Cloudflare project configuration, secrets, destructive database work, or unrelated files.
 
 ## Repository invariants
 
@@ -17,7 +17,7 @@ Ship completed changes through the repository's existing static-artifact pipelin
 - Cloudflare Worker: `jeakyung`, account `380b1bc6d94eaf5f614ceffbdd5ef479`
 - Cloudflare zone: `76742882f920c70ae86e1d86a80ef7b5`
 - Production URL: `https://jeakyung.com`
-- Vercel URL `https://jeakyung-assets-playskang-6383s-projects.vercel.app` is only a secondary deployment and is not proof that `jeakyung.com` changed.
+- The Vercel pipeline was retired on 2026-09-24 (`vercel.json`/`.vercelignore` removed from the repo); Cloudflare Workers Builds is the only deployment path now. A leftover Vercel Git integration may still comment on PRs until someone with dashboard access to the `playskang-6383s-projects` team disconnects it — ignore those comments, they say nothing about `jeakyung.com`.
 - Read `source/AGENTS.md` and `docs/13_DEPLOYMENT.md` before changing the pipeline.
 - Preserve unrelated dirty files. Never stage `.gitignore`, `.vscode/`, or other pre-existing changes merely because they are present.
 - GitHub authentication for this repository is restored from the Codespaces Secret `JEAKYUNG_GITHUB_TOKEN`; do not substitute another repository's token.
@@ -47,7 +47,7 @@ Ship completed changes through the repository's existing static-artifact pipelin
    ```
 
 8. Pushing `main` is now sufficient to trigger production deployment: Cloudflare Workers Builds is connected to this repo's `main` branch and runs `npx wrangler deploy` automatically against the pushed commit, using `wrangler.jsonc`'s `assets.directory: "."` (the repo root, filtered by `.assetsignore`). No local Wrangler credentials or manual staging are required for a normal update.
-9. Confirm the GitHub check **"Workers Builds: jeakyung"** on the pushed commit (or its PR) is `success`, then verify `https://jeakyung.com/groupware/login` serves the new bundle hash. Treat production as complete only once both checks pass — Vercel success alone is insufficient. If the Workers Builds check fails, read its Cloudflare dashboard build log via `details_url` before assuming a manual `wrangler deploy` is needed (see Manual fallback below).
+9. Confirm the GitHub check **"Workers Builds: jeakyung"** on the pushed commit (or its PR) is `success`, then verify `https://jeakyung.com/groupware/login` serves the new bundle hash. Treat production as complete only once both checks pass. If the Workers Builds check fails, read its Cloudflare dashboard build log via `details_url` before assuming a manual `wrangler deploy` is needed (see Manual fallback below).
 
 ## Manual fallback (only if Workers Builds fails or you need to deploy without pushing)
 
@@ -65,6 +65,6 @@ Use Fast Track by default for a scoped UI, copy, style, or single-feature update
 1. Edit the source of truth and run only the focused check plus `git diff --check`; do not run unrelated suites.
 2. Run exactly one production `npm run release`. Never patch minified root assets by hand and never rebuild a second time merely to deploy.
 3. Confirm `groupware/index.html` names the newly built JS and CSS, then commit and push only the requested source and generated root assets to `main`. Pushing is the deploy step — Cloudflare Workers Builds picks up the new commit and runs `npx wrangler deploy` automatically (Workers Static Assets uploads only content whose hash changed).
-4. Verify the **"Workers Builds: jeakyung"** GitHub check is `success` and the production bundle at `https://jeakyung.com` reflects the new hash. Do not wait for the secondary Vercel deployment before reporting Cloudflare production success. If Workers Builds fails, fall back to the Manual fallback section above — do not spend time hunting for local Cloudflare credentials first.
+4. Verify the **"Workers Builds: jeakyung"** GitHub check is `success` and the production bundle at `https://jeakyung.com` reflects the new hash. If Workers Builds fails, fall back to the Manual fallback section above — do not spend time hunting for local Cloudflare credentials first.
 
 Skip Worker deployment entirely when the only changes are non-served repository instructions such as `docs/`, `.agents/`, or `.vscode/`; commit and push those changes only. Use the full workflow instead of Fast Track whenever the update crosses the exclusions in the first paragraph or the focused validation is inconclusive.
