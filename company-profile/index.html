@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>회사소개서 | 재경로지스｜물류 · 콜드체인 3PL</title>
+<meta name="description" content="냉동·냉장 식자재부터 온라인 신선식품까지. HL홀딩스 전담 물류사로 삼성웰스토리 DC·현대그린푸드 TC를 운영하는 콜드체인 3PL 파트너, 재경로지스｜물류 회사소개서입니다.">
+<link rel="canonical" href="https://jeakyung.com/company-profile/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="재경로지스｜물류">
+<meta property="og:title" content="재경로지스｜물류 회사소개서 — 신선물류, 재경에 맡기세요">
+<meta property="og:description" content="콜드체인 3PL · 신선식품 풀필먼트 · 기업운송 | 삼성웰스토리 DC · 현대그린푸드 TC · 직영차량 300여 대">
+<meta property="og:url" content="https://jeakyung.com/company-profile/">
+<meta property="og:image" content="https://jeakyung.com/company-profile/img/hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  /* 홈페이지(source/css/style.css)와 같은 라이트 전용 팔레트. 인쇄·PPT와 색을
+     맞추려고 다크 모드는 두지 않는다. 배경용 navy 와 제목 글자색(--heading)은
+     다른 페이지의 교훈대로 토큰을 나눠 둔다. */
+  :root {
+    --navy-950: #050a2b;
+    --navy-900: #071044;
+    --navy-800: #0b1560;
+    --blue-600: #1a46ff;
+    --blue-500: #315cff;
+    --blue-100: #e8edff;
+    --fresh-500: #0fb5a4;
+    --fresh-100: #dff7f3;
+    --ink-950: #10121a;
+    --ink-700: #3c404b;
+    --ink-500: #6a707c;
+    --line: #dfe3eb;
+    --surface: #eef1f7;
+    --card: #ffffff;
+    --heading: #071044;
+    --on-dark: #ffffff;
+    --on-dark-soft: #b9c3ec;
+    --radius: 18px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    margin: 0;
+    background: var(--surface);
+    color: var(--ink-950);
+    font-family: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+  /* ── 상단 바 ─────────────────────────────── */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: 16px;
+    padding: 12px max(16px, calc((100vw - 1200px) / 2));
+    background: rgba(5, 10, 43, .94);
+    backdrop-filter: blur(10px);
+    color: var(--on-dark);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; white-space: nowrap; }
+  .brand svg { width: 30px; height: 30px; flex: none; }
+  .brand small { color: var(--on-dark-soft); font-weight: 500; font-size: 13px; }
+  .topbar-spacer { flex: 1; }
+  .counter { font-size: 13px; color: var(--on-dark-soft); white-space: nowrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 16px; border-radius: 999px;
+    font: inherit; font-size: 14px; font-weight: 700; line-height: 1.2;
+    text-decoration: none; cursor: pointer; border: 1px solid transparent; white-space: nowrap;
+  }
+  .btn svg { width: 16px; height: 16px; flex: none; }
+  .btn-primary { background: var(--blue-600); color: #fff; }
+  .btn-primary:hover { background: var(--blue-500); }
+  .btn-ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.35); }
+  .btn-ghost:hover { border-color: #fff; }
+  .btn:focus-visible { outline: 3px solid var(--fresh-500); outline-offset: 2px; }
+
+  /* ── 페이지(슬라이드) ─────────────────────── */
+  main { padding: 28px 16px 64px; display: grid; gap: 28px; justify-items: center; }
+  .page {
+    position: relative;
+    width: min(1200px, 100%);
+    aspect-ratio: 16 / 9;
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: 0 18px 50px -24px rgba(7, 16, 68, .35);
+    overflow: hidden;
+    padding: 56px 64px 64px;
+    display: flex; flex-direction: column;
+  }
+  .page.dark { background: var(--navy-950); color: var(--on-dark); }
+  .page-foot {
+    position: absolute; left: 64px; right: 64px; bottom: 22px;
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--ink-500);
+  }
+  .page.dark .page-foot { color: var(--on-dark-soft); }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--blue-600);
+  }
+  .eyebrow::before { content: ""; width: 22px; height: 2px; background: currentColor; }
+  .page.dark .eyebrow { color: #8ea4ff; }
+  h1, h2, h3 { margin: 0; color: var(--heading); letter-spacing: -.02em; line-height: 1.25; }
+  .page.dark h1, .page.dark h2, .page.dark h3 { color: #fff; }
+  h2 { font-size: clamp(24px, 2.6vw, 34px); font-weight: 900; margin-top: 10px; }
+  h3 { font-size: 18px; font-weight: 700; }
+  p { margin: 0; }
+  .lead { margin-top: 12px; color: var(--ink-700); max-width: 760px; }
+  .page.dark .lead { color: var(--on-dark-soft); }
+  .body { flex: 1; display: grid; margin-top: 28px; min-height: 0; }
+
+  /* 표지 */
+  .cover { justify-content: space-between; }
+  .cover-copy { position: relative; max-width: 620px; margin-top: auto; margin-bottom: auto; }
+  .cover h1 { font-size: clamp(34px, 4.6vw, 60px); font-weight: 900; margin-top: 18px; }
+  .cover h1 span { color: #8ea4ff; }
+  .cover .lead { font-size: clamp(15px, 1.4vw, 18px); margin-top: 18px; }
+  .cover-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+  .tag { padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 500; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); }
+  .cover-meta { position: relative; margin-top: 24px; display: flex; gap: 28px; font-size: 13px; color: var(--on-dark-soft); }
+  .cover-meta b { display: block; color: #fff; font-size: 15px; }
+
+  /* 목차 */
+  .toc { grid-template-columns: repeat(3, 1fr); gap: 14px 28px; align-content: start; }
+  .toc a { display: flex; gap: 14px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+  .toc a:hover b { color: var(--blue-600); }
+  .toc span { font-family: "IBM Plex Mono", monospace; color: var(--blue-600); font-weight: 600; }
+  .toc b { font-size: 17px; color: var(--heading); }
+  .toc small { display: block; color: var(--ink-500); font-size: 13px; font-weight: 400; }
+
+  /* 개요 */
+  .overview { grid-template-columns: 1.25fr 1fr; gap: 40px; }
+  .facts { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .facts th, .facts td { text-align: left; padding: 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .facts th { width: 110px; color: var(--ink-500); font-weight: 500; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-content: start; }
+  .stat { background: var(--surface); border-radius: 14px; padding: 18px 20px; }
+  .stat b { display: block; font-size: clamp(26px, 3vw, 38px); font-weight: 900; color: var(--heading); line-height: 1.1; letter-spacing: -.03em; }
+  .stat span { font-size: 13px; color: var(--ink-700); }
+  .stat.accent { background: var(--navy-900); }
+  .stat.accent b { color: #fff; }
+  .stat.accent span { color: var(--on-dark-soft); }
+
+  /* CEO */
+  .ceo { grid-template-columns: 300px 1fr; gap: 48px; align-items: center; }
+  .ceo img { width: 100%; height: auto; aspect-ratio: 821/1024; object-fit: cover; border-radius: 16px; background: var(--surface); }
+  .ceo blockquote { margin: 0; font-size: clamp(16px, 1.5vw, 19px); color: var(--ink-700); }
+  .ceo blockquote strong { color: var(--heading); }
+  .ceo .sign { margin-top: 24px; font-size: 14px; color: var(--ink-500); }
+  .ceo .sign b { font-size: 20px; color: var(--heading); margin-right: 8px; }
+
+  /* 파트너십 다이어그램 */
+  .partner { grid-template-columns: 1fr 1.35fr; gap: 36px; align-items: center; }
+  .partner-points { display: grid; gap: 14px; }
+  .point { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start; }
+  .point i { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: rgba(142,164,255,.16); color: #8ea4ff; font-style: normal; font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 14px; }
+  .point b { display: block; color: #fff; }
+  .point span { font-size: 14px; color: var(--on-dark-soft); }
+  .diagram svg { width: 100%; height: auto; display: block; }
+
+  /* 실적 카드 */
+  .results { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-content: start; }
+  .result { border: 1px solid var(--line); border-radius: 16px; padding: 22px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .result .ico { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--blue-100); color: var(--blue-600); }
+  .result.fresh .ico { background: var(--fresh-100); color: var(--fresh-500); }
+  .result .ico svg { width: 24px; height: 24px; }
+  .result .period { font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600; color: var(--blue-600); }
+  .result.fresh .period { color: #0a8a7d; }
+  .result p { font-size: 14px; color: var(--ink-700); }
+  .span-bar { margin-top: 22px; display: grid; grid-template-columns: repeat(4, 1fr); position: relative; }
+  .span-bar::before { content: ""; position: absolute; left: 0; right: 0; top: 7px; height: 2px; background: linear-gradient(90deg, var(--blue-600), var(--fresh-500)); }
+  .span-bar div { position: relative; padding-top: 22px; font-size: 13px; color: var(--ink-500); }
+  .span-bar div::before { content: ""; position: absolute; top: 0; left: 0; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 3px solid var(--blue-600); }
+  .span-bar div:last-child::before { border-color: var(--fresh-500); background: var(--fresh-500); }
+  .span-bar b { display: block; color: var(--heading); font-size: 15px; }
+
+  /* 운영 모델 */
+  .models { grid-template-columns: repeat(3, 1fr); gap: 18px; align-content: start; }
+  .model { background: var(--surface); border-radius: 16px; padding: 22px; }
+  .model h3 { display: flex; align-items: center; gap: 10px; }
+  .model h3 em { font-style: normal; font-family: "IBM Plex Mono", monospace; font-size: 13px; padding: 3px 9px; border-radius: 6px; background: var(--navy-900); color: #fff; }
+  .model > p { font-size: 14px; color: var(--ink-700); margin-top: 8px; }
+  .flow { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 8px; counter-reset: step; }
+  .flow li { counter-increment: step; display: flex; gap: 10px; align-items: center; background: #fff; border-radius: 10px; padding: 9px 12px; font-size: 14px; font-weight: 500; }
+  .flow li::before { content: counter(step, decimal-leading-zero); font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--blue-600); font-weight: 600; }
+  .model.fresh .flow li::before { color: #0a8a7d; }
+  .model .client { margin-top: 14px; font-size: 13px; color: var(--ink-500); }
+
+  /* 서비스 */
+  .services { grid-template-columns: repeat(5, 1fr); gap: 14px; align-content: start; }
+  .svc { border-radius: 16px; padding: 22px 18px; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+  .svc.core { background: var(--navy-900); border-color: var(--navy-900); }
+  .svc.core h3, .svc.core b { color: #fff; }
+  .svc.core p { color: var(--on-dark-soft); }
+  .svc b { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--blue-600); }
+  .svc svg { width: 40px; height: 40px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; color: var(--blue-600); }
+  .svc.core svg { color: #8ea4ff; }
+  .svc p { font-size: 14px; color: var(--ink-700); }
+
+  /* 연혁 */
+  .history { grid-template-columns: repeat(8, 1fr); gap: 0; align-content: center; position: relative; }
+  .history::before { content: ""; position: absolute; left: 0; right: 0; top: 48px; height: 2px; background: rgba(255,255,255,.2); }
+  .hist { position: relative; padding: 0 12px 0 0; }
+  .hist .yr { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 20px; color: #fff; height: 36px; }
+  .hist .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--navy-950); border: 3px solid #8ea4ff; margin: 5px 0 18px; }
+  .hist.now .dot { background: var(--fresh-500); border-color: var(--fresh-500); box-shadow: 0 0 0 6px rgba(15,181,164,.2); }
+  .hist.now .yr { color: #5fe0d2; }
+  .hist ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .hist li { font-size: 13px; line-height: 1.5; color: var(--on-dark-soft); }
+
+  /* 경쟁력 */
+  .strengths { grid-template-columns: 1fr 1fr; gap: 16px 22px; align-content: start; }
+  .strength { display: grid; grid-template-columns: 56px 1fr; gap: 16px; padding: 20px; border-radius: 16px; background: var(--surface); }
+  .strength .ico { width: 56px; height: 56px; border-radius: 50%; background: #fff; display: grid; place-items: center; color: var(--blue-600); }
+  .strength .ico svg { width: 28px; height: 28px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .strength p { font-size: 14px; color: var(--ink-700); margin-top: 6px; }
+
+  /* 로드맵 */
+  .roadmap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-content: start; }
+  .phase { border-radius: 16px; padding: 22px; border: 1px solid var(--line); position: relative; }
+  .phase .when { font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600; color: var(--blue-600); }
+  .phase h3 { margin-top: 6px; }
+  .phase ul { margin: 14px 0 0; padding-left: 18px; display: grid; gap: 8px; font-size: 14px; color: var(--ink-700); }
+  .phase.p1 { background: var(--blue-100); border-color: var(--blue-100); }
+  .phase.p3 { background: var(--navy-900); border-color: var(--navy-900); }
+  .phase.p3 h3 { color: #fff; }
+  .phase.p3 .when { color: #8ea4ff; }
+  .phase.p3 ul { color: var(--on-dark-soft); }
+  .goal { margin-top: 18px; display: flex; gap: 12px; align-items: center; padding: 14px 18px; border-radius: 12px; background: var(--fresh-100); color: #065e55; font-size: 15px; font-weight: 500; }
+  .goal b { font-family: "IBM Plex Mono", monospace; font-size: 12px; padding: 3px 8px; border-radius: 6px; background: var(--fresh-500); color: #fff; }
+
+  /* 안전·ESG */
+  .safety { grid-template-columns: 1.2fr 1fr; gap: 32px; }
+  .checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .checklist li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line); font-size: 14px; color: var(--ink-700); }
+  .checklist li::before { content: ""; width: 28px; height: 28px; border-radius: 50%; background: var(--fresh-100) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a8a7d' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E") center / 16px no-repeat; }
+  .checklist b { display: block; color: var(--heading); font-size: 15px; }
+  .esg { background: var(--navy-900); color: #fff; border-radius: 16px; padding: 26px; display: flex; flex-direction: column; gap: 14px; }
+  .esg h3 { color: #fff; }
+  .esg p { font-size: 14px; color: var(--on-dark-soft); }
+  .esg .badge { align-self: flex-start; font-family: "IBM Plex Mono", monospace; font-size: 12px; padding: 4px 10px; border-radius: 6px; background: rgba(95,224,210,.16); color: #5fe0d2; }
+
+  /* 맺음 */
+  .closing { justify-content: center; }
+  .closing h2 { font-size: clamp(28px, 3.6vw, 46px); max-width: 780px; }
+  .closing h2 span { color: #8ea4ff; }
+  .contact { margin-top: 34px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 900px; }
+  .contact div { padding: 16px 18px; border-radius: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); font-size: 14px; color: var(--on-dark-soft); }
+  .contact b { display: block; color: #fff; font-size: 16px; margin-top: 2px; }
+  .contact a { text-decoration: none; }
+  .closing-actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
+
+
+  /* 한눈에 보는 재경(KPI) */
+  .glance { grid-template-columns: repeat(5, 1fr); gap: 14px; align-content: center; }
+  .kpi { padding: 22px 18px; border-radius: 16px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(4px); }
+  .kpi b { display: block; font-size: clamp(30px, 3.6vw, 48px); font-weight: 900; line-height: 1.05; color: #fff; letter-spacing: -.03em; white-space: nowrap; }
+  .kpi b small { font-size: .42em; font-weight: 700; margin-left: 2px; color: var(--on-dark-soft); letter-spacing: 0; }
+  .kpi span { display: block; margin-top: 12px; font-size: 13px; line-height: 1.5; color: var(--on-dark-soft); }
+  .kpi.accent { background: rgba(15,181,164,.18); border-color: rgba(95,224,210,.5); }
+  .kpi.accent b { font-size: clamp(24px, 2.7vw, 36px); }
+  .note { position: relative; margin-top: 12px; font-size: 12px; color: var(--on-dark-soft); }
+
+  /* 고객 네트워크 */
+  .clients { grid-template-columns: repeat(4, 1fr); gap: 16px; align-content: start; }
+  .client-group { border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .client-group.core { background: var(--navy-900); border-color: var(--navy-900); }
+  .cg-label { font-family: "IBM Plex Mono", "Noto Sans KR", monospace; font-size: 12px; font-weight: 600; color: var(--blue-600); letter-spacing: .02em; }
+  .client-group.core .cg-label { color: #8ea4ff; }
+  .client-group ul { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+  .client-group li { padding: 10px 14px; border-radius: 10px; background: var(--surface); font-weight: 700; font-size: 15px; color: var(--heading); }
+  .client-group.core li { background: rgba(255,255,255,.08); color: #fff; }
+
+  /* 인프라 */
+  .infra { grid-template-columns: .8fr 1.2fr; gap: 32px; align-items: center; }
+  .map svg { width: 100%; height: auto; max-height: 440px; display: block; }
+  .infra-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .infra-item { padding: 18px; border-radius: 14px; background: var(--surface); }
+  .infra-item b { display: block; font-size: 17px; color: var(--heading); }
+  .infra-item span { display: block; margin-top: 6px; font-size: 13px; color: var(--ink-700); }
+  .infra-photo { min-height: 140px; }
+
+
+  /* ── 회사소개서 전용 ──────────────────────── */
+  .btn-lg { padding: 13px 22px; font-size: 15px; }
+  .cover-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+  .kpi-ico { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: rgba(142,164,255,.16); margin-bottom: 14px; color: #8ea4ff; }
+  .kpi-ico svg, .why-ico svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .kpi.accent .kpi-ico { color: #5fe0d2; background: rgba(95,224,210,.16); }
+
+  .about { grid-template-columns: 1.1fr 1fr; gap: 36px; align-items: stretch; }
+  .about-lead { font-size: clamp(17px, 1.6vw, 21px); line-height: 1.6; color: var(--ink-700); }
+  .about-lead strong { color: var(--blue-600); }
+  .affiliates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 22px; }
+  .affiliates div { padding: 14px; border-radius: 12px; background: var(--surface); }
+  .affiliates b { display: block; font-size: 14px; color: var(--heading); }
+  .affiliates span { font-size: 12px; color: var(--ink-500); }
+  .quote { display: grid; grid-template-columns: 72px 1fr; gap: 16px; align-items: center; margin: 22px 0 0; padding: 16px; border-radius: 14px; border: 1px solid var(--line); }
+  .quote img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: top; }
+  .quote blockquote { margin: 0; font-size: 14px; color: var(--ink-700); }
+  .quote cite { display: block; margin-top: 6px; font-style: normal; font-size: 13px; color: var(--ink-500); }
+  .quote cite b { color: var(--heading); }
+  .about-photo { min-height: 0; }
+  .about-photo img { position: absolute; inset: 0; }
+
+  .why { grid-template-columns: repeat(4, 1fr); gap: 16px; align-content: center; }
+  .why-card { position: relative; padding: 28px 22px; border-radius: 18px; background: var(--surface); overflow: hidden; }
+  .why-no { position: absolute; right: 14px; top: 4px; font-family: "IBM Plex Mono", monospace; font-size: 64px; font-weight: 600; color: rgba(26,70,255,.08); line-height: 1; }
+  .why-ico { display: grid; place-items: center; width: 60px; height: 60px; border-radius: 50%; background: var(--blue-600); color: #fff; margin-bottom: 20px; }
+  .why-card.fresh .why-ico { background: var(--fresh-500); }
+  .why-ico svg { width: 30px; height: 30px; }
+  .why-card h3 { font-size: 19px; }
+  .why-card p { margin-top: 10px; font-size: 14px; color: var(--ink-700); }
+
+  .svc-photos { grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  .sp { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #fff; display: flex; flex-direction: column; }
+  .sp-img { flex: 1; min-height: 150px; overflow: hidden; }
+  .sp-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sp-body { padding: 16px 16px 18px; }
+  .sp-body b { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--blue-600); }
+  .sp-body h3 { margin-top: 4px; font-size: 17px; }
+  .sp-body p { margin-top: 6px; font-size: 13px; color: var(--ink-700); }
+  .sp.core { background: var(--navy-900); border-color: var(--navy-900); }
+  .sp.core h3 { color: #fff; }
+  .sp.core p { color: var(--on-dark-soft); }
+  .sp.core .sp-body b { color: #8ea4ff; }
+
+  .temp-wrap { align-content: center; gap: 34px; max-width: 900px; }
+  .temp-bar { display: grid; grid-template-columns: 57fr 29fr 14fr; height: 64px; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px -10px rgba(0,0,0,.5); }
+  .temp-bar .z { display: grid; place-items: center; color: #fff; font-weight: 900; font-size: 18px; letter-spacing: .02em; }
+  .z.frozen { background: linear-gradient(90deg, #1a46ff, #3d7bff); }
+  .z.chill { background: linear-gradient(90deg, #1ea5d8, #0fb5a4); }
+  .z.ambient { background: linear-gradient(90deg, #f0a73a, #f28b30); }
+  .temp-scale { display: grid; grid-template-columns: 57fr 29fr 14fr 0; margin-top: 10px; font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--on-dark-soft); }
+  .temp-scale span:last-child { white-space: nowrap; transform: translateX(-100%); }
+  .temp-points { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .temp-points div { padding: 20px; border-radius: 14px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(4px); }
+  .temp-points b { display: block; font-size: 28px; font-weight: 900; color: #fff; }
+  .temp-points span { font-size: 13px; color: var(--on-dark-soft); }
+
+  .lanes { align-content: center; gap: 16px; }
+  .lane { display: grid; grid-template-columns: 240px 1fr; gap: 20px; align-items: center; padding: 18px 22px; border-radius: 16px; background: var(--surface); }
+  .lane-tag em { font-style: normal; font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 6px; background: var(--navy-900); color: #fff; }
+  .lane.fresh .lane-tag em { background: var(--fresh-500); }
+  .lane-tag b { display: block; margin-top: 8px; font-size: 18px; color: var(--heading); }
+  .lane-tag small { font-size: 12px; color: var(--ink-500); }
+  .lane-flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); counter-reset: s; }
+  .lane-flow li { counter-increment: s; position: relative; padding: 14px 16px; margin-right: 18px; background: #fff; border-radius: 10px; font-size: 14px; font-weight: 700; color: var(--heading); }
+  .lane-flow li::before { content: counter(s, decimal-leading-zero); display: block; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--blue-600); }
+  .lane.fresh .lane-flow li::before { color: #0a8a7d; }
+  .lane-flow li:not(:last-child)::after { content: ""; position: absolute; right: -16px; top: 50%; transform: translateY(-50%); border: 7px solid transparent; border-left: 9px solid var(--blue-600); }
+  .lane.fresh .lane-flow li:not(:last-child)::after { border-left-color: var(--fresh-500); }
+
+  .cases { grid-template-columns: repeat(4, 1fr); gap: 16px; align-content: start; }
+  .case { border-radius: 16px; overflow: hidden; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); padding-bottom: 18px; }
+  .case-img { aspect-ratio: 16 / 10; overflow: hidden; margin-bottom: 14px; }
+  .case-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .case .since, .case h3, .case p { padding: 0 18px; display: block; }
+  .case .since { font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600; color: #8ea4ff; }
+  .case.fresh .since { color: #5fe0d2; }
+  .case h3 { margin-top: 4px; font-size: 19px; }
+  .case p { margin-top: 8px; font-size: 13px; color: var(--on-dark-soft); }
+  .case p b { color: #fff; }
+
+  .wall { align-content: center; gap: 14px; }
+  .wall-row { display: grid; grid-template-columns: 150px 1fr; gap: 16px; align-items: center; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .wall-row ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .wall-row li { padding: 10px 18px; border-radius: 999px; background: var(--surface); font-weight: 700; font-size: 15px; color: var(--heading); }
+  .wall-row li.big { background: var(--navy-900); color: #fff; font-size: 17px; padding: 12px 22px; }
+
+  .steps { align-content: center; gap: 26px; }
+  .step-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); position: relative; }
+  .step-list::before { content: ""; position: absolute; left: 10%; right: 10%; top: 30px; height: 3px; background: linear-gradient(90deg, var(--blue-600), var(--fresh-500)); }
+  .step-list li { position: relative; text-align: center; padding: 0 8px; }
+  .step-list i { position: relative; display: grid; place-items: center; width: 62px; height: 62px; margin: 0 auto 14px; border-radius: 50%; background: #fff; border: 3px solid var(--blue-600); font-style: normal; font-family: "IBM Plex Mono", monospace; font-size: 22px; font-weight: 600; color: var(--blue-600); }
+  .step-list li.last i { background: var(--fresh-500); border-color: var(--fresh-500); color: #fff; }
+  .step-list b { display: block; font-size: 17px; color: var(--heading); }
+  .step-list span { display: block; margin-top: 4px; font-size: 13px; color: var(--ink-700); }
+  .steps-cta { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; border-radius: 16px; background: var(--navy-900); color: #fff; }
+  .steps-cta p { font-size: 16px; font-weight: 700; }
+
+  /* ── 실사 이미지 ──────────────────────────
+     모든 사진은 인물 없는 생성 이미지(img/*.webp). 글자가 얹히는 곳은
+     어두운 그라데이션을 깔아 대비를 확보한다. */
+  .photo-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,10,43,.96) 0%, rgba(5,10,43,.88) 38%, rgba(5,10,43,.45) 70%, rgba(5,10,43,.25) 100%); }
+  .shade.full { background: linear-gradient(180deg, rgba(5,10,43,.82), rgba(5,10,43,.94)); }
+  /* 사진 위 콘텐츠를 사진보다 앞에 그린다. page-foot 은 원래대로 absolute 유지. */
+  .page > *:not(.photo-bg):not(.shade):not(.page-foot) { position: relative; }
+  .figure { position: relative; border-radius: 14px; overflow: hidden; background: var(--navy-900); }
+  .figure img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .figure figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 16px 12px; font-size: 12px; font-weight: 500; color: #fff; background: linear-gradient(180deg, transparent, rgba(5,10,43,.85)); }
+  .result .thumb { margin: -22px -20px 4px; aspect-ratio: 16 / 10; overflow: hidden; background: var(--surface); }
+  .result .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .result { overflow: hidden; }
+  .capability { grid-template-columns: 1fr 1.15fr; gap: 28px; }
+  .capability .figure { min-height: 0; }
+  .capability .figure img { position: absolute; inset: 0; }
+  .cap-list { display: grid; gap: 12px; align-content: start; }
+  .cap-list .strength { padding: 16px 18px; grid-template-columns: 48px 1fr; }
+  .cap-list .strength .ico { width: 48px; height: 48px; }
+  .overview-side { display: grid; grid-template-rows: 1fr auto; gap: 14px; }
+  .overview-side .figure { min-height: 150px; }
+  .overview-side .stats { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .overview-side .stat { padding: 14px 14px; }
+  .overview-side .stat b { font-size: clamp(20px, 2.1vw, 26px); }
+  .overview-side .stat span { font-size: 12px; display: block; line-height: 1.4; margin-top: 4px; }
+  .esg .figure { height: 200px; margin: -26px -26px 4px; border-radius: 0; }
+
+  /* 오른쪽 점 내비 */
+  .dots { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); display: grid; gap: 10px; z-index: 10; }
+  .dots a { width: 10px; height: 10px; border-radius: 50%; background: #c3cadb; display: block; }
+  .dots a[aria-current="true"] { background: var(--blue-600); transform: scale(1.3); }
+  @media (max-width: 1320px) { .dots { display: none; } }
+
+  /* ── 반응형: 태블릿·모바일에서는 16:9 틀을 풀고 세로로 흐르게 ── */
+  @media (max-width: 1080px) {
+    .page { aspect-ratio: auto; padding: 40px 32px 60px; }
+    .page-foot { left: 32px; right: 32px; }
+    .services { grid-template-columns: repeat(3, 1fr); }
+    .results { grid-template-columns: repeat(2, 1fr); }
+    .history { grid-template-columns: repeat(4, 1fr); row-gap: 28px; }
+    .glance { grid-template-columns: repeat(3, 1fr); }
+    .clients { grid-template-columns: repeat(2, 1fr); }
+    .why, .cases { grid-template-columns: repeat(2, 1fr); }
+    .svc-photos { grid-template-columns: repeat(3, 1fr); }
+    .lane { grid-template-columns: 1fr; }
+    .about-photo { min-height: 260px; }
+    .history::before { display: none; }
+    .cover { min-height: 560px; }
+    .shade { background: linear-gradient(180deg, rgba(5,10,43,.7), rgba(5,10,43,.95)); }
+    .capability .figure { min-height: 240px; }
+    .overview-side .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 760px) {
+    .topbar { gap: 10px; }
+    .brand small, .counter, .btn-ghost.print, .btn-ghost.consult { display: none; }
+    .btn { padding: 8px 12px; font-size: 13px; }
+    main { padding: 16px 16px 48px; gap: 16px; }
+    .page { padding: 32px 20px 56px; border-radius: 14px; }
+    .page-foot { left: 20px; right: 20px; }
+    .glance, .clients, .infra, .infra-list, .about, .why, .svc-photos, .cases, .lane, .lane-flow, .temp-points, .affiliates, .wall-row,
+    .toc, .overview, .ceo, .partner, .results, .models, .services, .strengths, .roadmap, .safety, .contact, .capability { grid-template-columns: 1fr; }
+    .history { grid-template-columns: 1fr 1fr; }
+    .ceo img { max-width: 220px; }
+    .span-bar { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+    .span-bar::before { display: none; }
+    .cover-meta { flex-wrap: wrap; gap: 16px; }
+    .lane-flow li { margin: 0 0 14px; }
+    .lane-flow li:not(:last-child)::after { right: auto; left: 50%; top: auto; bottom: -13px; transform: translateX(-50%); border: 7px solid transparent; border-top: 9px solid var(--blue-600); }
+    .step-list { grid-template-columns: 1fr; gap: 14px; text-align: left; }
+    .step-list::before { display: none; }
+    .step-list li { display: grid; grid-template-columns: 52px 1fr; column-gap: 12px; text-align: left; }
+    .step-list i { width: 48px; height: 48px; margin: 0; grid-row: span 2; font-size: 18px; }
+    .steps-cta { flex-direction: column; align-items: flex-start; }
+    .wall-row { grid-template-columns: 1fr; gap: 8px; }
+  }
+
+  /* 인쇄(PDF 저장): 한 장에 한 페이지 */
+  @media print {
+    @page { size: 297mm 167mm; margin: 0; }
+    body { background: #fff; }
+    .topbar, .dots { display: none; }
+    main { padding: 0; gap: 0; }
+    .page { width: 297mm; height: 167mm; aspect-ratio: auto; border-radius: 0; box-shadow: none; break-after: page; padding: 12mm 14mm 14mm; }
+    .page { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/" aria-label="재경로지스｜물류 홈페이지로">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1a46ff"/><g fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M32 10 51 20.7v22.6L32 54 13 43.3V20.7L32 10Z"/><path d="m14.4 21.5 17.6 10.3 17.6-10.3M32 31.8v20.7"/><path d="m23.4 15.2 17.8 10.3"/></g></svg>
+    <span>재경로지스｜물류 <small>회사소개서</small></span>
+  </a>
+  <span class="topbar-spacer"></span>
+  <span class="counter mono" id="counter" aria-live="polite">01 / 14</span>
+  <button type="button" class="btn btn-ghost print" onclick="window.print()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>
+    PDF 저장
+  </button>
+  <a class="btn btn-primary" href="jaekyung-company-profile-2026.pptx" download>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 21h16"/></svg>
+    PPT 다운로드
+  </a>
+  <a class="btn btn-ghost consult" href="https://pf.kakao.com/_xgrFxhn/chat" target="_blank" rel="noopener noreferrer">상담 ↗</a>
+</header>
+
+<nav class="dots" aria-label="페이지 이동" id="dots"></nav>
+
+<main>
+
+  <!-- 01 표지 -->
+  <section class="page dark cover" id="p1" aria-labelledby="t1">
+    <img class="photo-bg" src="img/hero.webp" alt="" width="1920" height="1279" fetchpriority="high">
+    <div class="shade"></div>
+    <span class="eyebrow">Company Profile 2026</span>
+    <div class="cover-copy">
+      <p class="mono" style="color:#5fe0d2;font-weight:600;letter-spacing:.06em">COLD-CHAIN 3PL &amp; FRESH LOGISTICS</p>
+      <h1 id="t1">신선물류,<br><span>재경에 맡기세요.</span></h1>
+      <p class="lead">냉동·냉장 식자재부터 온라인 신선식품까지. 보관·풀필먼트·운송을 한 번에 책임지는 콜드체인 3PL 파트너, 재경로지스｜물류입니다.</p>
+      <div class="cover-cta">
+        <a class="btn btn-primary btn-lg" href="#p14">물류 상담 신청 →</a>
+        <a class="btn btn-ghost btn-lg" href="jaekyung-company-profile-2026.pptx" download>회사소개서 PPT</a>
+      </div>
+    </div>
+    <div class="cover-meta">
+      <div>대표전화<b>070-8098-4559</b></div>
+      <div>이메일<b>contact@jeakyung.com</b></div>
+      <div>웹<b>jeakyung.com</b></div>
+    </div>
+  </section>
+
+  <!-- 02 숫자 -->
+  <section class="page dark" id="p2" aria-labelledby="t2">
+    <img class="photo-bg" src="img/fleet.webp" alt="" width="1920" height="1325" loading="lazy">
+    <div class="shade full"></div>
+    <span class="eyebrow">At a Glance</span>
+    <h2 id="t2">숫자로 보는 재경</h2>
+    <p class="lead">운송에서 시작해 콜드체인 3PL까지. 현장에서 쌓은 인프라가 곧 경쟁력입니다.</p>
+    <div class="body glance">
+      <div class="kpi"><i class="kpi-ico"><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></i><b>300<small>여 대</small></b><span>직영 차량<br>1톤 ~ 25톤</span></div>
+      <div class="kpi"><i class="kpi-ico"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14 20c0-2.5 1.6-4.6 4-5"/></svg></i><b>60<small>여 개</small></b><span>고객사·협력사<br>파트너십</span></div>
+      <div class="kpi"><i class="kpi-ico"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg></i><b>5<small>개 권역</small></b><span>수도권 3센터 +<br>호남·영남 식자재 센터</span></div>
+      <div class="kpi accent"><i class="kpi-ico"><svg viewBox="0 0 24 24"><path d="M14 14.8V4a2 2 0 1 0-4 0v10.8a4 4 0 1 0 4 0Z"/></svg></i><b>-20<small>℃</small>~15<small>℃</small></b><span>콜드체인 온도대<br>24시간 모니터링</span></div>
+      <div class="kpi"><i class="kpi-ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></i><b>365<small>일</small></b><span>수도권 ↔ 지방<br>정기 간선 운행</span></div>
+    </div>
+    <p class="note">※ 수치는 2025년 4월 기준</p>
+    <div class="page-foot"><span>재경로지스｜물류 · 회사소개서</span><span class="mono">02</span></div>
+  </section>
+
+  <!-- 03 회사 소개 -->
+  <section class="page" id="p3" aria-labelledby="t3">
+    <span class="eyebrow">About Us</span>
+    <h2 id="t3">현장을 이해하는 물류, 재경로지스｜물류</h2>
+    <div class="body about">
+      <div class="about-text">
+        <p class="about-lead">2013년 화물 운수사업으로 출발해 대기업 운송·중계물류를 거쳐, 지금은 <strong>식자재·신선식품 콜드체인 3PL</strong>을 전문으로 하는 종합 물류 기업입니다.</p>
+        <div class="affiliates">
+          <div><b>유한회사 재경로지스</b><span>본사 · 광주</span></div>
+          <div><b>유한회사 재경물류</b><span>평택 · 3PL 운영</span></div>
+          <div><b>재경상운</b><span>운송</span></div>
+        </div>
+        <figure class="quote">
+          <img src="ceo.webp" width="821" height="1024" alt="대표이사 염달성" loading="lazy">
+          <blockquote>“온도와 시간이 품질이 되는 신선물류에서, 약속한 시간에 약속한 상태로 전달하는 것 — 그것이 재경의 기준입니다.”<cite>대표이사 <b>염달성</b></cite></blockquote>
+        </figure>
+      </div>
+      <figure class="figure about-photo"><img src="img/overview.webp" alt="대형 물류센터 전경" width="1280" height="852" loading="lazy"><figcaption>Since 2013 · 식품 유통 특화 물류</figcaption></figure>
+    </div>
+    <div class="page-foot"><span>재경로지스｜물류 · 회사소개서</span><span class="mono">03</span></div>
+  </section>
+
+  <!-- 04 Why -->
+  <section class="page" id="p4" aria-labelledby="t4">
+    <span class="eyebrow">Why Jaekyung</span>
+    <h2 id="t4">재경을 선택해야 하는 4가지 이유</h2>
+    <div class="body why">
+      <div class="why-card"><span class="why-no">01</span><i class="why-ico"><svg viewBox="0 0 24 24"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4Z"/><path d="m8 12 3 3 5-6"/></svg></i><h3>대기업이 검증한 운영</h3><p>HL홀딩스 전담 물류사로 삼성웰스토리 DC·현대그린푸드 TC를 운영합니다.</p></div>
+      <div class="why-card fresh"><span class="why-no">02</span><i class="why-ico"><svg viewBox="0 0 24 24"><path d="M14 14.8V4a2 2 0 1 0-4 0v10.8a4 4 0 1 0 4 0Z"/><path d="M12 17v-5"/></svg></i><h3>-20℃~+15℃ 콜드체인</h3><p>냉동·냉장·정온 전 온도대, 24시간 온도 모니터링, HACCP 기준 위생 관리.</p></div>
+      <div class="why-card"><span class="why-no">03</span><i class="why-ico"><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></i><h3>센터 + 운송 원스톱</h3><p>직영 차량 300여 대와 365일 간선망. 보관부터 배송까지 한 곳에서.</p></div>
+      <div class="why-card"><span class="why-no">04</span><i class="why-ico"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/><circle cx="19" cy="17" r="2"/></svg></i><h3>채널별 맞춤 운영</h3><p>급식 DC, 통과형 TC, 온라인 B2B·B2C까지 — 채널에 맞는 운영을 설계합니다.</p></div>
+    </div>
+    <div class="page-foot"><span>재경로지스｜물류 · 회사소개서</span><span class="mono">04</span></div>
+  </section>
+
+  <!-- 05 서비스 -->
+  <section class="page" id="p5" aria-labelledby="t5">
+    <span class="eyebrow">Services</span>
+    <h2 id="t5">필요한 물류를 한곳에서</h2>
+    <div class="body svc-photos">
+      <article class="sp core"><div class="sp-img"><img src="img/b2b.webp" alt="출고 컨베이어" width="1280" height="854" loading="lazy"></div><div class="sp-body"><b>01</b><h3>3PL 물류대행</h3><p>입고·보관·주문 처리·출고 일괄 대행</p></div></article>
+      <article class="sp core"><div class="sp-img"><img src="img/fresh.webp" alt="신선 채소 상자" width="1280" height="798" loading="lazy"></div><div class="sp-body"><b>02</b><h3>신선식품 풀필먼트</h3><p>B2B·B2C 주문부터 보냉 포장·배송까지</p></div></article>
+      <article class="sp"><div class="sp-img"><img src="img/fleet.webp" alt="주행 중인 화물 트럭" width="1920" height="1325" loading="lazy"></div><div class="sp-body"><b>03</b><h3>기업운송</h3><p>1~25톤 · 특수화물 · 납품 · 정기 간선</p></div></article>
+      <article class="sp"><div class="sp-img"><img src="img/dc.webp" alt="랙 보관 창고" width="1280" height="853" loading="lazy"></div><div class="sp-body"><b>04</b><h3>보관물류</h3><p>냉동·냉장·상온 보관과 입출고 연계</p></div></article>
+      <article class="sp"><div class="sp-img"><img src="img/tc.webp" alt="물류센터 도크" width="1280" height="853" loading="lazy"></div><div class="sp-body"><b>05</b><h3>물류컨설팅</h3><p>냉장센터 설계 · 운영 시스템 · 물류비 진단</p></div></article>
+    </div>
+    <div class="page-foot"><span>재경로지스｜물류 · 회사소개서</span><span class="mono">05</span></div>
+  </section>
+
+  <!-- 06 콜드체인 -->
+  <section class="page dark" id="p6" aria-labelledby="t6">
+    <img class="photo-bg" src="img/coldchain.webp" alt="" width="1280" height="854" loading="lazy">
+    <div class="shade"></div>
+    <span class="eyebrow">Cold-Chain Capability</span>
+    <h2 id="t6">온도가 곧 품질입니다</h2>
+    <p class="lead">상품이 요구하는 온도대 그대로, 입고부터 출고까지 끊김 없이 관리합니다.</p>
+    <div class="body temp-wrap">
+      <div class="temp" role="img" aria-label="관리 온도대: 냉동 영하 20도부터, 냉장 0~10도, 정온 최대 영상 15도">
+        <div class="temp-bar"><span class="z frozen">냉동</span><span class="z chill">냉장</span><span class="z ambient">정온</span></div>
+        <div class="temp-scale"><span>-20℃</span><span>0℃</span><span>+10℃</span><span>+15℃</span></div>
+      </div>
+      <div class="temp-points">
+        <div><b>24h</b><span>실시간 온도 모니터링</span></div>
+        <div><b>HACCP</b><span>기준 위생 관리 체계</span></div>
+        <div><b>보냉</b><span>출고 포장·차량 온도 유지</span></div>
+      </div>
+    </div>
+    <div class="page-foot"><span>재경로지스｜물류 · 회사소개서</span><span class="mono">06</span></div>
+  </section>
+
+  <!-- 07 운영 모델 -->
+  <section class="page" id="p7" aria-labelledby="t7">
+    <span class="eyebrow">Operating Models</span>
+    <h2 id="t7">채널에 맞춘 세 가지 운영 방식</h2>
+    <div class="body lanes">
+      <div class="lane"><div class="lane-tag"><em>DC</em><b>보관형 배송센터</b><small>예) 급식·식자재 유통</small></div>
+        <ol class="lane-flow"><li>입고·온도 검수</li><li>냉장·냉동 보관</li><li>주문별 피킹</li><li>배송·납품</li></ol></div>
+      <div class="lane"><div class="lane-tag"><em>TC</em><b>통과형 센터</b><small>예) 크로스도킹 물류</small></div>
+        <ol class="lane-flow"><li>차량 입고</li><li>행선지 분류</li><li>즉시 상차</li><li>당일 출고</li></ol></div>
+      <div class="lane fresh"><div class="lane-tag"><em>B2B</em><b>온라인 풀필먼트</b><small>예) D2C 식품 브랜드</small></div>
+        <ol class="lane-flow"><li>주문 수신</li><li>피킹·보냉 패킹</li><li>출고·운송</li><li>재고 리포트</li></ol></div>
+    </div>
+    <div class="page-foot"><span>재경로지스｜물류 · 회사소개서</span><span class="mono">07</span></div>
+  </section>
+
+  <!-- 08 레퍼런스 -->
+  <section class="page dark" id="p8" aria-labelledby="t8">
+    <span class="eyebrow">References</span>
+    <h2 id="t8">대표 수행 사례</h2>
+    <div class="body cases">
+      <article class="case"><div class="case-img"><img src="img/overview.webp" alt="" width="1280" height="852" loading="lazy"></div><span class="since">2021.07 ~</span><h3>HL홀딩스</h3><p>홈쇼핑 B2C 콜드체인 3PL로 시작해 <b>전담 물류 파트너</b>로 성장</p></article>
+      <article class="case"><div class="case-img"><img src="img/dc.webp" alt="" width="1280" height="853" loading="lazy"></div><span class="since">2023.12 ~</span><h3>삼성웰스토리 DC</h3><p>HL홀딩스와 <b>DC 공동 운영</b> · B2B/B2C 콜드체인</p></article>
+      <article class="case"><div class="case-img"><img src="img/tc.webp" alt="" width="1280" height="853" loading="lazy"></div><span class="since">2023.12 ~</span><h3>현대그린푸드 TC</h3><p>동탄 <b>TC 전담 운영</b> · 입고 즉시 분류·출고</p></article>
+      <article class="case fresh"><div class="case-img"><img src="img/b2b.webp" alt="" width="1280" height="854" loading="lazy"></div><span class="since">B2B 온라인</span><h3>바르닭 · 작심닭 등</h3><p>온라인 식품 브랜드의 <b>B2B 유통 출고</b> 책임 운영</p></article>
+    </div>
+    <div class="page-foot"><span>재경로지스｜물류 · 회사소개서</span><span class="mono">08</span></div>
+  </section>
+
+  <!-- 09 고객 -->
+  <section class="page" id="p9" aria-labelledby="t9">
+    <span class="eyebrow">Clients &amp; Partners</span>
+    <h2 id="t9">국내 대표 유통·식품 기업과 함께합니다</h2>
+    <p class="lead">50~60여 개 고객사·협력사와 파트너십을 이어가고 있습니다.</p>
+    <div class="body wall">
+      <div class="wall-row"><p class="cg-label">식자재 · 급식</p><ul><li class="big">HL홀딩스</li><li class="big">삼성웰스토리</li><li class="big">현대그린푸드</li><li>동원홈푸드</li><li>CJ제일제당</li></ul></div>
+      <div class="wall-row"><p class="cg-label">온라인 유통</p><ul><li class="big">쿠팡</li><li class="big">컬리</li><li>배민 B마트</li><li>신세계유통</li><li>바르닭</li><li>작심닭</li></ul></div>
+      <div class="wall-row"><p class="cg-label">리테일 · 풀필먼트</p><ul><li>이마트에브리데이</li><li>현대홈쇼핑</li><li>푸디버스</li><li>푸드나무</li></ul></div>
+      <div class="wall-row"><p class="cg-label">운송 · 택배</p><ul><li>LX판토스</li><li>CJ대한통운</li><li>롯데택배</li><li>경동택배</li><li>한샘</li></ul></div>
+    </div>
+    <div class="page-foot"><span>재경로지스｜물류 · 회사소개서 · 수행 이력 기준</span><span class="mono">09</span></div>
+  </section>
+
+  <!-- 10 인프라 -->
+  <section class="page" id="p10" aria-labelledby="t10">
+    <span class="eyebrow">Network</span>
+    <h2 id="t10">전국을 잇는 센터·운송 네트워크</h2>
+    <div class="body infra">
+      <div class="map" role="img" aria-label="운영 거점: 수도권 3개 센터(이천·안성 1·2센터, 동탄), 호남 광주 식자재 센터, 영남 울주 식자재 센터, 수도권과 지방을 잇는 간선">
+        <svg viewBox="0 0 320 400" font-family="Noto Sans KR, sans-serif">
+          <path d="M120 22c28-6 52 4 70 2 22-2 38 14 44 34 8 26 30 40 34 70 4 30-8 52-4 80 4 26 18 48 8 74-12 30-44 44-72 58-24 12-52 30-80 26-26-4-46-22-60-44-10-18-4-40-14-58-10-20-24-36-18-58 6-22 26-30 30-52 4-22-6-44 8-62 12-16 34-22 54-28z" fill="#e8edff" stroke="#c5d0f5" stroke-width="2"/>
+          <g stroke="#1a46ff" stroke-width="2" stroke-dasharray="4 5" fill="none"><path d="M118 108 90 300"/><path d="M118 108 236 288"/></g>
+          <circle cx="118" cy="108" r="30" fill="rgba(26,70,255,.14)"/><circle cx="118" cy="108" r="9" fill="#1a46ff"/>
+          <circle cx="90" cy="300" r="8" fill="#0fb5a4"/><circle cx="236" cy="288" r="8" fill="#0fb5a4"/>
+          <text x="150" y="98" font-size="14" font-weight="700" fill="#071044">수도권</text>
+          <text x="150" y="116" font-size="11" fill="#3c404b">이천 · 안성1·2 · 동탄</text>
+          <text x="40" y="330" font-size="14" font-weight="700" fill="#071044">호남 · 광주</text>
+          <text x="40" y="347" font-size="11" fill="#3c404b">식자재 센터 · 본사</text>
+          <text x="200" y="320" font-size="14" font-weight="700" fill="#071044">영남 · 울주</text>
+          <text x="200" y="337" font-size="11" fill="#3c404b">식자재 센터</text>
+          <text x="128" y="215" font-size="11" font-weight="700" fill="#1a46ff">365일 간선</text>
+        </svg>
+      </div>
+      <div class="infra-list">
+        <div class="infra-item"><b>수도권 3개 센터</b><span>이천·안성 1·2센터, 동탄 물류단지 — 온라인 유통 콜드체인 거점</span></div>
+        <div class="infra-item"><b>호남·영남 식자재 센터</b><span>광주·울주 거점으로 지역 급식·식자재 배송</span></div>
+        <div class="infra-item"><b>직영 차량 300여 대</b><span>1톤~25톤 · 기업물류·특수화물·납품운송</span></div>
+        <figure class="figure infra-photo"><img src="img/fleet.webp" alt="고속도로를 달리는 화물 트럭" width="1920" height="1325" loading="lazy"></figure>
+      </div>
+    </div>
+    <div class="page-foot"><span>재경로지스｜물류 · 회사소개서 · 2025년 4월 기준</span><span class="mono">10</span></div>
+  </section>
+
+  <!-- 11 연혁 -->
+  <section class="page dark" id="p11" aria-labelledby="t11">
+    <span class="eyebrow">History</span>
+    <h2 id="t11">운송에서 콜드체인 3PL까지, 2013 — 2026</h2>
+    <div class="body history">
+      <div class="hist"><p class="yr">2013</p><div class="dot"></div><ul><li>재경로지스 설립</li><li>화물 운수사업·운송주선</li></ul></div>
+      <div class="hist"><p class="yr">2015</p><div class="dot"></div><ul><li>대기업 운송·구간 택배</li><li>롯데칠성·삼성전자·대림산업</li></ul></div>
+      <div class="hist"><p class="yr">2018</p><div class="dot"></div><ul><li>한화케미칼·LG화학·한샘 특판 운송</li></ul></div>
+      <div class="hist"><p class="yr">2019</p><div class="dot"></div><ul><li>현대리바트·아모레퍼시픽·이마트에브리데이</li></ul></div>
+      <div class="hist"><p class="yr">2021</p><div class="dot"></div><ul><li>HL홀딩스 전담 물류</li><li>쿠팡 콜드체인 3PL, 안성 1센터</li></ul></div>
+      <div class="hist"><p class="yr">2022</p><div class="dot"></div><ul><li>컬리 콜드체인 3PL</li></ul></div>
+      <div class="hist"><p class="yr">2023</p><div class="dot"></div><ul><li>삼성웰스토리 DC·현대그린푸드 TC</li><li>B마트·푸디버스, 안성 2센터</li></ul></div>
+      <div class="hist now"><p class="yr">2024–26</p><div class="dot"></div><ul><li>HL홀딩스 3PL 운영 전담 파트너</li><li>바르닭·작심닭 B2B 온라인 유통</li></ul></div>
+    </div>
+    <div class="page-foot"><span>재경로지스｜물류 · 회사소개서</span><span class="mono">11</span></div>
+  </section>
+
+  <!-- 12 도입 절차 -->
+  <section class="page" id="p12" aria-labelledby="t12">
+    <span class="eyebrow">How We Start</span>
+    <h2 id="t12">재경과 시작하는 5단계</h2>
+    <p class="lead">현재 물류를 먼저 이해하고, 무리 없이 옮겨 오는 것부터 시작합니다.</p>
+    <div class="body steps">
+      <ol class="step-list">
+        <li><i>1</i><b>상담</b><span>상품·물동량·채널 파악</span></li>
+        <li><i>2</i><b>현장 진단</b><span>현행 물류 흐름과 온도 조건 점검</span></li>
+        <li><i>3</i><b>운영 설계·견적</b><span>센터·운송·인력 구성 제안</span></li>
+        <li><i>4</i><b>시범 운영</b><span>소규모로 운영 기준 검증</span></li>
+        <li class="last"><i>5</i><b>본 운영</b><span>정기 리포트로 지속 개선</span></li>
+      </ol>
+      <div class="steps-cta"><p>지금 운영 중인 물류, 비용과 품질을 함께 점검해 드립니다.</p><a class="btn btn-primary btn-lg" href="https://pf.kakao.com/_xgrFxhn/chat" target="_blank" rel="noopener noreferrer">카카오톡으로 상담 시작 ↗</a></div>
+    </div>
+    <div class="page-foot"><span>재경로지스｜물류 · 회사소개서</span><span class="mono">12</span></div>
+  </section>
+
+  <!-- 13 안전·ESG -->
+  <section class="page" id="p13" aria-labelledby="t13">
+    <span class="eyebrow">Safety &amp; ESG</span>
+    <h2 id="t13">안전이 곧 서비스 품질입니다</h2>
+    <div class="body safety">
+      <ul class="checklist">
+        <li><div><b>안전보건경영방침 운영</b>2024년 1월 제정, 전 사업장 공통 적용</div></li>
+        <li><div><b>원청 수준의 안전보건관리</b>HL홀딩스 동탄냉장 협력사 안전보건관리계획 이행</div></li>
+        <li><div><b>위험성평가 상시 운영</b>지게차·상하차·냉동창고 작업 위험요인 개선</div></li>
+        <li><div><b>신선 품질 관리</b>입고 온도 검수 · 24시간 모니터링 · 보냉 출고</div></li>
+      </ul>
+      <div class="esg">
+        <figure class="figure"><img src="img/safety.webp" alt="정렬된 지게차와 안전 통로 표시" width="1280" height="960" loading="lazy"></figure>
+        <span class="badge">SOCIAL CONTRIBUTION</span>
+        <h3>지역과 함께 성장하는 기업</h3>
+        <p>광주광역시장애인체육회 후원기업으로 지역 장애인 체육 발전을 지원하고 있습니다.</p>
+      </div>
+    </div>
+    <div class="page-foot"><span>재경로지스｜물류 · 회사소개서</span><span class="mono">13</span></div>
+  </section>
+
+  <!-- 14 문의 -->
+  <section class="page dark closing" id="p14" aria-labelledby="t14">
+    <img class="photo-bg" src="img/hero.webp" alt="" width="1920" height="1279" loading="lazy">
+    <div class="shade"></div>
+    <span class="eyebrow">Contact</span>
+    <h2 id="t14" style="margin-top:14px">신선물류 고민,<br><span>재경이 함께 풀겠습니다.</span></h2>
+    <div class="contact">
+      <div>대표전화<b><a href="tel:07080984559">070-8098-4559</a></b></div>
+      <div>본사<b><a href="tel:0629529794">062-952-9794</a></b></div>
+      <div>이메일<b><a href="mailto:contact@jeakyung.com">contact@jeakyung.com</a></b></div>
+    </div>
+    <div class="closing-actions">
+      <a class="btn btn-primary btn-lg" href="https://pf.kakao.com/_xgrFxhn/chat" target="_blank" rel="noopener noreferrer">카카오톡 상담 ↗</a>
+      <a class="btn btn-ghost btn-lg" href="jaekyung-company-profile-2026.pptx" download>회사소개서 PPT 받기</a>
+      <a class="btn btn-ghost btn-lg" href="/">홈페이지</a>
+    </div>
+    <div class="page-foot"><span>재경로지스｜물류 · jeakyung.com · 사진: Unsplash</span><span class="mono">14</span></div>
+  </section>
+
+</main>
+
+<script>
+  // 지금 보고 있는 페이지 번호를 상단 카운터와 오른쪽 점에 반영하고,
+  // ← → / PageUp·PageDown 키로 한 페이지씩 넘길 수 있게 한다.
+  (function () {
+    var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
+    var counter = document.getElementById('counter');
+    var dots = document.getElementById('dots');
+    var total = pages.length;
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    var current = 0;
+
+    pages.forEach(function (page, i) {
+      var a = document.createElement('a');
+      a.href = '#' + page.id;
+      var h = page.querySelector('h1, h2');
+      a.setAttribute('aria-label', (i + 1) + '페이지' + (h ? ': ' + h.textContent.replace(/\s+/g, ' ').trim() : ''));
+      dots.appendChild(a);
+    });
+    var links = dots.querySelectorAll('a');
+
+    function mark(i) {
+      current = i;
+      counter.textContent = pad(i + 1) + ' / ' + pad(total);
+      links.forEach(function (l, j) { l.setAttribute('aria-current', j === i ? 'true' : 'false'); });
+    }
+    mark(0);
+
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) mark(pages.indexOf(e.target)); });
+      }, { rootMargin: '-45% 0px -45% 0px' });
+      pages.forEach(function (p) { io.observe(p); });
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.target.closest && e.target.closest('input, textarea, [contenteditable]')) return;
+      var next = null;
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') next = Math.min(current + 1, total - 1);
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') next = Math.max(current - 1, 0);
+      if (next === null || next === current) return;
+      e.preventDefault();
+      pages[next].scrollIntoView({ block: 'start' });
+    });
+  })();
+</script>
+</body>
+</html>
