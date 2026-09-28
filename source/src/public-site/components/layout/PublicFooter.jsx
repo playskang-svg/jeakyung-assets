@@ -29,9 +29,9 @@ export default function PublicFooter({ page }) {
             <a href={links.about}>회사 소개</a>
             <a href={links.services}>서비스</a>
             <a href={links.location}>찾아오시는 길</a>
-            {/* 사업계획서는 Vite 파이프라인 밖의 손수 작성 페이지(business-plan/)라
+            {/* 회사소개서는 Vite 파이프라인 밖의 손수 작성 페이지(company-profile/)라
                 어느 페이지에서든 같은 절대 경로로 보낸다. */}
-            <a href="/business-plan/">사업계획서 · PPT</a>
+            <a href="/company-profile/">회사소개서 · PPT</a>
           </div>
           <div>
             <p>Support</p>
