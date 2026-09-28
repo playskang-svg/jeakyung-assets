@@ -3,8 +3,8 @@
 // 문구를 고치면 웹(index.html)과 이 파일을 함께 고친다.
 const pptxgen = require('pptxgenjs');
 const sharp = require('sharp');
-const OUT = process.argv[2] || IMG + 'jaekyung-business-plan-2026.pptx';
 const IMG = require('path').resolve(__dirname, '../../business-plan') + '/';
+const OUT = process.argv[2] || IMG + 'jaekyung-business-plan-2026.pptx';
 const C = { navy950:'050A2B', navy900:'071044', blue:'1A46FF', blueSoft:'8EA4FF', ice:'E8EDFF', fresh:'0FB5A4', freshSoft:'DFF7F3', freshText:'0A8A7D', mint:'5FE0D2', ink:'10121A', ink7:'3C404B', ink5:'6A707C', line:'DFE3EB', surf:'EEF1F7', white:'FFFFFF', darkSoft:'B9C3EC', darkCard:'121A45', darkLine:'2A3470' };
 const F = 'Malgun Gothic', M = 'Consolas';
 // 사진을 슬롯 비율에 맞춰 미리 잘라 넣는다(pptx 의 cover 크롭은 뷰어마다 달라서).
