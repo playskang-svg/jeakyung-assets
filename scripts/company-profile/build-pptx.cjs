@@ -71,7 +71,7 @@ async function crop(name, w, h, darken) {
     T(s, [{ text: '신선물류,', options: { color: C.white, breakLine: true } }, { text: '재경에 맡기세요.', options: { color: C.blueSoft } }], { x: X, y: 2.3, w: 7.4, h: 1.7, fontSize: 46, bold: true, lineSpacingMultiple: 1.1 });
     T(s, '냉동·냉장 식자재부터 온라인 신선식품까지. 보관·풀필먼트·운송을 한 번에 책임지는 콜드체인 3PL 파트너, 재경로지스｜물류입니다.', { x: X, y: 4.15, w: 6.8, h: 0.9, fontSize: 14, color: 'DCE2F7', lineSpacingMultiple: 1.3 });
     pill(s, X, 5.2, 2.4, 0.5, C.blue, '물류 상담 신청 →', C.white, 13);
-    [['대표전화','070-8098-4559',0,2.2],['이메일','contact@jeakyung.com',2.4,3.0],['웹','jeakyung.com',5.6,2.0]].forEach(([a,b,dx,w]) => { T(s, a, { x: X + dx, y: 6.3, w, h: 0.25, fontSize: 10, color: C.darkSoft }); T(s, b, { x: X + dx, y: 6.55, w, h: 0.35, fontSize: 13, bold: true, color: C.white }); });
+    [['대표전화','010-5516-0301',0,2.2],['이메일','sk@jeakyung.com',2.4,3.0],['웹','jeakyung.com',5.6,2.0]].forEach(([a,b,dx,w]) => { T(s, a, { x: X + dx, y: 6.3, w, h: 0.25, fontSize: 10, color: C.darkSoft }); T(s, b, { x: X + dx, y: 6.55, w, h: 0.35, fontSize: 13, bold: true, color: C.white }); });
   }
 
   // 02 숫자
@@ -116,7 +116,7 @@ async function crop(name, w, h, darken) {
 
   // 05 서비스
   { const s = slide(false); head(s, false, 'SERVICES', '필요한 물류를 한곳에서');
-    const sv = [['img/b2b.webp','3PL 물류대행','입고·보관·주문 처리·출고 일괄 대행',true],['img/fresh.webp','신선식품 풀필먼트','B2B·B2C 주문부터 보냉 포장·배송까지',true],['img/fleet.webp','기업운송','1~25톤 · 특수화물 · 납품 · 정기 간선'],['img/dc.webp','보관물류','냉동·냉장·상온 보관과 입출고 연계'],['img/tc.webp','물류컨설팅','냉장센터 설계 · 운영 시스템 · 물류비 진단']];
+    const sv = [['img/svc-3pl.webp','3PL 물류대행','입고·보관·주문 처리·출고 일괄 대행',true],['img/svc-fresh.webp','신선식품 풀필먼트','B2B·B2C 주문부터 보냉 포장·배송까지',true],['img/svc-fleet.webp','기업운송','1~25톤 · 특수화물 · 납품 · 정기 간선'],['img/svc-storage.webp','보관물류','냉동·냉장·상온 보관과 입출고 연계'],['img/tc.webp','물류컨설팅','냉장센터 설계 · 운영 시스템 · 물류비 진단']];
     for (let i = 0; i < 5; i++) { const [img,h,d,core] = sv[i]; const x = X + i*2.46, y = 1.75, w = 2.3;
       card(s, x, y, w, 5.0, core ? C.navy900 : C.white, core ? null : C.line);
       s.addImage({ data: await crop(img, w, 3.1), x: x+0.01, y: y+0.01, w: w-0.02, h: 3.1, altText: h });
@@ -168,7 +168,7 @@ async function crop(name, w, h, darken) {
   // 09 고객
   { const s = slide(false); head(s, false, 'CLIENTS & PARTNERS', '국내 대표 유통·식품 기업과 함께합니다');
     lead(s, '50~60여 개 고객사·협력사와 파트너십을 이어가고 있습니다.');
-    const rows = [['식자재 · 급식',[['HL홀딩스',1],['삼성웰스토리',1],['현대그린푸드',1],['동원홈푸드'],['CJ제일제당']]],['온라인 유통',[['쿠팡',1],['컬리',1],['배민 B마트'],['신세계유통'],['바르닭'],['작심닭']]],['리테일 · 풀필먼트',[['이마트에브리데이'],['현대홈쇼핑'],['푸디버스'],['푸드나무']]],['운송 · 택배',[['LX판토스'],['CJ대한통운'],['롯데택배'],['경동택배'],['한샘']]]];
+    const rows = [['식자재 · 급식',[['HL홀딩스',1],['삼성웰스토리',1],['현대그린푸드',1],['동원홈푸드'],['CJ제일제당']]],['온라인 유통',[['쿠팡',1],['컬리',1],['배민 B마트'],['신세계유통'],['바르닭'],['작심닭']]],['리테일 · 풀필먼트',[['이마트에브리데이'],['현대홈쇼핑'],['푸디버스'],['푸드나무',1]]],['운송 · 택배',[['LX판토스'],['CJ대한통운'],['롯데택배'],['경동택배'],['한샘']]]];
     rows.forEach(([lab, items], i) => { const y = 2.35 + i*1.1; T(s, lab, { x: X, y: y, w: 1.8, h: 0.55, valign: 'middle', fontSize: 11, bold: true, color: C.blue });
       let x = X + 2.0; items.forEach(([t, big]) => { const w = 0.5 + t.length * (big ? 0.2 : 0.17); pill(s, x, y, w, 0.55, big ? C.navy900 : C.surf, t, big ? C.white : C.navy900, big ? 14 : 12); x += w + 0.15; });
       s.addShape(pres.shapes.LINE, { x: X, y: y+0.8, w: 12.1, h: 0, line: { color: C.line, width: 1 } }); });
@@ -238,7 +238,7 @@ async function crop(name, w, h, darken) {
     await photoBg(s, 'img/hero.webp', 25);
     T(s, 'CONTACT', { x: X, y: 1.4, w: 6, h: 0.3, fontFace: M, fontSize: 11, bold: true, color: C.blueSoft, charSpacing: 2 });
     T(s, [{ text: '신선물류 고민,', options: { color: C.white, breakLine: true } }, { text: '재경이 함께 풀겠습니다.', options: { color: C.blueSoft } }], { x: X, y: 1.9, w: 10, h: 1.7, fontSize: 40, bold: true, lineSpacingMultiple: 1.1 });
-    [['대표전화','070-8098-4559'],['본사','062-952-9794'],['이메일','contact@jeakyung.com']].forEach(([a,b],i) => { const x = X + i*3.7; card(s, x, 4.1, 3.5, 1.1, C.darkCard, C.darkLine, 15);
+    [['대표전화','010-5516-0301'],['본사','062-952-9794'],['이메일','sk@jeakyung.com']].forEach(([a,b],i) => { const x = X + i*3.7; card(s, x, 4.1, 3.5, 1.1, C.darkCard, C.darkLine, 15);
       T(s, a, { x: x+0.3, y: 4.28, w: 3, h: 0.3, fontSize: 11, color: C.darkSoft }); T(s, b, { x: x+0.3, y: 4.6, w: 3.1, h: 0.4, fontSize: 16, bold: true, color: C.white }); });
     T(s, [{ text: 'jeakyung.com/company-profile', options: { hyperlink: { url: 'https://jeakyung.com/company-profile/' }, color: C.mint } }, { text: '   ·   카카오톡 상담 pf.kakao.com/_xgrFxhn', options: { color: C.darkSoft } }], { x: X, y: 5.6, w: 11, h: 0.35, fontSize: 13 });
     foot2(s, true, '사진: Unsplash');

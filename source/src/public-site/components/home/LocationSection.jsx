@@ -10,9 +10,9 @@ const SITES = [
     address: ['광주광역시 광산구 앰코로 35', '245호 (쌍암동, 폭스존)'],
     query: '광주광역시 광산구 앰코로 35',
     contacts: [
-      { label: '대표전화', value: '070-8098-4559', href: 'tel:07080984559' },
+      { label: '대표전화', value: '010-5516-0301', href: 'tel:01055160301' },
       { label: '본사전화', value: '062-952-9794', href: 'tel:0629529794' },
-      { label: '이메일', value: 'contact@jeakyung.com', href: 'mailto:contact@jeakyung.com' },
+      { label: '이메일', value: 'sk@jeakyung.com', href: 'mailto:sk@jeakyung.com' },
     ],
   },
   {

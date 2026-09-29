@@ -4,6 +4,7 @@ const PARTNER_COMPANIES = [
   '동원식품',
   'HL홀딩스',
   '현대홈쇼핑',
+  '푸드나무',
 ];
 
 export default function PartnersSection() {
