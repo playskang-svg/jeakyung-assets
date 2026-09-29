@@ -1477,7 +1477,7 @@ p {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 16px;
-    max-width: 960px;
+    max-width: 1080px;
     margin: 0 auto;
     padding: 0;
     list-style: none;

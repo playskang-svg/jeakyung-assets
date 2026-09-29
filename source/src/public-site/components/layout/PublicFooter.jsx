@@ -18,9 +18,9 @@ export default function PublicFooter({ page }) {
           <p className="footer-company-name">유한회사 재경로지스</p>
           <address>광주광역시 광산구 앰코로 35, 245호<br />(쌍암동, 폭스존)</address>
           <p className="footer-contact">
-            <a href="tel:07080984559">070-8098-4559</a>
+            <a href="tel:01055160301">010-5516-0301</a>
             <span>·</span>
-            <a href="mailto:contact@jeakyung.com">contact@jeakyung.com</a>
+            <a href="mailto:sk@jeakyung.com">sk@jeakyung.com</a>
           </p>
         </div>
         <div className="footer-nav">
