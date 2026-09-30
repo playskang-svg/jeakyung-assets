@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { resolveArticleThumbnail } from '../../utils/articleThumbnails.js';
 
 // 서비스 카드 안에 붙는 칼럼 띠.
 //
@@ -128,8 +129,8 @@ export default function ServiceColumns({ serviceKey, serviceName, shape = 'squar
         tabIndex={echo ? -1 : undefined}
       >
         <span className="service-columns-shot">
-          {article.thumbnail_url
-            ? <img src={article.thumbnail_url} alt="" loading="lazy" />
+          {resolveArticleThumbnail(article)
+            ? <img src={resolveArticleThumbnail(article)} alt="" loading="lazy" />
             : <span className="service-columns-blank" aria-hidden="true" />}
         </span>
       </a>

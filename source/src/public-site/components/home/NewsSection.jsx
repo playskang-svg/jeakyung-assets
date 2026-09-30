@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import PopupDocumentContent from '../../../shared/popup/PopupDocumentContent.jsx';
 import '../../../shared/popup/popup.css';
+import { resolveArticleThumbnail } from '../../utils/articleThumbnails.js';
 
 // 히어로 바로 아래 "소식/정보" 영역.
 // 카드에는 썸네일과 요약만 노출하고, 카드를 누르면 본문을 따로 받아 팝업으로
@@ -139,8 +140,8 @@ export default function NewsSection() {
             <li key={article.id}>
               <button type="button" className="news-card" onClick={() => openArticle(article)}>
                 <span className="news-card-thumb">
-                  {article.thumbnail_url
-                    ? <img src={article.thumbnail_url} alt="" loading="lazy" decoding="async" />
+                  {resolveArticleThumbnail(article)
+                    ? <img src={resolveArticleThumbnail(article)} alt="" loading="lazy" decoding="async" />
                     : <span className="news-card-thumb-fallback" aria-hidden="true">JEAKYUNG</span>}
                 </span>
                 <span className="news-card-body">
