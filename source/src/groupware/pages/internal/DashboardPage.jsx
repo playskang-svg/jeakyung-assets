@@ -200,14 +200,17 @@ function QuickLinkButton({ link }) {
     );
   }
 
-  if (link.url.startsWith('/')) return <Link className={className} to={link.url}>{link.label}</Link>;
-  if (link.open_in === 'tab') {
+  const isLegacy = link.label?.includes('이전 인트라넷') || link.url?.includes('legacy') || link.url?.includes('quv.kr');
+
+  if (isLegacy || link.open_in === 'tab') {
     return (
       <a className={className} href={link.url} target="_blank" rel="noopener noreferrer">
         {link.label}<span aria-hidden="true">↗</span>
       </a>
     );
   }
+
+  if (link.url.startsWith('/')) return <Link className={className} to={link.url}>{link.label}</Link>;
   return <Link className={className} to={`/view/link/${link.id}`}>{link.label}</Link>;
 }
 

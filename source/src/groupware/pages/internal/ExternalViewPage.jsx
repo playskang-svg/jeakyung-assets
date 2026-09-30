@@ -40,6 +40,12 @@ export function QuickLinkViewPage() {
     return () => { active = false; };
   }, [linkId]);
 
+  useEffect(() => {
+    if (link?.url && (link.label?.includes('이전 인트라넷') || link.url.includes('legacy') || link.url.includes('quv.kr'))) {
+      window.open(link.url, '_blank');
+    }
+  }, [link]);
+
   if (link === undefined) return <p className="gw-empty-state" role="status">화면을 준비하고 있습니다.</p>;
   if (!link) return <Navigate to="/dashboard" replace />;
 
@@ -58,6 +64,34 @@ export function QuickLinkViewPage() {
     );
   }
 
+  const isLegacy = link.label?.includes('이전 인트라넷') || link.url.includes('legacy') || link.url.includes('quv.kr');
+  if (isLegacy) {
+    return (
+      <article className="gw-page gw-external-view" aria-labelledby="external-view-title">
+        <header className="gw-external-view-head">
+          <h1 id="external-view-title">{link.label}</h1>
+          <a href={link.url} target="_blank" rel="noopener noreferrer">새 탭에서 열기 ↗</a>
+        </header>
+        <div className="gw-notice gw-notice--info" style={{ margin: '24px 0', padding: '24px', textAlign: 'center' }}>
+          <p style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '8px' }}>
+            이전 인트라넷은 새 창(새 탭)에서 열립니다.
+          </p>
+          <p style={{ color: 'var(--gw-text-muted, #64748b)', marginBottom: '16px' }}>
+            새 창이 자동으로 열리지 않았거나 팝업이 차단되었다면 아래 버튼을 눌러주세요.
+          </p>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+            <a href={link.url} target="_blank" rel="noopener noreferrer" className="gw-primary-button" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              새 탭에서 열기 ↗
+            </a>
+            <Link to="/dashboard" className="gw-secondary-button">
+              대시보드로 돌아가기
+            </Link>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return <ViewFrame label={link.label} url={link.url} />;
 }
 
@@ -66,5 +100,11 @@ export default function ExternalViewPage() {
   // newTab 항목은 액자를 거부하는 곳이라 여기서 열면 빈 화면만 남는다.
   const item = GROUPWARE_NAVIGATION.find((entry) => entry.key === viewKey && entry.href && !entry.newTab);
   if (!item) return <Navigate to="/dashboard" replace />;
+
+  if (item.label?.includes('이전 인트라넷') || item.href.includes('legacy') || item.href.includes('quv.kr')) {
+    window.open(item.href, '_blank');
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return <ViewFrame label={item.label} url={item.href} />;
 }
