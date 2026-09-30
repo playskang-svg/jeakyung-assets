@@ -4,7 +4,7 @@ import { serviceName, withObjectParticle } from '../data/services.js';
 import PopupDocumentContent from '../../shared/popup/PopupDocumentContent.jsx';
 import '../../shared/popup/popup.css';
 import ShareButtonGroup from '../components/common/ShareButtonGroup.jsx';
-import { resolveArticleThumbnail } from '../utils/articleThumbnails.js';
+import { resolveArticleThumbnail, shouldShowArticleDetailThumb } from '../utils/articleThumbnails.js';
 
 // 서비스별 칼럼 전용 페이지. 홈 화면 서비스 카드의 "자세히 보기"와 카드 안
 // 흐르는 띠 그림이 모두 이 주소(?service=3pl 등)로 보낸다.
@@ -155,7 +155,7 @@ export default function ServicesPage() {
               </header>
               {/* 썸네일이 본문 맨 앞 이미지에서 자동으로 뽑힌 경우 본문에도 같은 그림이
                   있으므로, 위에 또 띄우지 않는다. */}
-              {resolveArticleThumbnail(current) && !(detail?.content_html ?? '').includes(resolveArticleThumbnail(current)) && (
+              {shouldShowArticleDetailThumb(resolveArticleThumbnail(current), detail?.content_html) && (
                 <div className="news-article-thumb"><img src={resolveArticleThumbnail(current)} alt="" /></div>
               )}
               {detailState === 'loading' && <p className="site-news-dialog-state" role="status">본문을 불러오고 있습니다.</p>}
@@ -206,7 +206,7 @@ export default function ServicesPage() {
                     <button type="button" className="news-card" onClick={() => openArticle(article.id)}>
                       <span className="news-card-thumb">
                         {resolveArticleThumbnail(article)
-                          ? <img src={resolveArticleThumbnail(article)} alt="" loading="lazy" decoding="async" />
+                          ? <img src={resolveArticleThumbnail(article)} alt="" decoding="async" />
                           : <span className="news-card-thumb-fallback" aria-hidden="true">JEAKYUNG</span>}
                       </span>
                       <span className="news-card-body">

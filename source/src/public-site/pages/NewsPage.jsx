@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import PopupDocumentContent from '../../shared/popup/PopupDocumentContent.jsx';
 import '../../shared/popup/popup.css';
 import ShareButtonGroup from '../components/common/ShareButtonGroup.jsx';
-import { resolveArticleThumbnail } from '../utils/articleThumbnails.js';
+import { resolveArticleThumbnail, shouldShowArticleDetailThumb } from '../utils/articleThumbnails.js';
 
 // 소식/정보 전용 페이지. 분류 탭으로 목록을 거르고, 글을 누르면 같은
 // 화면에서 본문이 열린다. 뒤로가기 / 목록 보기 / 닫기와 브라우저 뒤로가기가
@@ -147,7 +147,7 @@ export default function NewsPage() {
               </header>
               {/* 썸네일이 본문 맨 앞 이미지에서 자동으로 뽑힌 경우 본문에도 같은 그림이
                   있으므로, 위에 또 띄우지 않는다. */}
-              {resolveArticleThumbnail(current) && !(detail?.content_html ?? '').includes(resolveArticleThumbnail(current)) && (
+              {shouldShowArticleDetailThumb(resolveArticleThumbnail(current), detail?.content_html) && (
                 <div className="news-article-thumb"><img src={resolveArticleThumbnail(current)} alt="" /></div>
               )}
               {detailState === 'loading' && <p className="site-news-dialog-state" role="status">본문을 불러오고 있습니다.</p>}
@@ -214,7 +214,7 @@ export default function NewsPage() {
                     <button type="button" className="news-card" onClick={() => openArticle(article.id)}>
                       <span className="news-card-thumb">
                         {resolveArticleThumbnail(article)
-                          ? <img src={resolveArticleThumbnail(article)} alt="" loading="lazy" decoding="async" />
+                          ? <img src={resolveArticleThumbnail(article)} alt="" decoding="async" />
                           : <span className="news-card-thumb-fallback" aria-hidden="true">JEAKYUNG</span>}
                       </span>
                       <span className="news-card-body">

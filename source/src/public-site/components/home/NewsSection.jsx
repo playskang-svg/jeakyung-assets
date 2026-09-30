@@ -141,7 +141,7 @@ export default function NewsSection() {
               <button type="button" className="news-card" onClick={() => openArticle(article)}>
                 <span className="news-card-thumb">
                   {resolveArticleThumbnail(article)
-                    ? <img src={resolveArticleThumbnail(article)} alt="" loading="lazy" decoding="async" />
+                    ? <img src={resolveArticleThumbnail(article)} alt="" decoding="async" />
                     : <span className="news-card-thumb-fallback" aria-hidden="true">JEAKYUNG</span>}
                 </span>
                 <span className="news-card-body">
