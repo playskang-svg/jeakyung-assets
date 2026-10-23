@@ -5,7 +5,7 @@ import BoardDocumentRenderer from '../../components/editor/BoardDocumentRenderer
 import { useAuth } from '../../context/AuthContext.jsx';
 import { deleteBoardAttachment, deleteBoardComment, deleteBoardPost, downloadAttachment, getBoardOverview, getBoardPost, saveBoardComment, uploadBoardAttachment } from '../../services/boardService.js';
 import { legacyTextToDocument } from '../../utils/boardDocument.js';
-import { formatBoardDateTime } from '../../utils/datetime.js';
+import { formatBoardDateTime, formatBoardPostDateTime } from '../../utils/datetime.js';
 
 // 팝업 안에서도 쓰기 위해 라우트 파라미터 대신 props 로도 받을 수 있게 한다.
 // onBack 이 있으면 목록으로 돌아가는 동작을 그 함수에 맡긴다(팝업 안 전환).
@@ -103,7 +103,7 @@ export default function PostDetailPage({ boardSlug: boardSlugProp, postId: postI
       <div className="gw-post-head-meta">
         <span><small>작성자</small> <strong>{authorMeta}</strong></span>
         <span>
-          {formatBoardDateTime(data.post.created_at)}
+          {formatBoardPostDateTime(data.post)}
           {overview.board.settings.show_views !== false && <em>조회 {data.post.view_count}</em>}
         </span>
       </div>

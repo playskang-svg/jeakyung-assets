@@ -13,4 +13,11 @@ export function formatBoardDateTime(value) {
   return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()} ${time}`;
 }
 
+// Migrated posts retain their original timestamp in a reserved, non-displayed prefix.
+// New posts keep the server-created timestamp.
+export function formatBoardPostDateTime(post) {
+  const match = /^legacy-date:(\d{10})$/.exec(post?.prefix ?? '');
+  return formatBoardDateTime(match ? Number(match[1]) * 1000 : post?.created_at);
+}
+
 export default formatBoardDateTime;
