@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getBoardType } from '../../config/boardTypes.js';
 import { getVisibleBoards } from '../../services/boardService.js';
+import BoardCardArt, { boardCardKind } from '../../components/BoardCardArt.jsx';
 
 export default function BoardsPage() {
   const [boards, setBoards] = useState([]);
@@ -38,9 +39,9 @@ export default function BoardsPage() {
                 const type = getBoardType(board.board_type);
                 return (
                   // 카드 전체가 링크다. 제목 글자만 정확히 겨냥할 필요가 없다.
-                  <article className="gw-board-card" key={board.id}>
+                  <article className={`gw-board-card gw-card-kind--${boardCardKind(board)}`} key={board.id}>
                     <span className="gw-board-type-label">{type.label}</span>
-                    <h3><Link to={`/boards/${board.slug}`}>{board.name}</Link></h3>
+                    <h3><Link to={`/boards/${board.slug}`}><BoardCardArt kind={boardCardKind(board)} />{board.name}</Link></h3>
                     <p>{board.description || type.description}</p>
                     <span className="gw-board-card-enter" aria-hidden="true">
                       바로가기

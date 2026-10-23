@@ -7,6 +7,7 @@ import { getMyLinkPages } from '../../services/linkPageService.js';
 import { getButtonBox } from '../../services/buttonBoxService.js';
 import ProfileCard from '../../components/profile/ProfileCard.jsx';
 import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
+import BoardCardArt, { boardCardKind } from '../../components/BoardCardArt.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getQuickLinks } from '../../services/quickLinkService.js';
 import { youTubeThumbnail } from '../../components/editor/YouTubeEmbed.js';
@@ -363,14 +364,14 @@ export default function DashboardPage() {
           </div>
           <div className="gw-launch-grid">
             {boards.map((board) => (
-              <Link className="gw-launch-card" key={board.id} to={`/boards/${board.slug}`}>
-                <strong>{board.name}</strong>
+              <Link className={`gw-launch-card gw-card-kind--${boardCardKind(board)}`} key={board.id} to={`/boards/${board.slug}`}>
+                <span className="gw-card-title"><BoardCardArt kind={boardCardKind(board)} /><strong>{board.name}</strong></span>
                 {board.description && <span>{board.description}</span>}
               </Link>
             ))}
             {linkPages.map((page) => (
-              <Link className="gw-launch-card" key={page.id} to={`/pages/${page.slug}`}>
-                <strong>{page.title}</strong>
+              <Link className="gw-launch-card gw-card-kind--page" key={page.id} to={`/pages/${page.slug}`}>
+                <span className="gw-card-title"><BoardCardArt kind="page" /><strong>{page.title}</strong></span>
                 <span>{page.item_count}개 항목</span>
               </Link>
             ))}
