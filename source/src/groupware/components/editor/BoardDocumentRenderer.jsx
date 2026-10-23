@@ -26,7 +26,11 @@ function MarkedText({ node }) {
     } else if (mark.type === 'link') {
       // 저장 시 DB에서도 검사하지만, 예전 문서를 대비해 여기서도 스킴을 확인한다.
       const href = mark.attrs?.href ?? '';
-      if (SAFE_HREF.test(href)) content = <a href={href} target="_blank" rel="noopener noreferrer">{content}</a>;
+      if (SAFE_HREF.test(href)) {
+        // Only this known presentation class is allowed from stored documents.
+        const className = mark.attrs?.class === 'gw-resource-button' ? 'gw-resource-button' : undefined;
+        content = <a href={href} target="_blank" rel="noopener noreferrer" className={className}>{content}</a>;
+      }
     }
   }
   return content;
