@@ -65,7 +65,7 @@ export async function handleChat(request, env) {
     return json({ error: '요청 형식이 올바르지 않습니다.' }, 415);
   }
   if (!env.ANTHROPIC_API_KEY) {
-    return json({ error: 'AI 상담 연결을 준비 중입니다. 카카오톡으로 문의해 주세요.' }, 503);
+    return json({ error: '챗봇상담 연결을 준비 중입니다. 카카오톡으로 문의해 주세요.' }, 503);
   }
 
   let messages;
@@ -80,21 +80,28 @@ export async function handleChat(request, env) {
   if (isRateLimited(request)) return json({ error: '잠시 후 다시 질문해 주세요.' }, 429);
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 450,
-        system: CHAT_SYSTEM_PROMPT,
-        messages: messages.map(({ role, content }) => ({ role, content: content.trim() })),
-      }),
-      signal: AbortSignal.timeout(30_000),
-    });
+    async function callClaude(attempt = 1) {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 450,
+          system: CHAT_SYSTEM_PROMPT,
+          messages: messages.map(({ role, content }) => ({ role, content: content.trim() })),
+        }),
+        signal: AbortSignal.timeout(30_000),
+      });
+      if (!res.ok && attempt < 2 && (res.status === 403 || res.status >= 500)) {
+        return callClaude(attempt + 1);
+      }
+      return res;
+    }
+    const response = await callClaude();
     if (!response.ok) {
       // 문의 원문이나 API 키를 로그에 남기지 않는다.
       console.error('Claude API failed', response.status, response.headers.get('request-id'));
@@ -109,7 +116,7 @@ export async function handleChat(request, env) {
       }[response.status] || 'upstream_error';
       return json({ code, error: response.status === 429
         ? '지금은 요청이 많습니다. 잠시 후 다시 시도해 주세요.'
-        : 'AI 상담 연결에 문제가 생겼습니다. 카카오톡으로 문의해 주세요.' }, 502);
+        : '챗봇상담 연결에 문제가 생겼습니다. 카카오톡으로 문의해 주세요.' }, 502);
     }
     const data = await response.json();
     const reply = data.content?.filter((block) => block.type === 'text')
