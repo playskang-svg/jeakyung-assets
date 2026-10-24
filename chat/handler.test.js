@@ -57,3 +57,21 @@ test('Claude 오류는 원문 없이 진단 코드만 반환한다', async () =>
   assert.ok(!JSON.stringify(data).includes('private upstream detail'));
   assert.ok(!JSON.stringify(data).includes('private-test-key'));
 });
+
+test('Claude 호출 시 403이나 500대 에러가 발생하면 1회 재시도한다', async () => {
+  let attempts = 0;
+  globalThis.fetch = async () => {
+    attempts++;
+    if (attempts === 1) {
+      return new Response('{"error":{"message":"geo restricted"}}', { status: 403 });
+    }
+    return new Response(JSON.stringify({ content: [{ type: 'text', text: '재시도 성공 답변입니다.' }] }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  };
+  const response = await handleChat(request([{ role: 'user', content: '재시도 테스트' }]), { ANTHROPIC_API_KEY: 'test-key' });
+  assert.equal(response.status, 200);
+  assert.equal(attempts, 2);
+  const data = await response.json();
+  assert.equal(data.reply, '재시도 성공 답변입니다.');
+});
