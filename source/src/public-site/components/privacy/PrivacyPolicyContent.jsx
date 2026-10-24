@@ -12,11 +12,11 @@ export default function PrivacyPolicyContent() {
       <section className="policy-content">
         <div className="content-width policy-layout">
           <article className="policy-article">
-            <p className="policy-summary"><strong>AI 상담창에서 동의하고 보낸 질문과 대화 맥락은 답변 생성을 위해 Anthropic의 Claude API로 전송됩니다.</strong> 웹사이트는 대화 원문을 별도 데이터베이스에 저장하거나 담당자에게 자동 전달하지 않습니다. 개별 견적·계약 상담은 카카오톡 채널을 이용해 주세요.</p>
+            <p className="policy-summary"><strong>챗봇상담창에서 입력하여 전송한 질문과 대화 맥락은 답변 생성을 위해 Anthropic의 Claude API로 전송됩니다.</strong> 웹사이트는 대화 원문을 별도 데이터베이스에 저장하거나 담당자에게 자동 전달하지 않습니다. 개별 견적·계약 상담은 카카오톡 채널을 이용해 주세요.</p>
 
             <section className="policy-section">
               <h2>1. 개인정보의 처리 목적 및 항목</h2>
-              <p>AI 상담 답변을 생성하기 위해 이용자가 입력한 질문과 같은 대화창의 앞선 메시지를 처리합니다. 연락처, 주민등록번호, 결제 정보 등 개인정보나 민감정보를 입력하지 마세요. 상담창은 전송 전에 이용자의 동의를 받습니다. 별도의 문의 양식이나 결제 기능은 운영하지 않습니다.</p>
+              <p>챗봇상담 답변을 생성하기 위해 이용자가 입력한 질문과 같은 대화창의 앞선 메시지를 처리합니다. 연락처, 주민등록번호, 결제 정보 등 개인정보나 민감정보를 입력하지 마세요. 별도의 문의 양식이나 결제 기능은 운영하지 않습니다.</p>
             </section>
 
             <section className="policy-section">
@@ -26,9 +26,9 @@ export default function PrivacyPolicyContent() {
 
             <section className="policy-section">
               <h2>3. 제3자 제공 및 처리 위탁</h2>
-              <p>AI 상담에 동의하고 메시지를 보내면 답변 생성을 위해 메시지와 대화 맥락을 Anthropic의 Claude API로 전송합니다. 카카오톡 상담 또는 Google 지도 링크를 선택하면 외부 서비스로 이동하며 해당 서비스의 정책이 적용됩니다.</p>
+              <p>챗봇상담에서 메시지를 보내면 답변 생성을 위해 메시지와 대화 맥락을 Anthropic의 Claude API로 전송합니다. 카카오톡 상담 또는 Google 지도 링크를 선택하면 외부 서비스로 이동하며 해당 서비스의 정책이 적용됩니다.</p>
               <ul>
-                <li>Anthropic Claude API: AI 답변 생성</li>
+                <li>Anthropic Claude API: AI 챗봇 답변 생성</li>
                 <li>카카오톡 채널: 서비스 상담 연결</li>
                 <li>Google 지도: 본사 위치 확인</li>
               </ul>
@@ -60,20 +60,10 @@ export default function PrivacyPolicyContent() {
             </section>
 
             <section className="policy-section">
-              <h2>8. 방침의 변경</h2>
-              <p>개인정보 처리 방식이나 관련 법령이 변경되면 이 페이지의 내용을 갱신하고 시행일을 표시합니다.</p>
-              <p><strong>시행일: 2026년 10월 24일</strong></p>
+              <h2>8. 개정 고지</h2>
+              <p>본 방침은 2026년 10월 24일부터 적용됩니다. 내용이 변경되는 경우 웹사이트를 통해 공지합니다.</p>
             </section>
           </article>
-
-          <aside className="policy-aside" aria-label="개인정보 보호 문의 요약">
-            <strong>개인정보 보호 문의</strong>
-            <span>유한회사 재경로지스</span>
-            <span>경영지원부</span>
-            <span>070-800-8100</span>
-            <span>sk@jeakyung.com</span>
-            <a href="mailto:sk@jeakyung.com">이메일 문의하기 →</a>
-          </aside>
         </div>
       </section>
     </>

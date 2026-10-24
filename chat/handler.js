@@ -52,7 +52,13 @@ export async function handleChat(request, env) {
   if (request.method !== 'POST') return json({ error: '허용되지 않은 요청입니다.' }, 405);
 
   const url = new URL(request.url);
-  if (request.headers.get('Origin') !== url.origin) {
+  const origin = request.headers.get('Origin');
+  const allowedOrigins = new Set([
+    url.origin,
+    'https://jeakyung.com',
+    'https://www.jeakyung.com',
+  ]);
+  if (origin && !allowedOrigins.has(origin)) {
     return json({ error: '허용되지 않은 요청입니다.' }, 403);
   }
   if (!request.headers.get('Content-Type')?.toLowerCase().startsWith('application/json')) {
