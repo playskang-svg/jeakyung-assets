@@ -92,7 +92,16 @@ export async function handleChat(request, env) {
     if (!response.ok) {
       // 문의 원문이나 API 키를 로그에 남기지 않는다.
       console.error('Claude API failed', response.status, response.headers.get('request-id'));
-      return json({ error: response.status === 429
+      const code = {
+        400: 'upstream_request',
+        401: 'upstream_auth',
+        402: 'upstream_billing',
+        403: 'upstream_permission',
+        404: 'upstream_model',
+        429: 'upstream_rate_limit',
+        529: 'upstream_overloaded',
+      }[response.status] || 'upstream_error';
+      return json({ code, error: response.status === 429
         ? '지금은 요청이 많습니다. 잠시 후 다시 시도해 주세요.'
         : 'AI 상담 연결에 문제가 생겼습니다. 카카오톡으로 문의해 주세요.' }, 502);
     }
