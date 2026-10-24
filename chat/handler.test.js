@@ -47,3 +47,13 @@ test('서버에서만 API 키를 사용하고 답변 텍스트만 반환한다',
   assert.equal(JSON.parse(sent.body).model, 'claude-sonnet-4-6');
   assert.ok(!JSON.stringify(response.headers).includes('private-test-key'));
 });
+
+test('Claude 오류는 원문 없이 진단 코드만 반환한다', async () => {
+  globalThis.fetch = async () => new Response('{"error":{"message":"private upstream detail"}}', { status: 401 });
+  const response = await handleChat(request([{ role: 'user', content: '안내 부탁드립니다' }]), { ANTHROPIC_API_KEY: 'private-test-key' });
+  assert.equal(response.status, 502);
+  const data = await response.json();
+  assert.equal(data.code, 'upstream_auth');
+  assert.ok(!JSON.stringify(data).includes('private upstream detail'));
+  assert.ok(!JSON.stringify(data).includes('private-test-key'));
+});
