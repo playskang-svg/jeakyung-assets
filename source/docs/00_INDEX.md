@@ -28,6 +28,7 @@
 
 - [`11_ASSET_MANIFEST.md`](11_ASSET_MANIFEST.md): 공개 자산 등록 및 사용 상태
 - [`12_REFERENCES.md`](12_REFERENCES.md): 참고 자료의 출처와 적용 범위
+- [`35_AI_CHAT.md`](35_AI_CHAT.md): 공개 사이트 AI 상담의 구성, 운영 활성화, 추후 답변 자료 반영
 - 루트 `CONTENT.md`, `REFERENCES.md`: 초기 빈 문서이며 상세 기준은 위 담당 문서를 우선한다.
 
 ## Phase G0–G1 범위

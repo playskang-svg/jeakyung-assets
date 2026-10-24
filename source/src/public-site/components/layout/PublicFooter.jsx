@@ -1,4 +1,5 @@
 import Brand from '../common/Brand.jsx';
+import ChatWidget from '../common/ChatWidget.jsx';
 import {
   CONSULTATION_URL,
   footerLinksByPage,
@@ -11,7 +12,7 @@ export default function PublicFooter({ page }) {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="content-width">
+    <><div className="content-width">
       <div className="footer-main">
         <div className="footer-company">
           <Brand href={links.home} placement="footer" />
@@ -71,6 +72,6 @@ export default function PublicFooter({ page }) {
         <p>본사 062-952-9794 · Fax 062-962-9795</p>
         <p>© <span id="current-year">{currentYear}</span> Jaekyung.com. All rights reserved.</p>
       </div>
-    </div>
+    </div><ChatWidget /></>
   );
 }

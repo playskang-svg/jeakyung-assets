@@ -1011,3 +1011,12 @@ Change ID 단위로 구현 대기 항목과 완료 이력을 분리한다. 다�
 - 인증·권한: `docs/27_AUTH_AND_MEMBERSHIP.md`, `docs/28_ROLE_AND_PERMISSION_MATRIX.md`
 - 게시판·데이터·보안: `docs/29_BOARD_SYSTEM.md`, `docs/30_DATABASE_SCHEMA.md`, `docs/31_SECURITY_AND_RLS.md`
 - 관리자·메일: `docs/32_ADMIN_SYSTEM.md`, `docs/33_MAIL_INTEGRATION.md`
+
+## 16. 공개 사이트 AI 상담 (2026-10-24)
+
+- 공개 페이지 하단에 고정 상담창을 제공하고 Cloudflare Worker의 `/api/chat`에서 Claude API를 호출한다.
+- API 키는 Worker 비밀값 `ANTHROPIC_API_KEY`로만 관리한다. 키가 없거나 API가 실패하면 담당자 카카오톡 상담으로 안내한다.
+- 상담창에서 전송 동의를 받고, 대화 원문은 사이트 데이터베이스에 저장하지 않는다. 개인정보처리방침에 API 전송을 안내한다.
+- 기본 답변은 확인된 서비스 범위의 일반 안내로 제한한다. 견적·계약·운영 가능 여부는 담당자에게 연결한다.
+- 운영자가 추후 제공할 상세 프롬프트, 답변 자료, 담당자 연결 기준은 `chat/systemPrompt.js`를 중심으로 갱신한다.
+- 운영·설정·검증 절차: `docs/35_AI_CHAT.md`.

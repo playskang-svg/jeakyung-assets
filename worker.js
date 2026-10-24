@@ -1,5 +1,7 @@
 // Paths that must never be indexed by search engines (internal/private or noindex-marked areas).
 // Mirrors the noindex rules the old vercel.json headers config applied.
+import { handleChat } from './chat/handler.js';
+
 const NOINDEX_PREFIXES = ['/groupware', '/hl-safety-eval', '/legacy', '/notice'];
 
 function applyCommonHeaders(response, pathname) {
@@ -28,6 +30,7 @@ function applyCommonHeaders(response, pathname) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === '/api/chat') return handleChat(request, env);
     const lastSegment = url.pathname.split('/').pop() || '';
     const isFile = lastSegment.includes('.');
 
