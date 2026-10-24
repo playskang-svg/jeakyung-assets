@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { after, test } from 'node:test';
 
-import { handleChat } from './handler.js';
+import { handleChat, handleChatStatus } from './handler.js';
 
 const originalFetch = globalThis.fetch;
 after(() => { globalThis.fetch = originalFetch; });
@@ -18,6 +18,13 @@ test('API key가 없으면 외부 호출 없이 503을 반환한다', async () =
   globalThis.fetch = () => { throw new Error('must not call API'); };
   const response = await handleChat(request([{ role: 'user', content: '안녕하세요' }]), {});
   assert.equal(response.status, 503);
+});
+
+test('상담 가능 상태는 키 값 없이 불리언만 반환한다', async () => {
+  const statusRequest = new Request('https://jeakyung.com/api/chat/status');
+  assert.deepEqual(await (await handleChatStatus(statusRequest, {})).json(), { available: false });
+  const ready = await handleChatStatus(statusRequest, { ANTHROPIC_API_KEY: 'private-test-key' });
+  assert.deepEqual(await ready.json(), { available: true });
 });
 
 test('다른 출처와 잘못된 대화 형식을 거부한다', async () => {

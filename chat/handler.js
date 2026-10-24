@@ -15,6 +15,11 @@ function json(data, status = 200) {
   });
 }
 
+export function handleChatStatus(request, env) {
+  if (request.method !== 'GET') return json({ error: '허용되지 않은 요청입니다.' }, 405);
+  return json({ available: Boolean(env.ANTHROPIC_API_KEY) });
+}
+
 function validMessages(messages) {
   return Array.isArray(messages)
     && messages.length > 0

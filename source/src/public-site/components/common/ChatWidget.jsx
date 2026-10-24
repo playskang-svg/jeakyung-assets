@@ -6,6 +6,7 @@ import './chatWidget.css';
 const welcome = { role: 'assistant', content: '안녕하세요. 재경로지스 AI 상담입니다. 물류 서비스에 관해 궁금한 점을 알려주세요.' };
 
 export default function ChatWidget() {
+  const [available, setAvailable] = useState(false);
   const [open, setOpen] = useState(false);
   const [consented, setConsented] = useState(false);
   const [draft, setDraft] = useState('');
@@ -16,6 +17,15 @@ export default function ChatWidget() {
   const inputRef = useRef(null);
   const launcherRef = useRef(null);
   const listRef = useRef(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/chat/status', { signal: controller.signal })
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => { if (data?.available) setAvailable(true); })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
@@ -57,6 +67,9 @@ export default function ChatWidget() {
     setOpen(false);
     launcherRef.current?.focus();
   }
+
+  // 운영 키가 준비되기 전에는 기존 카카오톡 상담만 노출한다.
+  if (!available) return null;
 
   return (
     <div className="chat-widget" onKeyDown={(event) => { if (event.key === 'Escape' && open) close(); }}>
