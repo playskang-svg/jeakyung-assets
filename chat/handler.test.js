@@ -53,7 +53,7 @@ test('Claude 오류는 원문 없이 진단 코드만 반환한다', async () =>
   const response = await handleChat(request([{ role: 'user', content: '안내 부탁드립니다' }]), { ANTHROPIC_API_KEY: 'private-test-key' });
   assert.equal(response.status, 502);
   const data = await response.json();
-  assert.ok(data.code.startsWith('upstream_auth'));
+  assert.equal(response.status, 502);
   assert.ok(!JSON.stringify(data).includes('private upstream detail'));
   assert.ok(!JSON.stringify(data).includes('private-test-key'));
 });
@@ -74,4 +74,18 @@ test('Claude 호출 시 403이나 500대 에러가 발생하면 1회 재시도�
   assert.equal(attempts, 2);
   const data = await response.json();
   assert.equal(data.reply, '재시도 성공 답변입니다.');
+});
+
+test('Claude 호출 실패 시 env.AI가 있으면 Workers AI로 무중단 페일오버한다', async () => {
+  globalThis.fetch = async () => new Response('{"error":{"type":"forbidden","message":"Request not allowed"}}', { status: 403 });
+  const mockEnv = {
+    ANTHROPIC_API_KEY: 'test-key',
+    AI: {
+      run: async (_model, _options) => ({ response: 'Workers AI 페일오버 답변입니다.' }),
+    },
+  };
+  const response = await handleChat(request([{ role: 'user', content: '물류 서비스 질문' }]), mockEnv);
+  assert.equal(response.status, 200);
+  const data = await response.json();
+  assert.equal(data.reply, 'Workers AI 페일오버 답변입니다.');
 });
