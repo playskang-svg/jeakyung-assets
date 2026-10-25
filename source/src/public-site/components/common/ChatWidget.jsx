@@ -57,6 +57,7 @@ export default function ChatWidget() {
 
     const nextHistory = [...history, { role: 'user', content }].slice(-11);
     setMessages((current) => [...current, { role: 'user', content }]);
+    setHistory(nextHistory);
     setDraft('');
     setError('');
     setSending(true);
@@ -74,7 +75,32 @@ export default function ChatWidget() {
       setHistory([...nextHistory, { role: 'assistant', content: data.reply }].slice(-10));
       setMessages((current) => [...current, { role: 'assistant', content: data.reply }]);
     } catch (problem) {
-      setError(problem.message || '연결에 실패했습니다. 다시 시도해 주세요.');
+      setError(problem.message || '일시적인 연결 지연입니다. 다시 시도해 주세요.');
+    } finally {
+      setSending(false);
+      inputRef.current?.focus();
+    }
+  }
+
+  async function retryLast() {
+    if (sending || history.length === 0) return;
+    setError('');
+    setSending(true);
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.reply) {
+        throw new Error(data.error || '답변을 받지 못했습니다.');
+      }
+      setHistory([...history, { role: 'assistant', content: data.reply }].slice(-10));
+      setMessages((current) => [...current, { role: 'assistant', content: data.reply }]);
+    } catch (problem) {
+      setError(problem.message || '일시적인 연결 지연입니다. 다시 시도해 주세요.');
     } finally {
       setSending(false);
       inputRef.current?.focus();
@@ -155,19 +181,24 @@ export default function ChatWidget() {
                 <span className="chat-typing-dots">
                   <span>.</span><span>.</span><span>.</span>
                 </span>
-                답변을 작성하고 있습니다…
+                답변을 준비하고 있습니다…
               </div>
             )}
           </div>
 
           <div className="chat-panel-bottom">
             {error && (
-              <p className="chat-error" role="alert">
-                {error}{' '}
-                <a href={CONSULTATION_URL} target="_blank" rel="noopener noreferrer">
-                  담당자 상담 ↗
-                </a>
-              </p>
+              <div className="chat-error" role="alert">
+                <span>{error}</span>
+                <div className="chat-error-actions">
+                  <button type="button" onClick={retryLast} className="chat-retry-btn">
+                    ↻ 다시 시도
+                  </button>
+                  <a href={CONSULTATION_URL} target="_blank" rel="noopener noreferrer">
+                    카카오톡 1:1 상담 ↗
+                  </a>
+                </div>
+              </div>
             )}
 
             <form className="chat-form" onSubmit={send}>
