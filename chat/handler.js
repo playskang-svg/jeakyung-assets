@@ -17,7 +17,7 @@ function json(data, status = 200) {
 
 export function handleChatStatus(request, env) {
   if (request.method !== 'GET') return json({ error: '허용되지 않은 요청입니다.' }, 405);
-  return json({ available: Boolean(env.ANTHROPIC_API_KEY) });
+  return json({ available: Boolean(env.ANTHROPIC_API_KEY || env.AI) });
 }
 
 function validMessages(messages) {
@@ -48,6 +48,25 @@ function isRateLimited(request) {
   return false;
 }
 
+async function fallbackWorkersAI(env, messages) {
+  if (!env?.AI) return null;
+  try {
+    const aiMessages = [
+      { role: 'system', content: CHAT_SYSTEM_PROMPT },
+      ...messages.map(({ role, content }) => ({ role, content: content.trim() })),
+    ];
+    const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+      messages: aiMessages,
+      max_tokens: 450,
+    });
+    const reply = (aiResponse?.response || '').trim();
+    return reply || null;
+  } catch (err) {
+    console.error('Workers AI fallback failed', err);
+    return null;
+  }
+}
+
 export async function handleChat(request, env) {
   if (request.method !== 'POST') return json({ error: '허용되지 않은 요청입니다.' }, 405);
 
@@ -64,7 +83,7 @@ export async function handleChat(request, env) {
   if (!request.headers.get('Content-Type')?.toLowerCase().startsWith('application/json')) {
     return json({ error: '요청 형식이 올바르지 않습니다.' }, 415);
   }
-  if (!env.ANTHROPIC_API_KEY) {
+  if (!env.ANTHROPIC_API_KEY && !env.AI) {
     return json({ error: '챗봇상담 연결을 준비 중입니다. 카카오톡으로 문의해 주세요.' }, 503);
   }
 
@@ -102,28 +121,34 @@ export async function handleChat(request, env) {
       }
       return res;
     }
-    const response = await callClaude();
-    if (!response.ok) {
-      console.error('Claude API failed', response.status, response.headers.get('request-id'));
-      const code = {
-        400: 'upstream_request',
-        401: 'upstream_auth',
-        402: 'upstream_billing',
-        403: 'upstream_permission',
-        404: 'upstream_model',
-        429: 'upstream_rate_limit',
-        529: 'upstream_overloaded',
-      }[response.status] || 'upstream_error';
-      return json({ code, error: response.status === 429
-        ? '지금은 요청이 많습니다. 잠시 후 다시 시도해 주세요.'
-        : '챗봇상담 연결에 문제가 생겼습니다. 카카오톡으로 문의해 주세요.' }, 502);
+
+    if (env.ANTHROPIC_API_KEY) {
+      const response = await callClaude();
+      if (response.ok) {
+        const data = await response.json();
+        const reply = data.content?.filter((block) => block.type === 'text')
+          .map((block) => block.text).join('\n').trim();
+        if (reply) return json({ reply });
+      } else {
+        console.error('Claude API failed', response.status, response.headers.get('request-id'));
+      }
     }
-    const data = await response.json();
-    const reply = data.content?.filter((block) => block.type === 'text')
-      .map((block) => block.text).join('\n').trim();
-    if (!reply) return json({ error: '답변을 받지 못했습니다. 다시 시도해 주세요.' }, 502);
-    return json({ reply });
+
+    // Anthropic API 키가 없거나, 403(지역 제한) / 5xx 오류 시 Workers AI로 무중단 페일오버
+    const fallbackReply = await fallbackWorkersAI(env, messages);
+    if (fallbackReply) {
+      return json({ reply: fallbackReply });
+    }
+
+    return json({
+      code: 'upstream_permission',
+      error: '챗봇상담 연결에 문제가 생겼습니다. 카카오톡으로 문의해 주세요.',
+    }, 502);
   } catch {
+    const fallbackReply = await fallbackWorkersAI(env, messages);
+    if (fallbackReply) {
+      return json({ reply: fallbackReply });
+    }
     return json({ error: '연결 시간이 초과되었습니다. 다시 시도해 주세요.' }, 504);
   }
 }
