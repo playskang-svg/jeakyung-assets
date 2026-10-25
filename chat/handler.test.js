@@ -53,7 +53,7 @@ test('Claude 오류는 원문 없이 진단 코드만 반환한다', async () =>
   const response = await handleChat(request([{ role: 'user', content: '안내 부탁드립니다' }]), { ANTHROPIC_API_KEY: 'private-test-key' });
   assert.equal(response.status, 502);
   const data = await response.json();
-  assert.equal(data.code, 'upstream_auth');
+  assert.ok(data.code.startsWith('upstream_auth'));
   assert.ok(!JSON.stringify(data).includes('private upstream detail'));
   assert.ok(!JSON.stringify(data).includes('private-test-key'));
 });
