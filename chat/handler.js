@@ -87,6 +87,7 @@ export async function handleChat(request, env) {
           'Content-Type': 'application/json',
           'x-api-key': env.ANTHROPIC_API_KEY,
           'anthropic-version': '2023-06-01',
+          'User-Agent': 'anthropic-sdk-typescript/0.39.0',
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
@@ -103,9 +104,7 @@ export async function handleChat(request, env) {
     }
     const response = await callClaude();
     if (!response.ok) {
-      let rawText = '';
-      try { rawText = await response.text(); } catch {}
-      console.error('Claude API failed', response.status, response.headers.get('request-id'), rawText);
+      console.error('Claude API failed', response.status, response.headers.get('request-id'));
       const code = {
         400: 'upstream_request',
         401: 'upstream_auth',
@@ -115,7 +114,7 @@ export async function handleChat(request, env) {
         429: 'upstream_rate_limit',
         529: 'upstream_overloaded',
       }[response.status] || 'upstream_error';
-      return json({ code, diag: rawText.slice(0, 300), error: response.status === 429
+      return json({ code, error: response.status === 429
         ? '지금은 요청이 많습니다. 잠시 후 다시 시도해 주세요.'
         : '챗봇상담 연결에 문제가 생겼습니다. 카카오톡으로 문의해 주세요.' }, 502);
     }
