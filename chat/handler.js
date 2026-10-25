@@ -103,19 +103,9 @@ export async function handleChat(request, env) {
     }
     const response = await callClaude();
     if (!response.ok) {
-      let detail = 'raw';
-      try {
-        const errJson = await response.json();
-        const msg = (errJson?.error?.message || '').toLowerCase();
-        if (msg.includes('region') || msg.includes('country') || msg.includes('available in your')) detail = 'geo';
-        else if (msg.includes('credit') || msg.includes('balance') || msg.includes('bill')) detail = 'credit';
-        else if (msg.includes('model')) detail = 'model';
-        else if (msg.includes('workspace')) detail = 'workspace';
-        else if (msg.includes('key') || msg.includes('auth')) detail = 'key';
-        else detail = (errJson?.error?.type || 'other').slice(0, 20);
-      } catch {}
-      // 문의 원문이나 API 키를 로그에 남기지 않는다.
-      console.error('Claude API failed', response.status, response.headers.get('request-id'), detail);
+      let rawText = '';
+      try { rawText = await response.text(); } catch {}
+      console.error('Claude API failed', response.status, response.headers.get('request-id'), rawText);
       const code = {
         400: 'upstream_request',
         401: 'upstream_auth',
@@ -125,7 +115,7 @@ export async function handleChat(request, env) {
         429: 'upstream_rate_limit',
         529: 'upstream_overloaded',
       }[response.status] || 'upstream_error';
-      return json({ code: `${code}_${detail}`, error: response.status === 429
+      return json({ code, diag: rawText.slice(0, 300), error: response.status === 429
         ? '지금은 요청이 많습니다. 잠시 후 다시 시도해 주세요.'
         : '챗봇상담 연결에 문제가 생겼습니다. 카카오톡으로 문의해 주세요.' }, 502);
     }
