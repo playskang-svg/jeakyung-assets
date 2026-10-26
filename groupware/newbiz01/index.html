@@ -803,7 +803,86 @@
       body { background: #fff; font-size: 11px; }
       .panel-card, .doc-header { box-shadow: none; border: 1px solid #ccc; }
     }
-  </style>
+      /* 슬라이더 컨트롤러 스타일 */
+    .slider-control-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .slider-label-box {
+      min-width: 120px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-800);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .slider-track-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 240px;
+    }
+    .range-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 7px;
+      background: #cbd5e1;
+      border-radius: 4px;
+      outline: none;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1d4ed8;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      border: 2.5px solid #ffffff;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .range-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #1e40af;
+    }
+    .range-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1d4ed8;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      border: 2.5px solid #ffffff;
+    }
+    .slider-val-badge {
+      font-size: 12px;
+      min-width: 240px;
+      padding: 5px 12px;
+      background: #ffffff;
+      border: 1px solid var(--border-medium);
+      border-radius: 6px;
+      text-align: left;
+    }
+    .multi-hint {
+      font-size: 11px;
+      color: var(--ink-400);
+      margin-left: 6px;
+      font-weight: 500;
+    }
+</style>
 </head>
 <body>
 
@@ -891,56 +970,70 @@
 
       <div class="filter-tags-row" id="catPills">
         <span class="filter-tag-label">분야 선택</span>
-        <button class="pill active" data-cat="ALL" onclick="setCategory('ALL')">전체</button>
-        <button class="pill" data-cat="TRANSPORT" onclick="setCategory('TRANSPORT')">운송</button>
-        <button class="pill" data-cat="SUPPLY" onclick="setCategory('SUPPLY')">납품</button>
-        <button class="pill" data-cat="MANPOWER" onclick="setCategory('MANPOWER')">인력</button>
-        <button class="pill" data-cat="INSTALL" onclick="setCategory('INSTALL')">설치</button>
-        <button class="pill" data-cat="CONST" onclick="setCategory('CONST')">시설보수</button>
-        <button class="pill" data-cat="LOW_OTHER" onclick="setCategory('LOW_OTHER')">기타위탁</button>
+        <button class="pill active" data-cat="ALL" onclick="toggleFilter('cat', 'ALL')">전체</button>
+        <button class="pill" data-cat="TRANSPORT" onclick="toggleFilter('cat', 'TRANSPORT')">운송</button>
+        <button class="pill" data-cat="SUPPLY" onclick="toggleFilter('cat', 'SUPPLY')">납품</button>
+        <button class="pill" data-cat="MANPOWER" onclick="toggleFilter('cat', 'MANPOWER')">인력</button>
+        <button class="pill" data-cat="INSTALL" onclick="toggleFilter('cat', 'INSTALL')">설치</button>
+        <button class="pill" data-cat="CONST" onclick="toggleFilter('cat', 'CONST')">시설보수</button>
+        <button class="pill" data-cat="LOW_OTHER" onclick="toggleFilter('cat', 'LOW_OTHER')">기타위탁</button>
+        <span class="multi-hint">※ 복수선택 가능</span>
       </div>
 
       <div class="filter-tags-row" id="orgPills">
         <span class="filter-tag-label">기관 구분</span>
-        <button class="pill active" data-org="ALL" onclick="setOrg('ALL')">전체 기관</button>
-        <button class="pill" data-org="KEPCO" onclick="setOrg('KEPCO')">한국전력공사 (32개 거점)</button>
-        <button class="pill" data-org="LOCAL_GOV" onclick="setOrg('LOCAL_GOV')">광주·전남 지자체 (29곳)</button>
-        <button class="pill" data-org="EDU" onclick="setOrg('EDU')">교육청·학교·대학 (25청·각급교)</button>
-        <button class="pill" data-org="PUB_CORP" onclick="setOrg('PUB_CORP')">공사·공단 (50개사)</button>
+        <button class="pill active" data-org="ALL" onclick="toggleFilter('org', 'ALL')">전체 기관</button>
+        <button class="pill" data-org="KEPCO" onclick="toggleFilter('org', 'KEPCO')">한국전력공사 (32개 거점)</button>
+        <button class="pill" data-org="LOCAL_GOV" onclick="toggleFilter('org', 'LOCAL_GOV')">광주·전남 지자체 (29곳)</button>
+        <button class="pill" data-org="EDU" onclick="toggleFilter('org', 'EDU')">교육청·학교·대학 (25청·각급교)</button>
+        <button class="pill" data-org="PUB_CORP" onclick="toggleFilter('org', 'PUB_CORP')">공사·공단 (50개사)</button>
+        <span class="multi-hint">※ 복수선택 가능</span>
       </div>
 
       <div class="filter-tags-row" id="methodPills">
         <span class="filter-tag-label">계약 방식</span>
-        <button class="pill active" data-method="ALL" onclick="setMethod('ALL')">전체 방식</button>
-        <button class="pill" data-method="SUYI" onclick="setMethod('SUYI')">일반 수의계약</button>
-        <button class="pill" data-method="FAILED_SUYI" onclick="setMethod('FAILED_SUYI')">⚠️ 유찰 시 수의계약</button>
-        <button class="pill" data-method="COMPETITIVE" onclick="setMethod('COMPETITIVE')">소액 전자수의·경쟁</button>
+        <button class="pill active" data-method="ALL" onclick="toggleFilter('method', 'ALL')">전체 방식</button>
+        <button class="pill" data-method="SUYI" onclick="toggleFilter('method', 'SUYI')">일반 수의계약</button>
+        <button class="pill" data-method="FAILED_SUYI" onclick="toggleFilter('method', 'FAILED_SUYI')">⚠️ 유찰 시 수의계약</button>
+        <button class="pill" data-method="COMPETITIVE" onclick="toggleFilter('method', 'COMPETITIVE')">소액 전자수의·경쟁</button>
+        <span class="multi-hint">※ 복수선택 가능</span>
       </div>
 
       <div class="filter-tags-row" id="ptypePills">
         <span class="filter-tag-label">계약 형태</span>
-        <button class="pill active" data-ptype="ALL" onclick="setPtype('ALL')">전체 형태</button>
-        <button class="pill" data-ptype="YEAR" onclick="setPtype('YEAR')">연간 단가·계속계약</button>
-        <button class="pill" data-ptype="CASE" onclick="setPtype('CASE')">건별·단기계약</button>
+        <button class="pill active" data-ptype="ALL" onclick="toggleFilter('ptype', 'ALL')">전체 형태</button>
+        <button class="pill" data-ptype="YEAR" onclick="toggleFilter('ptype', 'YEAR')">연간 단가·계속계약</button>
+        <button class="pill" data-ptype="CASE" onclick="toggleFilter('ptype', 'CASE')">건별·단기계약</button>
+        <span class="multi-hint">※ 복수선택 가능</span>
       </div>
 
-      <div class="filter-tags-row" id="revPills">
-        <span class="filter-tag-label">월 추정매출</span>
-        <button class="pill active" data-rev="ALL" onclick="setRev('ALL')">전체 규모</button>
-        <button class="pill" data-rev="UNDER_200" onclick="setRev('UNDER_200')">월 200만 미만</button>
-        <button class="pill" data-rev="200_400" onclick="setRev('200_400')">월 200만~400만</button>
-        <button class="pill" data-rev="400_700" onclick="setRev('400_700')">월 400만~700만</button>
-        <button class="pill" data-rev="OVER_700" onclick="setRev('OVER_700')">월 700만 이상</button>
+      <!-- 슬라이더 조절바 (정도 선택) -->
+      <div class="slider-control-row">
+        <div class="slider-label-box">
+          <span>🎯 업무 연관도</span>
+        </div>
+        <div class="slider-track-wrap">
+          <span style="font-size:11px; color:var(--ink-500); font-weight:600;">0%</span>
+          <input type="range" id="relSlider" class="range-slider" min="0" max="100" step="5" value="0" oninput="onRelSliderChange(this.value)">
+          <span style="font-size:11px; color:var(--ink-500); font-weight:600;">100%</span>
+        </div>
+        <div class="slider-val-badge" id="relSliderVal">
+          <strong style="color:var(--ink-700);">전체 (0% 이상)</strong>
+        </div>
       </div>
 
-      <div class="filter-tags-row" id="relPills">
-        <span class="filter-tag-label">업무 연관도</span>
-        <button class="pill active" data-rel="ALL" onclick="setRel('ALL')">전체 연관도</button>
-        <button class="pill" data-rel="STAGE1" onclick="setRel('STAGE1')">1단계: 95~100% (화물차량 직영운송)</button>
-        <button class="pill" data-rel="STAGE2" onclick="setRel('STAGE2')">2단계: 85~94% (보관·인력·식자재납품)</button>
-        <button class="pill" data-rel="STAGE3" onclick="setRel('STAGE3')">3단계: 75~84% (설비·물류랙 설치)</button>
-        <button class="pill" data-rel="STAGE4" onclick="setRel('STAGE4')">4단계: 60~74% (경미 시설보수·공사)</button>
-        <button class="pill" data-rel="STAGE5" onclick="setRel('STAGE5')">5단계: 60% 미만 (외주·협력 검토)</button>
+      <div class="slider-control-row">
+        <div class="slider-label-box">
+          <span>💰 최소 월매출</span>
+        </div>
+        <div class="slider-track-wrap">
+          <span style="font-size:11px; color:var(--ink-500); font-weight:600;">0원</span>
+          <input type="range" id="revSlider" class="range-slider" min="0" max="1000" step="50" value="0" oninput="onRevSliderChange(this.value)">
+          <span style="font-size:11px; color:var(--ink-500); font-weight:600;">1천만+</span>
+        </div>
+        <div class="slider-val-badge" id="revSliderVal">
+          <strong style="color:var(--ink-700);">전체 (제한 없음)</strong>
+        </div>
       </div>
     </section>
 
@@ -1262,12 +1355,12 @@ window.NEWBIZ01_XLSX_BASE64 = "UEsDBBQAAAAIAIhbWl1Gx01IlwAAAM0AAAAQAAAAZG9jUHJvc
 
     let appState = {
       view: 'TABLE',
-      cat: 'ALL',
-      org: 'ALL',
-      method: 'ALL',
-      ptype: 'ALL',
-      rev: 'ALL',
-      rel: 'ALL',
+      cats: new Set(),
+      orgs: new Set(),
+      methods: new Set(),
+      ptypes: new Set(),
+      minRel: 0,
+      minRev: 0,
       month: 'ALL',
       keyword: '',
       barMode: 'CAT',
@@ -1327,17 +1420,32 @@ window.NEWBIZ01_XLSX_BASE64 = "UEsDBBQAAAAIAIhbWl1Gx01IlwAAAM0AAAAQAAAAZG9jUHJvc
     }
 
     function rowMatches(r) {
-      if (appState.cat !== 'ALL' && r.category !== appState.cat) return false;
-      if (appState.org !== 'ALL' && r.orgGroup !== appState.org) return false;
-      if (appState.method !== 'ALL' && r.contractType !== appState.method) return false;
-      if (appState.ptype !== 'ALL' && r.periodType !== appState.ptype) return false;
-      if (appState.rev !== 'ALL' && r.revTier !== appState.rev) return false;
-      if (appState.rel !== 'ALL' && r.relStage !== appState.rel) return false;
+      // 1. Categories (Multi-select)
+      if (appState.cats.size > 0 && !appState.cats.has(r.category)) return false;
+
+      // 2. Orgs (Multi-select)
+      if (appState.orgs.size > 0 && !appState.orgs.has(r.orgGroup)) return false;
+
+      // 3. Contract Methods (Multi-select)
+      if (appState.methods.size > 0 && !appState.methods.has(r.contractType)) return false;
+
+      // 4. Period Types (Multi-select)
+      if (appState.ptypes.size > 0 && !appState.ptypes.has(r.periodType)) return false;
+
+      // 5. Min Relevance Slider (0 ~ 100)
+      if ((r.relScore || 0) < appState.minRel) return false;
+
+      // 6. Min Monthly Revenue Slider (0 ~ 1000만원)
+      if ((r.monthlyRevenueNum || 0) < appState.minRev) return false;
+
+      // 7. Month filter
       if (appState.month !== 'ALL') {
         const m = Number(appState.month);
         const hasMonth = (r.orderMonths || []).includes(m) || (r.bidMonth || '').includes(m + '월');
         if (!hasMonth) return false;
       }
+
+      // 8. Search Keyword
       if (appState.keyword.trim() !== '') {
         const q = appState.keyword.trim().toLowerCase();
         const corpus = [r.agency, r.dept, r.contactPhone, r.svcName, r.workSpec, r.budget, r.method, r.bidMonth, r.contractTypeLabel, r.periodTypeLabel, r.monthlyRevText].join(' ').toLowerCase();
@@ -1855,58 +1963,78 @@ window.NEWBIZ01_XLSX_BASE64 = "UEsDBBQAAAAIAIhbWl1Gx01IlwAAAM0AAAAQAAAAZG9jUHJvc
       scrollToResults();
     }
 
+    function toggleFilter(type, value) {
+      let targetSet;
+      let containerId;
+
+      if (type === 'cat') { targetSet = appState.cats; containerId = 'catPills'; }
+      else if (type === 'org') { targetSet = appState.orgs; containerId = 'orgPills'; }
+      else if (type === 'method') { targetSet = appState.methods; containerId = 'methodPills'; }
+      else if (type === 'ptype') { targetSet = appState.ptypes; containerId = 'ptypePills'; }
+
+      if (value === 'ALL') {
+        targetSet.clear();
+      } else {
+        if (targetSet.has(value)) {
+          targetSet.delete(value);
+        } else {
+          targetSet.add(value);
+        }
+      }
+
+      // Update UI pills
+      const container = document.getElementById(containerId);
+      if (container) {
+        const isAll = (targetSet.size === 0);
+        container.querySelectorAll('.pill').forEach(btn => {
+          const btnVal = btn.getAttribute('data-' + type);
+          if (btnVal === 'ALL') {
+            btn.classList.toggle('active', isAll);
+          } else {
+            btn.classList.toggle('active', targetSet.has(btnVal));
+          }
+        });
+      }
+
+      renderView();
+      scrollToResults();
+    }
+
+    // Single category setter fallback for matrix clicks
     function setCategory(cat) {
-      appState.cat = cat;
-      document.querySelectorAll('#catPills .pill').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-cat') === cat);
-      });
-      renderView();
-      scrollToResults();
+      toggleFilter('cat', cat);
     }
 
-    function setOrg(org) {
-      appState.org = org;
-      document.querySelectorAll('#orgPills .pill').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-org') === org);
-      });
+    function onRelSliderChange(val) {
+      appState.minRel = parseInt(val, 10);
+      const labelEl = document.getElementById('relSliderVal');
+      if (labelEl) {
+        if (appState.minRel === 0) {
+          labelEl.innerHTML = '<strong style="color:var(--ink-700);">전체 (0% 이상)</strong>';
+        } else {
+          let desc = '';
+          if (appState.minRel >= 95) desc = ' (화물차 직영운송 1단계)';
+          else if (appState.minRel >= 85) desc = ' (보관·인력·납품 2단계 이상)';
+          else if (appState.minRel >= 75) desc = ' (설비·물류랙 3단계 이상)';
+          else if (appState.minRel >= 60) desc = ' (시설보수 4단계 이상)';
+          else desc = ' (외주 포함)';
+          labelEl.innerHTML = `<strong style="color:#1d4ed8;">${appState.minRel}% 이상</strong> <span style="color:var(--ink-500); font-size:11px;">${desc}</span>`;
+        }
+      }
       renderView();
-      scrollToResults();
     }
 
-    function setMethod(method) {
-      appState.method = method;
-      document.querySelectorAll('#methodPills .pill').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-method') === method);
-      });
+    function onRevSliderChange(val) {
+      appState.minRev = parseInt(val, 10);
+      const labelEl = document.getElementById('revSliderVal');
+      if (labelEl) {
+        if (appState.minRev === 0) {
+          labelEl.innerHTML = '<strong style="color:var(--ink-700);">전체 (제한 없음)</strong>';
+        } else {
+          labelEl.innerHTML = `<strong style="color:#059669;">월 약 ${appState.minRev.toLocaleString()}만 원 이상</strong>`;
+        }
+      }
       renderView();
-      scrollToResults();
-    }
-
-    function setPtype(ptype) {
-      appState.ptype = ptype;
-      document.querySelectorAll('#ptypePills .pill').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-ptype') === ptype);
-      });
-      renderView();
-      scrollToResults();
-    }
-
-    function setRev(rev) {
-      appState.rev = rev;
-      document.querySelectorAll('#revPills .pill').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-rev') === rev);
-      });
-      renderView();
-      scrollToResults();
-    }
-
-    function setRel(rel) {
-      appState.rel = rel;
-      document.querySelectorAll('#relPills .pill').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-rel') === rel);
-      });
-      renderView();
-      scrollToResults();
     }
 
     function setMonthFilter(m) {
