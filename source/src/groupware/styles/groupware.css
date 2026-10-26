@@ -5949,7 +5949,7 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 @media (min-width: 900px) {
   .gw-panel--feeds {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     column-gap: 32px;
     padding: 6px 20px 14px;
   }
@@ -5963,7 +5963,7 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 }
 
 /* ── 글 다섯 줄 ─────────────────────────────────────────────────────── */
-.gw-feed { padding: 14px 0; }
+.gw-feed { padding: 14px 0; min-width: 0; }
 .gw-feed + .gw-feed { border-top: 1px solid var(--gw-border); }
 .gw-feed > header {
   display: flex;
@@ -6007,12 +6007,13 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
 }
 .gw-feed > header a svg { transition: transform .2s cubic-bezier(.2, .7, .3, 1); }
 .gw-feed > header a:hover svg { transform: translateX(3px); }
-.gw-feed ul { margin: 0; padding: 0; list-style: none; }
+.gw-feed ul { margin: 0; padding: 0; list-style: none; min-width: 0; }
 .gw-feed li {
   display: flex;
   align-items: center;
   gap: 10px;
   min-height: 34px;
+  min-width: 0;
   border-top: 1px dashed #eceff6;
 }
 .gw-feed li:first-child { border-top: 0; }
@@ -6020,13 +6021,17 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
+  overflow: hidden;
   color: var(--gw-text);
   font-size: 13.5px;
   text-decoration: none;
 }
 .gw-feed li > a > span {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -6048,7 +6053,14 @@ body.groupware-root a.gw-board-write-button { color: #fff; }
   font-weight: 650;
 }
 .gw-feed li b { flex: 0 0 auto; color: #d1741c; font-size: 12px; font-weight: 700; }
-.gw-feed li time { flex: 0 0 auto; color: var(--gw-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.gw-feed li time {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--gw-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
 .gw-feed-empty { margin: 8px 0; color: var(--gw-muted); font-size: 13px; }
 
 /* ── 시계 ────────────────────────────────────────────────────────────── */
