@@ -4,3 +4,4 @@
 insert into public.quick_links (label, url, variant, size, open_in, visibility, sort_order)
 select '공공사업권 DB', 'https://jeakyung.com/groupware/newbiz01/', 'primary', 'md', 'tab', 'all', 15
 where not exists (select 1 from public.quick_links where url like '%/groupware/newbiz01/%');
+
