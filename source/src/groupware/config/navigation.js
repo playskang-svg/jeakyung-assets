@@ -8,6 +8,7 @@ export const GROUPWARE_NAVIGATION = [
   // 웹메일은 다른 화면 안에 실리는 것을 막아 둔다(X-Frame-Options). 액자에
   // 넣으면 빈 화면만 남으므로 이것만 새 탭으로 연다.
   { key: 'mail', label: '사내메일', href: 'https://mail.jeakyung.com/', newTab: true, quick: 10 },
+  { key: 'newbiz', label: '공공사업권 DB', href: 'https://jeakyung.com/groupware/newbiz01/', newTab: true, quick: 15 },
   { key: 'approval', label: '전자결재', path: '/approval', quick: 20 },
   { key: 'organization', label: '조직도', path: '/organization', quick: 30 },
   // 사내일정은 바깥 페이지다. 액자 안에서 열어 상단 메뉴를 잃지 않게 한다.
