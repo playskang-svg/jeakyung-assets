@@ -5,6 +5,8 @@ export default function HeroSection() {
   return (
     <section className="hero" id="top" aria-labelledby="hero-title">
       <div className="hero-media" aria-hidden="true">
+        {/* 실사 물류센터 루프. 캔버스 물류망이 그 위에 겹친다. */}
+        <video className="hero-video" src="/assets/hero-logistics.mp4" autoPlay muted loop playsInline preload="metadata" />
         <HeroNetwork />
         <div className="hero-overlay" />
         <div className="hero-grid" />
