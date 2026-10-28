@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>광주·전남 공공기관 위탁사업 실적 분석 | 재경물류 신규사업기획</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --bg:#f8fafc; --card:#fff; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --navy:#0f1f4b; --chip:#f1f5f9;
+  --f-운송:#1d4ed8; --f-납품:#0f7b5f; --f-인력:#c2570c; --f-설치:#7e22ce; --f-시설보수:#b91c1c; --f-기타:#475569;
+  --ok:#15803d; --ok-bg:#dcfce7; --mid:#a16207; --mid-bg:#fef3c7; --lo:#b91c1c; --lo-bg:#fee2e2; --na:#475569; --na-bg:#e2e8f0;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-size:14px;line-height:1.6}
+.topbar{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px max(16px,3vw);flex-wrap:wrap}
+.topbar-title{font-weight:800;font-size:16px}
+.tag{display:inline-block;margin-left:8px;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:2px 8px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;border:0;border-radius:8px;padding:9px 14px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.wrap{max-width:1280px;margin:0 auto;padding:24px max(16px,3vw) 80px;display:grid;gap:20px}
+.wrap>*,.row2>*,#tableView>*{min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px}
+.eyebrow{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;color:var(--muted);font-size:12.5px}
+h1{font-size:22px;margin:8px 0}
+h2{font-size:16px;margin:0}
+.intro{color:#334155;max-width:110ch;margin:0}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}
+.fcard{border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.fcard .h{display:flex;justify-content:space-between;font-weight:800}
+.fcard .h b{color:var(--c)}
+.fcard p{margin:4px 0 0;color:var(--muted);font-size:12.5px}
+.row2{display:grid;grid-template-columns:1.25fr 1fr;gap:20px}
+@media (max-width:900px){.row2{grid-template-columns:1fr}}
+.head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:6px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+.seg button.on{background:var(--chip);font-weight:800}
+.bars{display:grid;gap:12px}
+.bar{display:grid;grid-template-columns:96px 1fr 150px;gap:10px;align-items:center;font-size:13px}
+.track{height:12px;background:var(--chip);border-radius:6px;overflow:hidden}
+.fill{height:100%;border-radius:6px}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums}
+.bar .v small{color:var(--muted)}
+.donut{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center}
+.legend{display:grid;gap:7px;font-size:13px}
+.legend div{display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center}
+.legend i{width:10px;height:10px;border-radius:2px}
+.legend b{font-variant-numeric:tabular-nums}
+.target{margin-top:16px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:12.5px}
+.target .t{display:flex;justify-content:space-between;font-weight:700}
+.target .track{height:8px;margin-top:6px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 14px;font:inherit;font-weight:700;cursor:pointer}
+.tabs button.on{background:var(--chip)}
+.search{flex:1;min-width:220px;max-width:420px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:inherit}
+.filters{display:grid;gap:10px;margin-top:14px}
+.frow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.frow > span{width:72px;font-size:12.5px;font-weight:700;color:#334155}
+.chip{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 11px;font:inherit;font-size:12.5px;cursor:pointer}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+.hint{font-size:11.5px;color:var(--muted)}
+.amt{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px;border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.amt input[type=range]{flex:1;min-width:180px}
+.amt b{min-width:150px}
+.tblhead{background:var(--navy);color:#fff;border-radius:10px 10px 0 0;padding:12px 16px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-weight:800}
+.tblhead small{font-weight:500;opacity:.8}
+.tblhead.alt{background:#475569}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;background:#fff}
+table{border-collapse:collapse;width:100%;min-width:1100px;font-size:13px}
+th{background:#f1f5f9;text-align:left;padding:9px 10px;font-size:12px;white-space:nowrap;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.nm{font-weight:700;color:#1e293b}
+.sub{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.pill{display:inline-block;font-size:11.5px;font-weight:800;border-radius:5px;padding:1px 7px;color:#fff;background:var(--c);white-space:nowrap}
+.fit{display:inline-block;font-size:11px;font-weight:800;border-radius:5px;padding:1px 6px;margin-left:4px}
+.fit.상,.fit.중상{background:var(--ok-bg);color:var(--ok)} .fit.중{background:var(--mid-bg);color:var(--mid)} .fit.중하,.fit.하{background:var(--lo-bg);color:var(--lo)} .fit.제외{background:var(--na-bg);color:var(--na)}
+.mth{display:inline-block;font-size:11.5px;font-weight:700;border-radius:5px;padding:1px 6px;margin-top:3px}
+.mth.su{background:var(--ok-bg);color:var(--ok)} .mth.gy{background:#dbeafe;color:#1d4ed8}
+.no{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--muted);cursor:pointer;border:0;background:none;padding:0;text-align:left}
+.more{display:block;margin:12px auto;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 18px;font:inherit;font-weight:700;cursor:pointer}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.tcards{align-items:start;display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+.tc{border:1px solid var(--line);border-top:4px solid var(--c);border-radius:10px;padding:16px;background:#fff;display:grid;gap:8px;align-content:start}
+.tc h3{margin:0;font-size:15px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.kv{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.kv div{background:var(--chip);border-radius:7px;padding:6px 4px}
+.kv b{display:block;font-size:15px;font-variant-numeric:tabular-nums}
+.kv span{font-size:11px;color:var(--muted)}
+.tc ul{margin:0;padding-left:16px;font-size:12.5px;display:grid;gap:3px}
+.tc .note{font-size:12.5px;color:#334155;background:#f8fafc;border-radius:7px;padding:8px 10px}
+.tc .lbl{font-size:11.5px;font-weight:800;color:var(--muted)}
+.tc button{justify-self:start}
+.top5{display:grid;gap:12px}
+.ti{display:grid;grid-template-columns:40px 1fr auto;gap:4px 14px;border:1px solid var(--line);border-radius:10px;padding:14px 16px;align-items:start}
+.ti .n{grid-row:span 2;font-size:24px;font-weight:800;color:var(--navy)}
+.ti h3{margin:0;font-size:15px}
+.ti p{margin:0;color:#334155;font-size:13px;grid-column:2}
+.ti button{grid-row:span 2;grid-column:3}
+@media (max-width:640px){.ti{grid-template-columns:32px 1fr}.ti button{grid-column:2;grid-row:auto;justify-self:start}.bar{grid-template-columns:70px 1fr 110px}.donut{grid-template-columns:1fr}}
+.scope{font-size:12.5px;color:var(--muted);margin:0}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:8px 16px;border-radius:8px;font-size:13px}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div><span class="topbar-title">광주·전남 공공기관 위탁사업 실적 분석</span><span class="tag" id="period">2025년 계약 실적 기준</span></div>
+  <a class="btn" href="./g2b_20250101_20251231.csv" download>⬇ 전체 계약 데이터 (CSV)</a>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <div class="eyebrow"><span>재경물류 신규사업기획팀 | 실무 분석자료</span><span id="built"></span></div>
+    <h1>광주·전남 주요 발주처별 5대 분야 위탁사업 실적 총람</h1>
+    <p class="intro">나라장터 계약현황에서 2025년에 체결된 계약 중 수요기관이 광주·전남(현 전남광주통합특별시)인 건을 모아, 자사 직영 인프라(냉장·냉동 화물차 약 300대, 식자재 물류센터, 물류·설비 인력풀)와 연계 가능한 사업 유형별로 분류했습니다. 모든 건은 실제 계약이며 계약번호로 나라장터에서 확인할 수 있습니다.</p>
+    <div class="fields" id="fields"></div>
+  </section>
+
+  <div class="row2">
+    <section class="card">
+      <div class="head"><h2>분야 및 기관별 계약 규모 분포</h2>
+        <div class="seg" id="distSeg"><button class="on" data-k="f">5대 분야별</button><button data-k="g">기관군별</button></div></div>
+      <div class="bars" id="bars"></div>
+    </section>
+    <section class="card">
+      <div class="head"><h2>분야 구성 비율 및 1인 견적 구간 비중</h2><span class="hint" id="totalHint"></span></div>
+      <div class="donut"><svg id="donut" viewBox="0 0 120 120" width="150" height="150" role="img" aria-label="분야별 계약 건수 비율"></svg><div class="legend" id="legend"></div></div>
+      <div class="target"><div class="t"><span id="tgtA"></span><span id="tgtB" style="color:var(--muted)"></span></div><div class="track"><div class="fill" id="tgtFill" style="background:var(--navy)"></div></div></div>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="head">
+      <div class="tabs" id="viewTabs"><button class="on" data-v="table">마스터 명세표 (상세 목록)</button><button data-v="cards">사업유형별 카드 요약</button></div>
+      <input class="search" id="q" type="search" placeholder="기관명, 계약명, 업체명, 계약번호 검색" aria-label="검색">
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="amt"><label for="minAmt">💰 최소 계약금액</label><input id="minAmt" type="range" min="0" max="10" step="1" value="0"><b id="minAmtV">전체 (제한 없음)</b></div>
+  </section>
+
+  <section id="tableView" style="display:grid;gap:20px">
+    <div><div class="tblhead"><span id="h1">자사 직접수행 검토 사업군</span><small>운송·이사·하역·보관·설치 등 적합도 '중' 이상</small></div><div class="tblwrap"><table><thead><tr><th>No</th><th>분야 / 유형 · 적합도</th><th>수요기관</th><th>계약명</th><th>계약금액 / 방식</th><th>계약일 / 기간</th><th>계약업체</th><th>계약번호</th></tr></thead><tbody id="tb1"></tbody></table></div><button class="more" id="more1">더 보기</button></div>
+    <div><div class="tblhead alt"><span id="h2">외주·협력 검토 및 참고 사업</span><small>공사·식품·도시락·폐기물·여객 등 본업 밖</small></div><div class="tblwrap"><table><thead><tr><th>No</th><th>분야 / 유형 · 적합도</th><th>수요기관</th><th>계약명</th><th>계약금액 / 방식</th><th>계약일 / 기간</th><th>계약업체</th><th>계약번호</th></tr></thead><tbody id="tb2"></tbody></table></div><button class="more" id="more2">더 보기</button></div>
+  </section>
+
+  <section id="cardView" class="tcards" style="display:none"></section>
+
+  <section class="card">
+    <div class="head"><h2>🎯 실적 기반 추천 사업권 TOP 5</h2></div>
+    <p class="scope" style="margin-bottom:14px">원본 추천 TOP 10은 연 1억~3억 원 사업을 '분할 수의'로 따내는 전제였습니다. 분할계약은 금지이므로, 2025년에 실제로 발주된 사업만으로 다시 골랐습니다.</p>
+    <div class="top5" id="top5"></div>
+  </section>
+
+  <section class="card">
+    <h2>데이터 범위와 유의사항</h2>
+    <p class="scope" style="margin-top:8px">나라장터 통합검색 계약현황 · 계약일 2025.1.1~12.31 · 44개 키워드로 전국 조회 후 수요기관명으로 광주·전남 판정. 학교장터(S2B), 한전 전자조달(SRM), 학교급식 eaT, 기관 자체계약은 포함되지 않습니다. 금액은 부가세 포함 계약금액이며 '2,200만 원 이하'는 1인 견적 수의가 가능한 구간(추정가격 2천만 원)입니다. 사업 유형은 계약명으로 자동 분류해 일부 오분류가 있을 수 있습니다. 계약번호를 누르면 복사됩니다.</p>
+  </section>
+</main>
+
+<script src="./data.js"></script>
+<script>
+const FIELDS=[['운송','화물·물품 운송, 이사·이전, 양곡·비축물자 수송'],['납품','식자재·도시락·제설제·폭염물품 구매'],['인력','비축기지 하역, 지게차·운전원 파견'],['설치','가구·집기 제작설치, 저온저장고'],['시설보수','펜스·캐노피·도색·방수, 경로당 개보수'],['기타','폐기물 수집·운반, 통학·전세버스 (참고)']];
+const TYPES={
+  T1:['운송','공공급식 식재료 배송','상','광주·전남은 나라장터 발주 없음. 타 지역은 2억~5억 원 입찰'],
+  T2:['운송','학교 이사·집기 보관','상','그린스마트스쿨 공사 이사가 대부분, 전부 수의계약'],
+  T4:['운송','대학·기관 이전','중상','대학 리모델링·청사 이전. 순천시·곡성군 신청사 이사 예정'],
+  T3:['운송','양곡·비축농산물 운송','중상','aT 본사 전국 단위 입찰(TRQ 쌀 항만 운송 등), 대형사 수주'],
+  T5:['운송','기타 화물·물품 운송','중','혈액·소포 정기 배송은 적합, 현금수송·미술품은 특수업종'],
+  T7:['운송','시험지·교과서 배송','하','인쇄사가 인쇄+포장·배송으로 수주'],
+  P1:['인력','하역·상하차 인력','상','aT 비축기지 하역, 2026.4 계약 만료'],
+  P2:['인력','지게차·운전원','중','운전원 파견은 근로자파견 허가 필요'],
+  N1:['납품','재난 비축물자 보관·수송','중','보관·수송 위탁 발주 실적 없음'],
+  N1b:['납품','제설제 구매','하','구매 계약, 제조·유통사 영역'],
+  N2:['납품','급식·구내식당 식자재','중하','학교·생활관·경로식당 구매, 식품 영업신고 필요'],
+  T6:['납품','늘봄·위탁급식 도시락','하','도시락 업체 구매 계약'],
+  N3:['납품','폭염·한파 물품','하','그늘막·쿨링포그 등 시설 구매가 대부분'],
+  S1:['설치','가구·집기 설치','중','제조·공급사 수주, 설치 협력사로 참여'],
+  S2:['설치','저온저장고 설치','하','냉동공조 업체 영역, 소액'],
+  F1:['시설보수','펜스·캐노피·도색·방수 공사','중하','건설 공사, 1,500만 원 미만 경미공사만 무등록 가능'],
+  F2:['시설보수','경로당 개보수','하','시군구 소액 수의 공사'],
+  X_WASTE:['기타','폐기물 수집·운반','제외','수집·운반업 허가와 대행 지정 필요'],
+  X_BUS:['기타','통학·전세버스','제외','여객운송 면허 필요'],
+};
+const FIT_OK=new Set(['상','중상','중']);
+const D=window.G2B_DATA, f$=s=>document.querySelector(s);
+const won=a=>!a?'-':a>=1e8?(a/1e8).toFixed(1).replace(/\.0$/,'')+'억':Math.round(a/1e4).toLocaleString()+'만';
+const ymd=s=>s&&s.length===8&&s!=='0'?s.slice(0,4)+'.'+s.slice(4,6)+'.'+s.slice(6):'';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const grp=i=>/대학|과학기술원/.test(i)?'대학':/학교|교육청|교육지원청|유치원|교육원|교육연수원|학생|평생교육관|도서관/.test(i)?'교육청·학교':/(전남광주통합특별시|광주광역시|전라남도)/.test(i)&&!/공사|공단|재단|진흥원|병원/.test(i)?'지자체':'공공기관';
+const mg=m=>m==='수의계약'?'수의계약':m==='일반경쟁'?'일반경쟁':m==='제한경쟁'?'제한경쟁':'기타';
+const band=a=>a<=22e6?'a':a<=55e6?'b':'c';
+const ROWS=D.rows.map(([t,sub,nm,inst,y,amt,mth,co,fr,to,no])=>({t,sub,nm,inst,y,amt,mth,co,fr,to,no,f:TYPES[t][0],g:grp(inst),m:mg(mth),b:band(amt),fit:TYPES[t][2]}));
+const cssF=f=>`var(--f-${f})`;
+
+f$('#built').textContent=`데이터 기준: ${ymd(D.from)} ~ ${ymd(D.to)} 계약분 · 수집 ${D.built}`;
+const sum=a=>a.reduce((s,r)=>s+r.amt,0);
+f$('#fields').innerHTML=FIELDS.map(([f,d])=>{const a=ROWS.filter(r=>r.f===f);return `<div class="fcard" style="--c:${cssF(f)}"><div class="h"><span>${f}</span><b>${a.length.toLocaleString()}건 · ${won(sum(a))}</b></div><p>${d}</p></div>`}).join('');
+
+function drawBars(k){
+  const keys=k==='f'?FIELDS.map(x=>x[0]):['지자체','교육청·학교','대학','공공기관'];
+  const color=k==='f'?cssF:()=> 'var(--navy)';
+  const stats=keys.map(x=>{const a=ROWS.filter(r=>(k==='f'?r.f:r.g)===x);return [x,a.length,sum(a)]});
+  const mx=Math.max(...stats.map(s=>s[1]));
+  f$('#bars').innerHTML=stats.map(([x,n,s])=>`<div class="bar"><span>${x}</span><div class="track"><div class="fill" style="width:${n/mx*100}%;background:${color(x)}"></div></div><span class="v"><b>${n.toLocaleString()}</b>건 <small>${won(s)}</small></span></div>`).join('');
+}
+f$('#distSeg').onclick=e=>{const b=e.target.closest('button');if(!b)return;[...f$('#distSeg').children].forEach(x=>x.classList.toggle('on',x===b));drawBars(b.dataset.k)};
+drawBars('f');
+
+(function donut(){
+  const tot=ROWS.length;let acc=0;const C=2*Math.PI*46;
+  f$('#donut').innerHTML=`<circle cx="60" cy="60" r="46" fill="none" stroke="#f1f5f9" stroke-width="16"/>`+FIELDS.map(([f])=>{const n=ROWS.filter(r=>r.f===f).length,len=n/tot*C,s=`<circle cx="60" cy="60" r="46" fill="none" stroke="${cssF(f)}" stroke-width="16" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-acc}" transform="rotate(-90 60 60)"/>`;acc+=len;return s}).join('')+`<text x="60" y="58" text-anchor="middle" font-size="17" font-weight="800" fill="#0f172a">${tot.toLocaleString()}</text><text x="60" y="74" text-anchor="middle" font-size="8" fill="#64748b">전체 계약</text>`;
+  f$('#legend').innerHTML=FIELDS.map(([f])=>{const n=ROWS.filter(r=>r.f===f).length;return `<div><i style="background:${cssF(f)}"></i><span>${f}</span><b>${n.toLocaleString()}건 (${(n/tot*100).toFixed(1)}%)</b></div>`}).join('');
+  const a=ROWS.filter(r=>r.b==='a').length;
+  f$('#totalHint').textContent=`총 ${tot.toLocaleString()}건 · ${won(sum(ROWS))}`;
+  f$('#tgtA').textContent=`1인 견적 구간(2,200만 이하): ${a.toLocaleString()}건 (${(a/tot*100).toFixed(1)}%)`;
+  f$('#tgtB').textContent=`그 이상: ${(tot-a).toLocaleString()}건`;
+  f$('#tgtFill').style.width=(a/tot*100)+'%';
+})();
+
+// 필터 상태: 빈 Set = 전체
+const FILTERS=[
+  ['f','분야 선택',FIELDS.map(x=>[x[0],x[0]])],
+  ['g','기관 구분',[['지자체','지자체 (통합특별시·시군구)'],['교육청·학교','교육청·학교'],['대학','대학'],['공공기관','공공기관 (aT·우정청·LH 등)']]],
+  ['m','계약 방식',[['수의계약','수의계약'],['일반경쟁','일반경쟁'],['제한경쟁','제한경쟁'],['기타','지명경쟁 등']]],
+  ['b','금액 구간',[['a','2,200만 이하 (1인 견적)'],['b','2,200만~5,500만'],['c','5,500만 초과 (입찰)']]],
+  ['fit','업무 적합도',[['상','상'],['중상','중상'],['중','중'],['중하','중하'],['하','하'],['제외','제외(참고)']]],
+];
+const st={f:new Set(),g:new Set(),m:new Set(),b:new Set(),fit:new Set(),t:null,q:'',min:0};
+f$('#filters').innerHTML=FILTERS.map(([k,l,opts])=>`<div class="frow" data-k="${k}"><span>${l}</span><button class="chip on" data-v="">전체</button>${opts.map(([v,t])=>`<button class="chip" data-v="${esc(v)}">${esc(t)}</button>`).join('')}<em class="hint">※ 복수선택 가능</em></div>`).join('')+`<div class="frow" id="typeRow" style="display:none"><span>사업 유형</span><button class="chip on" id="typeChip"></button><button class="chip" id="typeClear">✕ 유형 해제</button></div>`;
+f$('#filters').onclick=e=>{
+  const b=e.target.closest('.chip');if(!b)return;
+  if(b.id==='typeClear'){st.t=null;return render()}
+  const row=b.closest('.frow'),k=row.dataset.k;if(!k)return;
+  const v=b.dataset.v,s=st[k];
+  if(!v)s.clear();else s.has(v)?s.delete(v):s.add(v);
+  [...row.querySelectorAll('.chip')].forEach(c=>c.classList.toggle('on',c.dataset.v?s.has(c.dataset.v):s.size===0));
+  render();
+};
+const STEPS=[0,5e6,1e7,2.2e7,3e7,5.5e7,1e8,2e8,5e8,1e9,2e9];
+f$('#minAmt').oninput=e=>{st.min=STEPS[+e.target.value];f$('#minAmtV').textContent=st.min?won(st.min)+' 이상':'전체 (제한 없음)';render()};
+let qT;f$('#q').oninput=e=>{clearTimeout(qT);qT=setTimeout(()=>{st.q=e.target.value.trim().toLowerCase();render()},200)};
+
+const filtered=()=>ROWS.filter(r=>(!st.f.size||st.f.has(r.f))&&(!st.g.size||st.g.has(r.g))&&(!st.m.size||st.m.has(r.m))&&(!st.b.size||st.b.has(r.b))&&(!st.fit.size||st.fit.has(r.fit))&&(!st.t||r.t===st.t)&&r.amt>=st.min&&(!st.q||(r.nm+' '+r.inst+' '+r.co+' '+r.no).toLowerCase().includes(st.q))).sort((a,b)=>b.amt-a.amt);
+
+const PAGE=50;let lim={1:PAGE,2:PAGE},cur=[];
+function rowHtml(r,i){
+  const ty=TYPES[r.t],period=r.fr&&r.fr!=='0'?`${ymd(r.fr)} ~ ${ymd(r.to)}`:'';
+  return `<tr><td class="num">${i+1}</td>
+  <td><span class="pill" style="--c:${cssF(r.f)}">${r.f}</span><span class="fit ${ty[2]}">${ty[2]}</span><span class="sub">${esc(ty[1])}${r.sub?' · '+esc(r.sub):''}</span></td>
+  <td><b>${esc(r.inst)}</b><span class="sub">${r.g}</span></td>
+  <td class="nm">${esc(r.nm)}</td>
+  <td class="num"><b>${won(r.amt)}</b> 원<br><span class="mth ${r.m==='수의계약'?'su':'gy'}">${esc(r.mth||'-')}</span></td>
+  <td class="num">${ymd(r.y)}<span class="sub">${period}</span></td>
+  <td>${esc(r.co)}</td>
+  <td><button class="no" title="계약번호 복사" data-no="${esc(r.no)}">${esc(r.no)}</button></td></tr>`;
+}
+function drawTables(){
+  const a=cur.filter(r=>FIT_OK.has(r.fit)),b=cur.filter(r=>!FIT_OK.has(r.fit));
+  f$('#h1').textContent=`자사 직접수행 검토 사업군 (총 ${a.length.toLocaleString()}건 · ${won(sum(a))})`;
+  f$('#h2').textContent=`외주·협력 검토 및 참고 사업 (총 ${b.length.toLocaleString()}건 · ${won(sum(b))})`;
+  f$('#tb1').innerHTML=a.slice(0,lim[1]).map(rowHtml).join('')||'<tr><td colspan="8" class="empty">조건에 맞는 계약이 없습니다. 필터를 줄여 보세요.</td></tr>';
+  f$('#tb2').innerHTML=b.slice(0,lim[2]).map(rowHtml).join('')||'<tr><td colspan="8" class="empty">조건에 맞는 계약이 없습니다.</td></tr>';
+  f$('#more1').hidden=a.length<=lim[1];f$('#more2').hidden=b.length<=lim[2];
+  f$('#more1').textContent=`더 보기 (${(a.length-lim[1]).toLocaleString()}건 남음)`;f$('#more2').textContent=`더 보기 (${(b.length-lim[2]).toLocaleString()}건 남음)`;
+}
+f$('#more1').onclick=()=>{lim[1]+=PAGE*2;drawTables()};f$('#more2').onclick=()=>{lim[2]+=PAGE*2;drawTables()};
+
+function topN(obj,n){return Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,n)}
+function drawCards(){
+  const by={};cur.forEach(r=>(by[r.t]=by[r.t]||[]).push(r));
+  const order=Object.keys(TYPES);
+  f$('#cardView').innerHTML=order.map(t=>{
+    const a=by[t]||[],ty=TYPES[t];
+    if(!a.length&&!((t==='T1'||t==='N1')&&(!st.f.size||st.f.has(ty[0]))))return '';
+    const ins={},cos={};a.forEach(r=>{ins[r.inst]=(ins[r.inst]||0)+1;if(r.co)cos[r.co]=(cos[r.co]||0)+r.amt});
+    const su=a.filter(r=>r.m==='수의계약').length,ba=a.filter(r=>r.b==='a').length;
+    return `<article class="tc" style="--c:${cssF(ty[0])}"><h3><span>${esc(ty[1])}</span><span><span class="pill">${ty[0]}</span><span class="fit ${ty[2]}">${ty[2]}</span></span></h3>
+    <div class="kv"><div><b>${a.length}</b><span>건수</span></div><div><b>${won(sum(a))}</b><span>금액</span></div><div><b>${a.length?Math.round(su/a.length*100):0}%</b><span>수의계약</span></div><div><b>${ba}</b><span>1인 견적 구간</span></div></div>
+    <div class="note">${esc(ty[3])}</div>
+    ${a.length?`<div><div class="lbl">대표 계약</div><ul>${a.slice(0,3).map(r=>`<li>${esc(r.nm)} <span class="sub">${esc(r.inst)} · ${won(r.amt)} · ${esc(r.co)}</span></li>`).join('')}</ul></div>
+    <div><div class="lbl">주요 발주기관</div><ul>${topN(ins,3).map(([k,v])=>`<li>${esc(k)} (${v}건)</li>`).join('')}</ul></div>
+    <div><div class="lbl">주요 수주업체</div><ul>${topN(cos,3).map(([k,v])=>`<li>${esc(k)} (${won(v)})</li>`).join('')}</ul></div>
+    <button class="chip" data-t="${t}">이 유형 명세 보기 →</button>`:'<div class="sub">현재 조건에서 계약 실적 없음</div>'}</article>`}).join('');
+}
+f$('#cardView').onclick=e=>{const b=e.target.closest('[data-t]');if(b)showType(b.dataset.t)};
+function showType(t,q){st.t=t;if(q!==undefined){st.q=q.toLowerCase();f$('#q').value=q}setView('table');render();f$('#tableView').scrollIntoView({behavior:'smooth'})}
+
+let view='table';
+function setView(v){view=v;[...f$('#viewTabs').children].forEach(b=>b.classList.toggle('on',b.dataset.v===v));f$('#tableView').style.display=v==='table'?'grid':'none';f$('#cardView').style.display=v==='cards'?'grid':'none'}
+f$('#viewTabs').onclick=e=>{const b=e.target.closest('button');if(b){setView(b.dataset.v);render()}};
+
+function render(){
+  cur=filtered();lim={1:PAGE,2:PAGE};
+  f$('#typeRow').style.display=st.t?'flex':'none';if(st.t)f$('#typeChip').textContent=TYPES[st.t][1];
+  view==='table'?drawTables():drawCards();
+}
+
+document.addEventListener('click',e=>{const b=e.target.closest('.no');if(!b)return;
+  const done=()=>{const t=document.createElement('div');t.className='toast';t.textContent='계약번호 복사됨: '+b.dataset.no;document.body.appendChild(t);setTimeout(()=>t.remove(),1500)};
+  navigator.clipboard?.writeText(b.dataset.no).then(done,()=>{getSelection().selectAllChildren(b)})});
+
+const TOP5=[
+  ['aT 비축기지(광주·장성) 하역용역 재입찰','현재 계약(4.6억, 일반경쟁)이 2026년 4월에 끝납니다. 지게차·상하차 인력과 차량을 함께 쓰는 사업이라 직영 인프라와 가장 잘 맞습니다.','P1',''],
+  ['학교·대학·청사 이사','2025년 이사·이전 83건(13.2억), 거의 전부 수의계약입니다. 그린스마트스쿨 공사가 이어지고 순천시·곡성군 신청사 이사가 예정돼 있습니다.','T2',''],
+  ['aT 수입쌀(TRQ) 항만 운송','목포항 10.7억, 광양항 2.0억 등 제한경쟁 입찰입니다. 지금은 한진·대신로지스틱스 등 대형사가 수주합니다.','T3',''],
+  ['정기 배송 위탁 (혈액원·우체국 소포)','광주전남혈액원 혈액·물품 운송(연 5.7억, 일반경쟁), 영광·화순 우체국 소포 위탁배달(4.9억, 2027.3 만료).','T5',''],
+  ['공공급식 물류 (제안 영업)','광주·전남은 나라장터 발주가 없고, 타 지역 시군은 2억~5억 원으로 입찰합니다. 센터 운영 주체에 위탁 모델을 제안하는 방식으로 접근합니다.','',''],
+];
+f$('#top5').innerHTML=TOP5.map(([h,p,t],i)=>`<div class="ti"><span class="n">${i+1}</span><h3>${h}</h3><p>${p}</p>${t?`<button class="chip" data-top="${t}">실적 보기 →</button>`:''}</div>`).join('');
+f$('#top5').onclick=e=>{const b=e.target.closest('[data-top]');if(b)showType(b.dataset.top)};
+
+render();
+</script>
+</body>
+</html>
