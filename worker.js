@@ -1,6 +1,7 @@
 // Paths that must never be indexed by search engines (internal/private or noindex-marked areas).
 // Mirrors the noindex rules the old vercel.json headers config applied.
 import { handleChat, handleChatStatus } from './chat/handler.js';
+import { generateSitemap, generateRss } from './feed.js';
 
 const NOINDEX_PREFIXES = ['/groupware', '/hl-safety-eval', '/legacy', '/notice'];
 
@@ -22,6 +23,9 @@ function applyCommonHeaders(response, pathname) {
     headers.set('Cache-Control', 'public, max-age=31536000, immutable');
   } else if (pathname === '/favicon.ico' || pathname === '/favicon.svg') {
     headers.set('Cache-Control', 'public, max-age=86400');
+  } else if (pathname.endsWith('.xml')) {
+    headers.set('Content-Type', pathname.endsWith('rss.xml') ? 'application/rss+xml; charset=utf-8' : 'application/xml; charset=utf-8');
+    headers.set('Cache-Control', 'public, max-age=3600');
   }
 
   return withHeaders;
@@ -32,6 +36,28 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === '/api/chat/status') return handleChatStatus(request, env);
     if (url.pathname === '/api/chat') return handleChat(request, env);
+    if (url.pathname === '/sitemap.xml') {
+      const xml = await generateSitemap();
+      return new Response(xml, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/xml; charset=utf-8',
+          'Cache-Control': 'public, max-age=3600',
+          'X-Content-Type-Options': 'nosniff',
+        },
+      });
+    }
+    if (url.pathname === '/rss.xml' || url.pathname === '/feed.xml' || url.pathname === '/rss') {
+      const xml = await generateRss();
+      return new Response(xml, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/rss+xml; charset=utf-8',
+          'Cache-Control': 'public, max-age=3600',
+          'X-Content-Type-Options': 'nosniff',
+        },
+      });
+    }
     const lastSegment = url.pathname.split('/').pop() || '';
     const isFile = lastSegment.includes('.');
 

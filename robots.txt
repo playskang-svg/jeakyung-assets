@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /groupware/
+Disallow: /hl-safety-eval/
+Disallow: /legacy/
+Disallow: /notice/
 
 Sitemap: https://jeakyung.com/sitemap.xml

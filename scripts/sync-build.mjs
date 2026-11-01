@@ -87,3 +87,15 @@ if (missing.length) fail(`실재하지 않는 자산을 가리킵니다:\n   ${m
 
 const assetCount = [...built.values()].reduce((sum, list) => sum + list.length, 0);
 console.log(`✔ 자산 ${assetCount}개 반영, 참조 정상 (${HAND_WRITTEN.length + 1}개 HTML 확인)`);
+
+// 5) 사이트맵과 RSS 피드를 최신 상태로 갱신한다.
+try {
+  const { generateSitemap, generateRss } = await import('../feed.js');
+  const sitemap = await generateSitemap();
+  const rss = await generateRss();
+  await writeFile(path.join(root, 'sitemap.xml'), sitemap, 'utf8');
+  await writeFile(path.join(root, 'rss.xml'), rss, 'utf8');
+  console.log('✔ sitemap.xml, rss.xml 갱신 완료');
+} catch (e) {
+  console.warn('⚠ sitemap/rss 갱신 실패 (무시됨):', e.message);
+}
