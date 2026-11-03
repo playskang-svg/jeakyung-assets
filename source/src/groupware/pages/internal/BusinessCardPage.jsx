@@ -159,7 +159,8 @@ export default function BusinessCardPage() {
     const initial = {
       // 앞면 정보
       name: profile.display_name || profile.full_name || profile.name || '',
-      title: profile.job_title_name || '',
+      // 직책이 없으면 직급(과장 등)을 싣는다.
+      title: profile.job_title_name || profile.position_name || '',
       department: profile.department_name || '',
       mobile: profile.mobile_phone || '',
       office: profile.office_phone || '',

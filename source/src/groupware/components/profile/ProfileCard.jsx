@@ -39,7 +39,8 @@ export default function ProfileCard() {
             <h2 id="my-profile-card-title">{displayName}</h2>
             {contacts.length > 0 && <span className="gw-profile-card-contact">{contacts.join(', ')}</span>}
           </div>
-          <p>{value(profile.department_name)} · {value(profile.position_name)} · {value(profile.job_title_name)}<span className="gw-active-role-badge">{activeRoleName}</span></p>
+          {/* 직책은 없는 사람이 많아 '미등록'을 띄우지 않고 뺀다. */}
+          <p>{value(profile.department_name)} · {value(profile.position_name)}{profile.job_title_name && <> · {profile.job_title_name}</>}<span className="gw-active-role-badge">{activeRoleName}</span></p>
         </div>
         {/* 이름 줄과 단추 사이의 빈자리. 출퇴근은 매일 한 번씩 누르는 것이라
             홈에서 바로 닿아야 하고, 지금 접속자 창도 같은 자리에 둔다 —
