@@ -6,6 +6,7 @@ export default function AudienceSection() {
         <h2 id="audience-title">지금 겪고 있는<br />물류 과제는 무엇인가요?</h2>
         <p>업종과 운영 환경에 따라 필요한 물류의 범위는 달라집니다. 가장 가까운 상황부터 확인해 보세요.</p>
         <a className="text-link" href="#guide">상담 준비 순서 확인하기 <span aria-hidden="true">→</span></a>
+        <div className="audience-photo" aria-hidden="true" />
       </div>
 
       <div className="audience-list">

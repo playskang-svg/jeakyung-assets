@@ -6,6 +6,7 @@ const kakaoMapUrl = (query) => `https://map.kakao.com/link/search/${encodeURICom
 const SITES = [
   {
     type: 'Headquarters',
+    photo: 'loc-gwangju',
     name: '유한회사 재경로지스 본사',
     address: ['광주광역시 광산구 앰코로 35', '245호 (쌍암동, 폭스존)'],
     query: '광주광역시 광산구 앰코로 35',
@@ -17,6 +18,7 @@ const SITES = [
   },
   {
     type: 'Logistics Office',
+    photo: 'loc-pyeongtaek',
     name: '유한회사 재경물류',
     address: ['경기도 평택시 비전2로 79'],
     query: '경기도 평택시 비전2로 79',
@@ -24,6 +26,7 @@ const SITES = [
   },
   {
     type: 'Yeosu Branch',
+    photo: 'loc-yeosu',
     name: '재경로지스 여수지사',
     address: ['전남 여수시 여수산단로 140', '내트럭하우스 105호 (주삼동 1020)'],
     query: '전남 여수시 여수산단로 140',
@@ -55,7 +58,7 @@ export default function LocationSection() {
       <ul className="loc-grid">
         {SITES.map((site) => (
           <li key={site.name}>
-            <article className="loc-card reveal">
+            <article className="loc-card has-photo reveal" style={{ '--photo': `url(/assets/home/${site.photo}.webp)` }}>
               <span className="loc-card-type">{site.type}</span>
               <h3>{site.name}</h3>
               <address>
