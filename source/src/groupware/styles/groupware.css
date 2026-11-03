@@ -870,20 +870,6 @@ body.groupware-root a.gw-secondary-button {
   gap: 6px;
 }
 
-.gw-topweather {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-right: auto;
-  white-space: nowrap;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--gw-text, #1f2a44);
-}
-
-@media (max-width: 1200px) { .gw-topweather-range { display: none; } }
-@media (max-width: 900px) { .gw-topweather { display: none; } }
-
 .gw-topbar-tools button,
 .gw-menu-button {
   min-width: 44px;
