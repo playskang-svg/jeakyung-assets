@@ -75,6 +75,7 @@ export default function AppShell() {
           <div className="gw-topbar-title">
             <GroupwareBrand to="/" />
           </div>
+          <TopWeather />
           <div className="gw-topbar-tools" aria-label="사용자와 업무 도구">
             <TopSearch />
             <TopClock />
@@ -114,6 +115,46 @@ export default function AppShell() {
 }
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+// WMO 날씨 코드 → 이모티콘·짧은 말. 안 맞는 코드는 구름으로 둔다.
+function weatherLook(code) {
+  if (code === 0) return ['☀️', '맑음'];
+  if (code <= 2) return ['🌤️', '구름조금'];
+  if (code === 3) return ['☁️', '흐림'];
+  if (code === 45 || code === 48) return ['🌫️', '안개'];
+  if (code >= 51 && code <= 67) return ['🌧️', '비'];
+  if (code >= 71 && code <= 77) return ['❄️', '눈'];
+  if (code >= 80 && code <= 82) return ['🌦️', '소나기'];
+  if (code >= 85 && code <= 86) return ['🌨️', '눈'];
+  if (code >= 95) return ['⛈️', '뇌우'];
+  return ['☁️', '흐림'];
+}
+
+// 상단바 가운데의 날짜·날씨·기온. 서울 기준, 키 없는 Open-Meteo를 쓴다.
+// 실패하면 날짜만 남긴다 — 날씨 때문에 상단바가 깨질 이유는 없다.
+// shortcut: 서울 좌표 고정, 지점별 날씨가 필요하면 그때 설정으로 뺀다.
+function TopWeather() {
+  const [wx, setWx] = useState(null);
+  const now = new Date();
+  useEffect(() => {
+    let alive = true;
+    const load = () => fetch('https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.978&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=1')
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error('weather_failed'))))
+      .then((data) => { if (alive) setWx({ temp: data.current.temperature_2m, code: data.current.weather_code, max: data.daily.temperature_2m_max[0], min: data.daily.temperature_2m_min[0] }); })
+      .catch(() => {});
+    load();
+    const timer = window.setInterval(load, 30 * 60 * 1000);
+    return () => { alive = false; window.clearInterval(timer); };
+  }, []);
+  const [icon, text] = wx ? weatherLook(wx.code) : [];
+  return (
+    <div className="gw-topweather" aria-label="오늘 날짜와 날씨">
+      <span>📅 {now.getMonth() + 1}/{now.getDate()}({WEEKDAYS[now.getDay()]})</span>
+      {wx && <span title={`${text} · 최저 ${Math.round(wx.min)}° / 최고 ${Math.round(wx.max)}°`}>{icon} {text} {Math.round(wx.temp)}°</span>}
+      {wx && <span className="gw-topweather-range">🌡️ {Math.round(wx.min)}°/{Math.round(wx.max)}°</span>}
+    </div>
+  );
+}
 
 // 게시판 전체 검색. 어느 게시판에 썼는지 기억나지 않는 글을 찾는 자리라
 // 화면마다 있어야 한다.

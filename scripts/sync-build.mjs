@@ -75,6 +75,21 @@ for (const rel of HAND_WRITTEN) {
 }
 if (unresolved.length) fail(`빌드 결과에서 짝을 찾지 못한 참조:\n   ${unresolved.join('\n   ')}`);
 
+// 3-1) 빌드가 그 페이지에 새로 붙인 자산(예: 새로 쪼개진 CSS 청크)을 손으로 관리하는
+// HTML 이 모르면, 위의 이름 바꾸기로는 채워지지 않아 화면이 스타일 없이 깨진다.
+// 2026-11-03 source/index.html 에서 css/style.css 링크가 빠진 채 빌드돼 홈이 실제로 깨졌다.
+const dropped = [];
+for (const rel of HAND_WRITTEN) {
+  const distFile = path.join(dist, rel);
+  if (!existsSync(distFile)) continue;
+  const have = await readFile(path.join(root, rel), 'utf8');
+  // JS 는 진입점이 알아서 불러오므로(빠진 modulepreload 는 무해) CSS 만 본다.
+  for (const [, name] of (await readFile(distFile, 'utf8')).matchAll(/assets\/([A-Za-z0-9_.-]+\.css)/g)) {
+    if (!have.includes(`assets/${name}`)) dropped.push(`${rel} → ${name}`);
+  }
+}
+if (dropped.length) fail(`빌드가 요구하는 자산을 손 관리 HTML 이 빠뜨렸습니다:\n   ${dropped.join('\n   ')}`);
+
 // 4) 배포되는 모든 HTML 이 실재하는 자산만 가리키는지 마지막으로 확인한다.
 const missing = [];
 for (const rel of [...HAND_WRITTEN, 'groupware/index.html']) {

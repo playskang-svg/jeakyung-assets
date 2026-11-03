@@ -64,6 +64,8 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
   }, [boardSlug, search, category, page, scope]);
   if (error) return <div className="gw-route-state"><div className="gw-notice gw-notice--warning" role="alert">{error}<br /><Link to="/boards">게시판 목록으로</Link></div></div>;
   if (!overview) return <p className="gw-empty-state" role="status">게시판을 불러오고 있습니다.</p>;
+  // 열람자를 정해 둔 탭은 서버가 글을 비워 보낸다. "글 없음"으로 보이면 오해하므로 따로 알린다.
+  const emptyMessage = posts.category_locked ? '이 탭은 열람 권한이 있는 사람만 볼 수 있습니다.' : '등록된 게시글이 없습니다.';
   // 팝업 안에서는 라우팅 대신 콜백으로 본문을 바꿔 끼운다.
   const PostLink = ({ postId, children, ...rest }) => (onOpenPost
     ? <a href={`/groupware/boards/${boardSlug}/posts/${postId}`} onClick={(event) => { event.preventDefault(); onOpenPost(postId); }} {...rest}>{children}</a>
@@ -194,7 +196,7 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
                 <td className="gw-post-table-date">{formatBoardPostDateTime(post)}</td>
               </tr>
             ))}
-            {posts.items.length === 0 && <tr><td colSpan={5} className="gw-post-table-empty">등록된 게시글이 없습니다.</td></tr>}
+            {posts.items.length === 0 && <tr><td colSpan={5} className="gw-post-table-empty">{emptyMessage}</td></tr>}
           </tbody>
         </table>
       </div>
@@ -209,7 +211,7 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
             <span className="gw-post-list-author">{formatAuthor(post, overview.board.settings)}</span>
             <time>{formatBoardPostDateTime(post)}</time>
           </div></article>)}</div>
-        {posts.items.length === 0 && <p className="gw-empty-state">등록된 게시글이 없습니다.</p>}
+        {posts.items.length === 0 && <p className="gw-empty-state">{emptyMessage}</p>}
       </>
     )}
 
