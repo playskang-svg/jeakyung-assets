@@ -4,6 +4,7 @@ import { getBoardType } from '../../config/boardTypes.js';
 import { getVisibleBoards } from '../../services/boardService.js';
 import { getMyLinkPages } from '../../services/linkPageService.js';
 import BoardCardArt, { boardCardKind } from '../../components/BoardCardArt.jsx';
+import { isHiddenConsignmentLink } from '../../config/navigation.js';
 
 export default function BoardsPage() {
   const [boards, setBoards] = useState([]);
@@ -26,28 +27,11 @@ export default function BoardsPage() {
   }, []);
 
   const groups = useMemo(() => {
-    const list = [...boards];
-
-    // 지입업무 게시판이 누락되지 않도록 회사 그룹에 보장 추가
-    const hasConsignment = list.some((b) => b.name === '지입업무' || b.slug === 'consignment' || b.slug === 'consignment-work');
-    if (!hasConsignment) {
-      const consignPage = linkPages.find((p) => p.slug === 'consignment' || p.title === '지입업무');
-      list.push({
-        id: consignPage?.id ?? 'consignment-board-link',
-        group_name: '회사',
-        name: '지입업무',
-        slug: 'consignment',
-        to: consignPage ? `/pages/${consignPage.slug}` : '/pages/consignment',
-        description: consignPage?.description || '사업장 및 지입차량 계약 관리 업무 구분',
-        board_type: 'free',
-        isLinkPage: true,
-        sort_order: 45,
-      });
-    }
+    const list = boards.filter((board) => !isHiddenConsignmentLink(board));
 
     // 그 외 사용자 권한이 있는 업무 링크페이지도 게시판 목록에 포함
     for (const page of linkPages) {
-      if (page.slug === 'consignment' || page.title === '지입업무') continue;
+      if (isHiddenConsignmentLink(page)) continue;
       if (!list.some((b) => b.name === page.title || b.slug === page.slug)) {
         list.push({
           id: page.id,

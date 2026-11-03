@@ -5514,7 +5514,12 @@ body.groupware-root .gw-external-view-head a:hover { color: var(--gw-blue-700); 
   margin-bottom: 14px;
 }
 
-.gw-board-tabs button {
+.gw-board-tabs button,
+.gw-board-tabs a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   min-width: 116px;
   min-height: 40px;
   border: 1px solid var(--gw-border);
@@ -5526,7 +5531,8 @@ body.groupware-root .gw-external-view-head a:hover { color: var(--gw-blue-700); 
   cursor: pointer;
 }
 
-.gw-board-tabs button:hover { border-color: #b9c2d6; }
+.gw-board-tabs button:hover,
+.gw-board-tabs a:hover { border-color: #b9c2d6; }
 
 .gw-board-tabs button.is-active {
   border-color: #3f3f46;

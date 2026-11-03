@@ -19,6 +19,12 @@ export const getRecentBoardPosts = (limit = 5) => rpc('get_my_recent_board_posts
 // 볼 수 있는 게시판 전체에서 제목·말머리·본문을 훑는다.
 export const searchBoardPosts = (query, limit = 30) => rpc('search_board_posts', { p_query: query, p_limit: limit }).then((data) => data ?? []);
 export const getBoardOverview = (slug) => rpc('get_board_overview', { p_slug: slug });
+// 상위 게시판 탭 줄에 끼워 넣을 하위 게시판(예: 일반업무 → 전라남북사업부).
+// 서버가 볼 권한 있는 것만 내려준다. RPC가 아직 없는 환경에서도 목록 화면은
+// 떠야 하므로 실패하면 빈 목록으로 둔다.
+export const getBoardLinkedTabs = (slug) => rpc('get_board_linked_tabs', { p_slug: slug })
+  .then((data) => (Array.isArray(data) ? data : []))
+  .catch(() => []);
 export const getBoardPosts = (slug, { search = '', category = null, page = 1, scope = 'all' } = {}) => rpc('get_board_posts', { p_slug: slug, p_search: search || null, p_category: category, p_page: page, p_scope: scope });
 
 // 홈 화면 앨범 띠 전용. 목록에 필요한 것만 받는다 — 대표 이미지와, 본문에
