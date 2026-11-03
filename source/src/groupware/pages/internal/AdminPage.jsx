@@ -12,6 +12,7 @@ import SystemUsagePanel from '../../components/admin/SystemUsagePanel.jsx';
 import EmployeeProfilePanel from '../../components/admin/EmployeeProfilePanel.jsx';
 import PresenceAdminPanel from '../../components/admin/PresenceAdminPanel.jsx';
 import AttendanceAdminPanel from '../../components/admin/AttendanceAdminPanel.jsx';
+import GoogleActivityAdminPanel from '../../components/admin/GoogleActivityAdminPanel.jsx';
 import { EMPTY_DIRECTORY, getAdminOverview } from '../../services/adminOverviewService.js';
 
 const EMPTY_OVERVIEW = { directory: null, usage: null, approval: null, popups: null };
@@ -71,6 +72,7 @@ export default function AdminPage() {
       {section === 'sitearticles' && <SiteArticleAdminPanel />}
       {section === 'presence' && <PresenceAdminPanel />}
       {section === 'attendance' && <AttendanceAdminPanel />}
+      {section === 'google' && <GoogleActivityAdminPanel />}
       {section === 'usage' && <SystemUsagePanel usage={overview.usage} loading={loading} onReload={load} />}
     </article>
   );

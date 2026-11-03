@@ -3,6 +3,7 @@
 import { handleChat, handleChatStatus } from './chat/handler.js';
 import { generateSitemap, generateRss } from './feed.js';
 import { handleCalendar } from './calendar/handler.js';
+import { handleCalendarFile, handleCalendarWrite, handleDocs } from './calendar/google.js';
 
 const NOINDEX_PREFIXES = ['/groupware', '/hl-safety-eval', '/legacy', '/notice'];
 
@@ -38,6 +39,9 @@ export default {
     if (url.pathname === '/api/chat/status') return handleChatStatus(request, env);
     if (url.pathname === '/api/chat') return handleChat(request, env);
     if (url.pathname === '/api/calendar') return handleCalendar(request, env);
+    if (url.pathname === '/api/calendar/file') return handleCalendarFile(request, env, url);
+    if (url.pathname.startsWith('/api/calendar/events')) return handleCalendarWrite(request, env, url);
+    if (url.pathname === '/api/docs') return handleDocs(request, env);
     if (url.pathname === '/sitemap.xml') {
       const xml = await generateSitemap();
       return new Response(xml, {

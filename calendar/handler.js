@@ -1,5 +1,7 @@
 // 사내일정: 구글 캘린더의 iCal 비공개 주소를 서버에서 읽어 그룹웨어 회원에게만 돌려준다.
 // 주소는 Worker 비밀값 GOOGLE_CALENDAR_ICS_URL 에만 두고 브라우저로 내보내지 않는다.
+import { getMember, listApiEvents } from './google.js';
+
 const SUPABASE_URL = 'https://vzswlvumcdxnryrfwkkl.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_Jl43SzCeIQ90W-yYKgCQNA_2bS1K7Sd';
 const FEED_TTL_MS = 60_000;
@@ -204,6 +206,16 @@ export async function handleCalendar(request, env) {
   const rangeStart = Date.parse(`${startParam}T00:00:00Z`);
   const rangeEnd = Date.parse(`${endParam}T23:59:59Z`);
   if (!(rangeEnd >= rangeStart) || rangeEnd - rangeStart > MAX_RANGE_DAYS * DAY_MS) return json({ error: 'invalid_range' }, 400);
+  // 구글 API 연결(GOOGLE_OAUTH)이 있으면 첨부·수정 권한까지 담긴 API로 읽는다.
+  if (env?.GOOGLE_OAUTH) {
+    const member = await getMember(request);
+    if (!member) return json({ error: 'forbidden' }, 403);
+    try {
+      return json({ available: true, canWrite: true, events: await listApiEvents(env, member, startParam, endParam) });
+    } catch {
+      return json({ error: 'calendar_unavailable' }, 502);
+    }
+  }
   if (!(await isApprovedMember(token))) return json({ error: 'forbidden' }, 403);
   if (!env?.GOOGLE_CALENDAR_ICS_URL) return json({ available: false, events: [] }, 503);
   try {

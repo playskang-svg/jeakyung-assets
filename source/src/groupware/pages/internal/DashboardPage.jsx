@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import DocCreateButton from '../../components/DocCreateButton.jsx';
+
 import { getMyDashboardWidgets, setDashboardPreference } from '../../services/dashboardService.js';
 import { BOARD_CATALOG_CHANGED_EVENT, getAlbumHighlights, getBoardPosts, getRecentBoardPosts, getVisibleBoards, resolvePostThumbnail } from '../../services/boardService.js';
 import { getMyLinkPages } from '../../services/linkPageService.js';
@@ -367,6 +369,8 @@ export default function DashboardPage() {
   return (
     <article className="gw-page gw-dashboard-page" aria-label="대시보드">
       <ProfileCard />
+
+      <DocCreateButton />
 
       <div className="gw-panel gw-panel--feeds">
         <PostLines title="공지사항" posts={notices} to={`/boards/${NOTICE_SLUG}`} emptyText="등록된 공지가 없습니다." />

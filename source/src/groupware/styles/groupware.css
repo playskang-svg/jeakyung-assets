@@ -7568,3 +7568,34 @@ body.groupware-root .gw-search-results a:hover { background: #f6f8fd; }
   .gw-cal-chip { padding: 0 3px; font-size: 11px; }
   .gw-cal-day .gw-cal-chip:nth-of-type(n + 2) { display: none; }
 }
+.gw-cal-add { margin-left: auto; }
+.gw-cal-agenda-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.gw-cal-agenda-body { flex: 1; min-width: 0; }
+.gw-cal-agenda-actions { display: flex; gap: 6px; align-self: flex-start; }
+.gw-cal-files { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.gw-cal-file { border: 1px solid var(--gw-border); border-radius: 8px; padding: 4px 10px; background: #fff; font-size: 13px; cursor: pointer; }
+.gw-cal-file:hover { border-color: #2450f5; color: #2450f5; }
+.gw-cal-dialog { width: min(560px, 100%); height: auto; max-height: 92vh; }
+.gw-cal-form { display: grid; gap: 12px; padding: 16px 18px 18px; overflow: auto; }
+.gw-cal-form label { display: grid; gap: 6px; font-size: 13px; font-weight: 700; color: #2b3450; }
+.gw-cal-form input:not([type=checkbox]), .gw-cal-form textarea { border: 1px solid var(--gw-border); border-radius: 8px; padding: 9px 10px; font: inherit; font-weight: 400; font-size: 15px; }
+.gw-cal-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.gw-cal-check { display: flex !important; align-items: center; gap: 8px; font-weight: 600 !important; }
+.gw-cal-keep { border: 1px solid var(--gw-border); border-radius: 8px; padding: 8px 12px; display: grid; gap: 6px; }
+.gw-cal-form-actions { display: flex; justify-content: flex-end; gap: 8px; }
+@media (max-width: 640px) { .gw-cal-agenda li { flex-wrap: wrap; } .gw-cal-form-row { grid-template-columns: 1fr; } }
+
+/* 대시보드 문서 만들기 */
+.gw-doc-create-row { display: flex; align-items: center; gap: 14px; }
+.gw-doc-create-row > div { display: grid; gap: 2px; }
+.gw-doc-create-plus { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border: 0; border-radius: 50%; color: #fff; background: #2450f5; box-shadow: 0 6px 16px rgba(36, 80, 245, .28); font-size: 30px; line-height: 1; cursor: pointer; transition: transform .2s; }
+.gw-doc-create-plus:hover { transform: scale(1.06); }
+.gw-doc-create-plus[aria-expanded="true"] span { display: inline-block; transform: rotate(45deg); }
+.gw-doc-create-menu { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.gw-doc-create-menu button { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--gw-border); border-radius: 999px; padding: 8px 16px; background: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
+.gw-doc-create-menu button:hover { border-color: #2450f5; color: #2450f5; }
+.gw-table-wrap { overflow-x: auto; margin-top: 12px; }
+.gw-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.gw-table th, .gw-table td { padding: 9px 10px; border-bottom: 1px solid var(--gw-border); text-align: left; white-space: nowrap; }
+.gw-table th { background: #f6f8fc; font-weight: 700; color: #4a5470; }
+.gw-table td:last-child { white-space: normal; }
