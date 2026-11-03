@@ -7536,3 +7536,35 @@ body.groupware-root .gw-search-results a:hover { background: #f6f8fd; }
 @media (max-width: 640px) {
   .gw-attendance-summary { grid-template-columns: 1fr; }
 }
+
+/* 사내일정 (CalendarPage) */
+.gw-cal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.gw-cal-toolbar { display: flex; align-items: center; gap: 8px; margin: 16px 0 12px; }
+.gw-cal-toolbar strong { min-width: 7.5em; text-align: center; font-size: 18px; }
+.gw-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1px solid var(--gw-border); border-radius: 12px; overflow: hidden; background: #fff; }
+.gw-cal-weekday { padding: 8px; border-bottom: 1px solid var(--gw-border); font-size: 13px; font-weight: 700; text-align: center; color: #4a5470; background: #f6f8fc; }
+.gw-cal-weekday.is-sun, .gw-cal-day.is-sun .gw-cal-date { color: #d64545; }
+.gw-cal-weekday.is-sat, .gw-cal-day.is-sat .gw-cal-date { color: #2f5bd8; }
+.gw-cal-day { display: flex; flex-direction: column; gap: 3px; min-height: 104px; padding: 6px; border: 0; border-right: 1px solid var(--gw-border); border-bottom: 1px solid var(--gw-border); background: #fff; text-align: left; cursor: pointer; overflow: hidden; }
+.gw-cal-day:nth-child(7n + 7) { border-right: 0; }
+.gw-cal-day:hover { background: #f6f8fc; }
+.gw-cal-day.is-outside { background: #fafbfd; }
+.gw-cal-day.is-outside .gw-cal-date { opacity: .45; }
+.gw-cal-day.is-selected { box-shadow: inset 0 0 0 2px var(--gw-blue-600, #2450f5); }
+.gw-cal-date { font-size: 13px; font-weight: 700; color: #1f2a44; }
+.gw-cal-day.is-today .gw-cal-date { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: #fff; background: var(--gw-blue-600, #2450f5); }
+.gw-cal-chip { display: block; padding: 2px 6px; border-radius: 6px; font-size: 12px; line-height: 1.5; color: #1d3a8a; background: #e8eeff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gw-cal-chip.is-allday { color: #fff; background: #3b63e6; }
+.gw-cal-more { font-size: 12px; color: #4a5470; }
+.gw-cal-agenda { margin-top: 20px; }
+.gw-cal-agenda h2 { font-size: 17px; margin-bottom: 10px; }
+.gw-cal-agenda ul { margin: 0; padding: 0; list-style: none; }
+.gw-cal-agenda li { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--gw-border); }
+.gw-cal-agenda-time { flex: none; min-width: 7.5em; font-weight: 700; color: #2450f5; font-size: 14px; }
+.gw-cal-agenda-loc { display: block; margin-top: 2px; font-size: 13px; color: #4a5470; }
+.gw-cal-agenda p { margin: 6px 0 0; font-size: 14px; color: #3c4560; white-space: pre-line; }
+@media (max-width: 640px) {
+  .gw-cal-day { min-height: 62px; padding: 4px; }
+  .gw-cal-chip { padding: 0 3px; font-size: 11px; }
+  .gw-cal-day .gw-cal-chip:nth-of-type(n + 2) { display: none; }
+}

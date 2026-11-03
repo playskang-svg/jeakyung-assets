@@ -2,6 +2,7 @@
 // Mirrors the noindex rules the old vercel.json headers config applied.
 import { handleChat, handleChatStatus } from './chat/handler.js';
 import { generateSitemap, generateRss } from './feed.js';
+import { handleCalendar } from './calendar/handler.js';
 
 const NOINDEX_PREFIXES = ['/groupware', '/hl-safety-eval', '/legacy', '/notice'];
 
@@ -36,6 +37,7 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === '/api/chat/status') return handleChatStatus(request, env);
     if (url.pathname === '/api/chat') return handleChat(request, env);
+    if (url.pathname === '/api/calendar') return handleCalendar(request, env);
     if (url.pathname === '/sitemap.xml') {
       const xml = await generateSitemap();
       return new Response(xml, {

@@ -14,3 +14,4 @@ supabase
 *.md
 wrangler.jsonc
 worker.js
+calendar

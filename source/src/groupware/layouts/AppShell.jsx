@@ -235,7 +235,7 @@ function TopClock() {
           접속 {elapsedLabel(signedInAt.getTime(), now.getTime())}
         </span>
       )}
-      <Link className="gw-topclock-button" to="/view/schedule" title="사내일정" aria-label="사내일정">
+      <Link className="gw-topclock-button" to="/calendar" title="사내일정" aria-label="사내일정">
         <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M8 3v4M16 3v4M3 10h18" /></svg>
         <span className="gw-tool-label">일정</span>
       </Link>

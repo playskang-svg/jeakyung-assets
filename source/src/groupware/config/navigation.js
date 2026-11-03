@@ -11,9 +11,8 @@ export const GROUPWARE_NAVIGATION = [
   { key: 'newbiz', label: '공공사업권 DB', href: 'https://jeakyung.com/groupware/newbiz01/', newTab: true, quick: 15 },
   { key: 'approval', label: '전자결재', path: '/approval', quick: 20 },
   { key: 'organization', label: '조직도', path: '/organization', quick: 30 },
-  // 사내일정은 바깥 페이지다. 액자 안에서 열어 상단 메뉴를 잃지 않게 한다.
-  { key: 'schedule', label: '사내일정', href: 'https://jeakyung.quv.kr/36' },
-  { key: 'calendar', label: '일정', path: '/calendar' },
+  // 사내일정은 구글 캘린더 '재경 사내일정'을 Worker(/api/calendar)가 읽어 그린다.
+  { key: 'schedule', label: '사내일정', path: '/calendar' },
   { key: 'files', label: '파일', path: '/files', quick: 40 },
   { key: 'boards', label: '게시판', path: '/boards' },
   { key: 'consignment', label: '지입업무', href: 'https://jeakyung.quv.kr/41', quick: 45 },
@@ -39,7 +38,7 @@ const TRAIL_RULES = [
   [/^\/admin$/, ['관리자', null]],
   [/^\/pages\/[^/]+$/, ['업무 페이지', null]],
   [/^\/organization$/, ['조직도', null]],
-  [/^\/calendar$/, ['일정', null]],
+  [/^\/calendar$/, ['사내일정', null]],
   [/^\/files$/, ['파일', null]],
   [/^\/view\/link\/[^/]+$/, ['바로가기', null]],
   [/^\/view\/[^/]+$/, ['바로가기', null]],
