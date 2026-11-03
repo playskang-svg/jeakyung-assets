@@ -10,7 +10,6 @@ import ButtonBoxGrid from '../../components/ButtonBoxGrid.jsx';
 import BoardCardArt, { boardCardKind } from '../../components/BoardCardArt.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getQuickLinks } from '../../services/quickLinkService.js';
-import { isHiddenConsignmentLink } from '../../config/navigation.js';
 import { youTubeThumbnail } from '../../components/editor/YouTubeEmbed.js';
 
 // 홈 화면에 내보내지 않는 위젯.
@@ -303,12 +302,12 @@ export default function DashboardPage() {
     if (widgetResult.status === 'fulfilled') setWidgets(widgetResult.value);
     else setError('대시보드 구성을 불러오지 못했습니다.');
     if (boardResult.status === 'fulfilled') setBoards(boardResult.value);
-    if (linkPageResult.status === 'fulfilled') setLinkPages(linkPageResult.value.filter((page) => !isHiddenConsignmentLink(page)));
+    if (linkPageResult.status === 'fulfilled') setLinkPages(linkPageResult.value);
     if (noticeResult.status === 'fulfilled') {
       setNotices((noticeResult.value.items ?? []).slice(0, FEED_ROWS).map((item) => ({ ...item, board_slug: NOTICE_SLUG })));
     }
     if (recentResult.status === 'fulfilled') setRecent(recentResult.value);
-    if (quickResult.status === 'fulfilled') setQuickLinkRows(ensureNewbizLink(quickResult.value).filter((item) => !isHiddenConsignmentLink(item)));
+    if (quickResult.status === 'fulfilled') setQuickLinkRows(ensureNewbizLink(quickResult.value));
     // 앨범은 대표 이미지 주소를 한 장씩 따로 받아야 해서 뒤에서 채운다.
     // 권한이 없거나 게시판이 없으면 빈 배열로 두고 샘플 그림이 대신 선다.
     if (albumResult.status === 'fulfilled') {
