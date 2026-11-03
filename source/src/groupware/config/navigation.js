@@ -16,6 +16,7 @@ export const GROUPWARE_NAVIGATION = [
   { key: 'calendar', label: '일정', path: '/calendar' },
   { key: 'files', label: '파일', path: '/files', quick: 40 },
   { key: 'boards', label: '게시판', path: '/boards' },
+  { key: 'consignment', label: '지입업무', href: 'https://jeakyung.quv.kr/41', quick: 45 },
   { key: 'safety-eval', label: '적격수급평가', href: 'https://jeakyung.com/hl-safety-eval/', quick: 50 },
   { key: 'ceo', label: '대표님', href: 'https://jeakyung.quv.kr/17', quick: 60 },
   { key: 'payment-link', label: '결제 링크 발송', href: 'https://seller.payapp.kr/r/using_reg?payreqtype=krw', quick: 70 },
@@ -62,14 +63,3 @@ export const quickLinks = () => GROUPWARE_NAVIGATION
   .map((item) => (item.newTab
     ? { ...item, to: null }
     : { ...item, to: item.path ?? `/view/${item.key}` }));
-
-// 지입업무는 2026-11-03 부로 화면의 버튼·카드에서 모두 뺐다(이전 인트라넷 바로가기,
-// 대시보드 빠른 실행·게시판 카드, 게시판 목록). 업무 페이지 자체(/pages/consignment)와
-// 그 안의 회사별 게시판은 지우지 않았으므로 주소로는 그대로 열린다.
-// 빠른 실행 버튼은 DB(quick_links)에서 오지만, 마이그레이션 적용 전에도 바로
-// 사라지도록 화면에서 한 번 더 거른다.
-const CONSIGNMENT_URL = 'jeakyung.quv.kr/41';
-export const isHiddenConsignmentLink = (item) => Boolean(item) && (
-  item.label === '지입업무' || item.title === '지입업무' || item.slug === 'consignment'
-  || (typeof item.url === 'string' && item.url.includes(CONSIGNMENT_URL))
-);
