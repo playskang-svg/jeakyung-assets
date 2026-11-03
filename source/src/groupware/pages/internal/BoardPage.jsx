@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import FolderButtons from '../../components/FolderButtons.jsx';
-import { getBoardOverview, getBoardPosts, resolvePostThumbnail } from '../../services/boardService.js';
+import { getBoardLinkedTabs, getBoardOverview, getBoardPosts, resolvePostThumbnail } from '../../services/boardService.js';
 import { formatBoardPostDateTime } from '../../utils/datetime.js';
 
 // 글머리 표시. 글쓰기 화면에서 체크한 것을 목록에서 제목 앞에 그림으로 알린다.
@@ -45,6 +45,13 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
   const [params, setParams] = useSearchParams();
   const [overview, setOverview] = useState(null); const [posts, setPosts] = useState({ items: [] }); const [thumbnails, setThumbnails] = useState({}); const [error, setError] = useState('');
   const search = params.get('q') ?? ''; const category = params.get('category') || null; const page = Number(params.get('page') ?? 1); const scope = params.get('scope') || 'all';
+  const [linkedTabs, setLinkedTabs] = useState([]);
+  useEffect(() => {
+    let active = true;
+    setLinkedTabs([]);
+    getBoardLinkedTabs(boardSlug).then((tabs) => { if (active) setLinkedTabs(tabs); });
+    return () => { active = false; };
+  }, [boardSlug]);
   useEffect(() => {
     let active = true;
     Promise.all([getBoardOverview(boardSlug), getBoardPosts(boardSlug, { search, category, page, scope })]).then(async ([info, list]) => {
@@ -112,10 +119,21 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
 
   const categoryNameOf = (post) => post.category ?? post.prefix ?? (post.is_notice ? '공지' : '일반');
 
+  // 분류 탭 사이에 하위 게시판 탭을 끼운다. 접근이 제한된 사업부(전라남북사업부)는
+  // 분류가 아니라 별도 게시판이라, 권한 있는 사람에게만 원래 자리(after_code 다음)에 보인다.
+  const tabEntries = overview.categories.map((item) => ({ kind: 'category', key: item.id, item }));
+  for (const tab of linkedTabs) {
+    const entry = { kind: 'board', key: `board-${tab.slug}`, item: tab };
+    const at = tabEntries.findIndex((existing) => existing.kind === 'category' && existing.item.code === tab.after_code);
+    if (at >= 0) tabEntries.splice(at + 1, 0, entry); else tabEntries.push(entry);
+  }
+  const parentBoardSlug = overview.board.settings?.parent_board_slug;
+
   return <article className={embedded ? 'gw-page gw-page--embedded' : 'gw-page'} aria-labelledby="board-title">
     <header className="gw-page-header gw-board-header">
             <h1 id="board-title">{overview.board.name}</h1>
       <div className="gw-board-header-actions">
+        {!embedded && parentBoardSlug && <Link className="gw-secondary-button" to={`/boards/${parentBoardSlug}`}>상위 게시판</Link>}
         {!embedded && <Link className="gw-secondary-button" to="/boards">전체목록</Link>}
       </div>
     </header>
@@ -147,11 +165,12 @@ export default function BoardPage({ boardSlug: boardSlugProp, embedded = false, 
     )}
 
     {/* 분류 탭. 고른 것만 진하게 채워 지금 어디를 보고 있는지 한눈에 보이게 한다. */}
-    {overview.categories.length > 0 && (
+    {tabEntries.length > 0 && (
       <div className="gw-board-tabs" role="tablist" aria-label="게시판 분류">
         <button type="button" role="tab" aria-selected={!category} className={!category ? 'is-active' : ''} onClick={() => selectCategory(null)}>전체보기</button>
-        {overview.categories.map((item) => (
-          <button type="button" role="tab" key={item.id} aria-selected={category === item.id} className={category === item.id ? 'is-active' : ''} onClick={() => selectCategory(item.id)}>{item.name}</button>
+        {tabEntries.map(({ kind, key, item }) => (kind === 'board'
+          ? <Link role="tab" key={key} aria-selected={false} to={`/boards/${item.slug}`}>{item.name}</Link>
+          : <button type="button" role="tab" key={key} aria-selected={category === item.id} className={category === item.id ? 'is-active' : ''} onClick={() => selectCategory(item.id)}>{item.name}</button>
         ))}
       </div>
     )}
