@@ -25,7 +25,7 @@ export default function DocCreateButton() {
     try {
       const doc = await createGoogleDoc(type.key, name.trim());
       if (tab) tab.location.href = doc.url; else window.location.href = doc.url;
-      setStatus(`'${doc.name}'을(를) 만들었습니다. 드라이브에 저장됩니다.`);
+      setStatus(`'${doc.name}'을(를) 만들었습니다. 새 탭에서 편집하세요(회사 구글 드라이브에 저장됨).`);
     } catch (error) {
       tab?.close();
       setStatus(describeGoogleError(error.code));
@@ -40,7 +40,7 @@ export default function DocCreateButton() {
         </button>
         <div>
           <strong>문서 만들기</strong>
-          <span className="gw-field-hint">구글 문서·스프레드시트·프레젠테이션을 새로 만들어 회사 드라이브에 저장합니다.</span>
+          <span className="gw-field-hint">구글 문서·스프레드시트·프레젠테이션을 새로 만들어 회사 구글 드라이브(jeakyungdrive01)에 저장하고, 새 탭에서 바로 편집합니다.</span>
         </div>
       </div>
       {open && (

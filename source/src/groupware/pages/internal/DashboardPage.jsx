@@ -370,8 +370,6 @@ export default function DashboardPage() {
     <article className="gw-page gw-dashboard-page" aria-label="대시보드">
       <ProfileCard />
 
-      <DocCreateButton />
-
       <div className="gw-panel gw-panel--feeds">
         <PostLines title="공지사항" posts={notices} to={`/boards/${NOTICE_SLUG}`} emptyText="등록된 공지가 없습니다." />
         <PostLines title="최신 게시글" posts={recent} to="/boards" emptyText="등록된 글이 없습니다." showBoard />
@@ -463,6 +461,9 @@ export default function DashboardPage() {
           isSample={album.length === 0}
         />
       </section>
+
+      {/* 문서 만들기는 가끔 쓰는 기능이라 홈 맨 아래에 둔다. */}
+      <DocCreateButton />
 
       {!loading && restorableWidgets.length > 0 && <section className="gw-hidden-widgets" aria-labelledby="hidden-widgets-title"><h2 id="hidden-widgets-title">숨긴 위젯</h2>{restorableWidgets.map((widget) => <button type="button" key={widget.id} onClick={() => restore(widget)}>{widget.title} 복원</button>)}</section>}
     </article>
