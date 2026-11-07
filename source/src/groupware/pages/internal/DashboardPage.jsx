@@ -370,8 +370,6 @@ export default function DashboardPage() {
     <article className="gw-page gw-dashboard-page" aria-label="대시보드">
       <ProfileCard />
 
-      <DocCreateButton />
-
       <div className="gw-panel gw-panel--feeds">
         <PostLines title="공지사항" posts={notices} to={`/boards/${NOTICE_SLUG}`} emptyText="등록된 공지가 없습니다." />
         <PostLines title="최신 게시글" posts={recent} to="/boards" emptyText="등록된 글이 없습니다." showBoard />
@@ -391,6 +389,9 @@ export default function DashboardPage() {
         </div>
       </section>
       )}
+
+      {/* 문서 만들기는 '페이지' 바로 아래(사용자 지정 위치). */}
+      <DocCreateButton />
 
       {/* 게시판으로 가는 길을 한 덩어리로 묶는다. 낱개로 흩어 두면 화면이
           버튼밭처럼 보이고 무엇이 한 묶음인지 알기 어렵다. */}
