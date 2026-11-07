@@ -17,7 +17,7 @@ export default function GoogleActivityAdminPanel() {
         <div><span className="gw-eyebrow">GOOGLE</span><h2 id="google-log-title">구글 문서·일정 기록</h2></div>
         {rows && <span className="gw-count-badge">{rows.length}건</span>}
       </div>
-      <p className="gw-field-hint">대시보드 '문서 만들기'와 사내일정 등록·수정·삭제를 누가 언제 했는지 남깁니다. 파일은 jeakyungdrive01 드라이브에 저장됩니다.</p>
+      <p className="gw-field-hint">대시보드 '문서 만들기'와 사내일정 등록·수정·삭제를 누가 언제 했는지 남깁니다. 파일은 회사 구글 드라이브에 저장됩니다.</p>
       {error && <div className="gw-notice gw-notice--warning" role="alert">{error}</div>}
       {rows && rows.length === 0 && <p className="gw-empty-state">아직 기록이 없습니다.</p>}
       {rows && rows.length > 0 && (

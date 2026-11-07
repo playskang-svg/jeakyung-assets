@@ -36,6 +36,12 @@ export async function getGoogleActivityLogs() {
   return data ?? [];
 }
 
+export async function getDocCreateLogs() {
+  const { data, error } = await requireSupabase().rpc('get_doc_create_logs', { p_limit: 100 });
+  if (error) throw error;
+  return data ?? [];
+}
+
 export const describeGoogleError = (code) => ({
   invalid_event: '제목과 날짜·시간을 확인해 주세요. 끝 시간은 시작보다 뒤여야 합니다.',
   too_many_files: '첨부파일은 한 번에 5개까지 올릴 수 있습니다.',
