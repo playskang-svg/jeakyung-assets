@@ -219,7 +219,10 @@ export async function handleCalendarFile(request, env, url) {
   }
 }
 
-// 문서 만들기: jeakyungdrive01 드라이브 루트에 새 구글 문서를 만들고, 링크가 있는
+// 대시보드 '문서 만들기' 공용 폴더(jeakyungdrive01 드라이브).
+export const DOCS_FOLDER_ID = '1fO-RtkoocBUQQ4zb6q0KoX4dgREGcQbZ';
+
+// 문서 만들기: jeakyungdrive01 드라이브 공용 폴더에 새 구글 문서를 만들고, 링크가 있는
 // 사람은 누구나 편집할 수 있게 연다(만든 직원이 구글 계정 없이도 바로 쓰도록).
 export async function handleDocs(request, env) {
   if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
@@ -232,9 +235,13 @@ export async function handleDocs(request, env) {
   const name = String(input?.name || '').trim().slice(0, 200);
   if (!type || !name) return json({ error: 'invalid' }, 400);
   try {
-    const res = await google(env, 'https://www.googleapis.com/drive/v3/files?fields=id,name,webViewLink', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, mimeType: type.mime }),
+    const create = (parents) => google(env, 'https://www.googleapis.com/drive/v3/files?fields=id,name,webViewLink', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, mimeType: type.mime, ...(parents && { parents }) }),
     });
+    // shortcut: drive.file 범위 토큰은 사람이 만든 공용 폴더에 넣지 못해(404/403) 루트로 만든다.
+    // GOOGLE_OAUTH 를 drive 범위로 다시 발급하면 공용 폴더에 들어간다.
+    let res = await create([DOCS_FOLDER_ID]).catch(() => null);
+    if (!res?.ok) res = await create();
     const file = await res.json();
     await google(env, `https://www.googleapis.com/drive/v3/files/${file.id}/permissions`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: 'writer', type: 'anyone' }),
