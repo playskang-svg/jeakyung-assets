@@ -390,6 +390,9 @@ export default function DashboardPage() {
       </section>
       )}
 
+      {/* 문서 만들기는 '페이지' 바로 아래(사용자 지정 위치). */}
+      <DocCreateButton />
+
       {/* 게시판으로 가는 길을 한 덩어리로 묶는다. 낱개로 흩어 두면 화면이
           버튼밭처럼 보이고 무엇이 한 묶음인지 알기 어렵다. */}
       {!loading && (boards.length > 0 || linkPages.length > 0) && (
@@ -461,9 +464,6 @@ export default function DashboardPage() {
           isSample={album.length === 0}
         />
       </section>
-
-      {/* 문서 만들기는 가끔 쓰는 기능이라 홈 맨 아래에 둔다. */}
-      <DocCreateButton />
 
       {!loading && restorableWidgets.length > 0 && <section className="gw-hidden-widgets" aria-labelledby="hidden-widgets-title"><h2 id="hidden-widgets-title">숨긴 위젯</h2>{restorableWidgets.map((widget) => <button type="button" key={widget.id} onClick={() => restore(widget)}>{widget.title} 복원</button>)}</section>}
     </article>
