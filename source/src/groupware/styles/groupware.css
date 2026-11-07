@@ -7589,6 +7589,10 @@ body.groupware-root .gw-search-results a:hover { background: #f6f8fd; }
 .gw-doc-create-row { display: flex; align-items: center; gap: 14px; }
 .gw-doc-create-row > div { display: grid; gap: 2px; }
 .gw-doc-create-folder { flex: none; margin-left: auto; white-space: nowrap; }
+.gw-doc-create-log { flex: none; margin-left: auto; border: 0; padding: 4px 6px; background: none; color: #2450f5; font-size: 14px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.gw-doc-create-log + .gw-doc-create-folder { margin-left: 0; }
+.gw-doc-create-status { margin-top: 10px; text-align: center; }
+.gw-doc-log-dialog { width: min(760px, 100%); height: auto; max-height: min(80vh, 100%); }
 .gw-doc-create-plus { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border: 0; border-radius: 50%; color: #fff; background: #2450f5; box-shadow: 0 6px 16px rgba(36, 80, 245, .28); font-size: 30px; line-height: 1; cursor: pointer; transition: transform .2s; }
 .gw-doc-create-plus:hover { transform: scale(1.06); }
 .gw-doc-create-plus[aria-expanded="true"] span { display: inline-block; transform: rotate(45deg); }
